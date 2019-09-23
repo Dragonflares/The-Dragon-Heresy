@@ -1,6 +1,6 @@
 const Discord = require('discord.js')
 const client = new Discord.Client()
-const auth = require('auth.json')
+const auth = require("./auth.json")
 
 client.on('ready', () => {
     console.log("I need a new job, yet I logged as " + client.user.tag)

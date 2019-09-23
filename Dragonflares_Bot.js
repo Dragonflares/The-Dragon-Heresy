@@ -1,5 +1,6 @@
 const Discord = require('discord.js')
 const client = new Discord.Client()
+const auth = require('auth.json')
 
 client.on('ready', () => {
     console.log("I need a new job, yet I logged as " + client.user.tag)
@@ -51,7 +52,7 @@ function helpCommand(arguments, receivedMessage){
         receivedMessage.channel.send("Let me show you all I can do")
     }
     else{
-        receivedMessage.channel.send("So you need help with" + arguments)
+        receivedMessage.channel.send("So you need help with " + arguments)
     }
 }
 
@@ -64,4 +65,4 @@ function murderCommand(arguments, receivedMessage){
     }
 }
 
-client.login("NjI1NzE1NzE0MTQxMTkyMjAy.XYjzeA.cz4uijgksQk8TFt_9vWAeKmmV0g")
+client.login(auth.token)

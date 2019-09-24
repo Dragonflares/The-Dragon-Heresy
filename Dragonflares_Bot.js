@@ -8,15 +8,28 @@ client.on('ready', () => {
     client.user.setActivity("Space Engineers")
 
     client.guilds.forEach((guild) => {
-        console.log(guild.name)
+        console.log(guild.name, guild.id)
+        //guild.systemChannel.send(`Guilty as charged to exist, ${guild.owner}`)
         guild.channels.forEach((channel) => {
             console.log(' - ', channel.name, channel.id)
         })
     })
     // general de TBG 436263609711067151
     let generalChannel = client.channels.get("436263609711067151")
-    //generalChannel.send("Buenas noches la concha de su madre")
+    //generalChannel.send("Buenas noches la concha de su madre, y hola ")
 })
+
+client.on('guildMemberAdd', member => {
+    const channel = member.guild.channels.find(ch => ch.name === 'member-log')
+    if (!channel) {
+        return
+    }
+    if(guild.id == '436263609711067147')
+        channel.send(`Bienvenido a Team La Buena Gente, no se quién carajo te invitó, ${member}, pero bienvenido. \n
+        Datazo innecesario, el ${guild.owner} me creó, así que agradecele`)
+  })
+ 
+
 
 client.on('message', (receivedMessage) => {
     if(receivedMessage.author == client.user) {

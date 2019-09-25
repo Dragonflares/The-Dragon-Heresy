@@ -1,0 +1,24 @@
+{
+  "name": "Dragonflares_Bot",
+  "version": "1.0.0",
+  "repository": "https://github.com/Dragonflares/Dragonflares-Bot",
+  "description": "A simple Discord Bot",
+  "main": "Dragonflares_Bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "discord",
+    "music",
+    "bot"
+  ],
+  "author": "Dragonflares",
+  "license": "",
+  "dependencies": {
+    "discord.js": "^11.5.0",
+    "ffmpeg": "0.0.4",
+    "ffmpeg-binaries": "^4.0.0",
+    "opusscript": "0.0.6",
+    "ytdl-core": "^0.29.1"
+  }
+}

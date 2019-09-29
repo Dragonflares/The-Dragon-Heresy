@@ -7,10 +7,14 @@ const {
     youtubeToken
 }= require("./auth.json")
 const ytdl = require('ytdl-core')
-const YouTube = require('simple-youtube-api');
-const youtube = new YouTube(youtubeToken);
+const YouTube = require('simple-youtube-api')
+const youtube = new YouTube(youtubeToken)
+const fs = require('fs')
+let xp = require('./xp.json')
+
 
 const queue = new Map();
+
 
 client.on('ready', () => {
     console.log("I need a new job, yet I logged in as " + client.user.tag)
@@ -55,12 +59,36 @@ client.on('message', (receivedMessage) => {
 
     //receivedMessage.react("👍")
 
+    let xpAdd = Math.floor(Math.random() * 7) + 8
+
+    if(!xp[receivedMessage.author.id]){
+        xp[receivedMessage.author.id] = {
+            xp: 0,
+            level: 1
+        };
+    }
+
+    xp[receivedMessage.author.id].xp = xp[receivedMessage.author.id].xp +  xpAdd;
+    
+    let nxtlevel = xp[receivedMessage.author.id].level * 300;
+
+    if(xp[receivedMessage.author.id].xp >= nxtlevel) {
+        xp[receivedMessage.author.id].xp = xp[receivedMessage.author.id].xp - nxtlevel;
+        xp[receivedMessage.author.id].level = xp[receivedMessage.author.id].level + 1
+        receivedMessage.channel.send(`Congratulations ${receivedMessage.author}, you've leveled up!
+You are now level ${xp[receivedMessage.author.id].level}!`)
+    }
+    fs.writeFile("./xp.json", JSON.stringify(xp), err => {
+        if(err) console.log(err)
+    })
+
     if(receivedMessage.content.startsWith(prefix)){
         processCommand(receivedMessage)
     }
 })
 
 function processCommand(receivedMessage){
+
     let fullCommand = receivedMessage.content.substr(1)
     let splitCommand = fullCommand.split(" ")
     let primaryCommand = splitCommand[0]
@@ -96,8 +124,12 @@ function processCommand(receivedMessage){
             stopCommand(receivedMessage, serverQueue)
             break;
         }
-        case "handleEarrape": {
-            earrapeCommand(receivedMessage,serverQueue)
+        case "volume": {
+            volumeCommand(receivedMessage,serverQueue)
+            break;
+        }
+        case "earrape": {
+            earrapeCommand(receivedMessage, serverQueue)
             break;
         }
         default:{
@@ -179,7 +211,7 @@ function obliterateCommand(receivedMessage){
                         }).then(() => {
                         receivedMessage.channel.send(`I've successfully banned ${user}`)
                       }).catch(err => {
-                        receivedMessage.channel.send(`I was unable to banned ${member}`)
+                        receivedMessage.channel.send(`I was unable to ban ${member}`)
                         console.error(err)
                       })
                 }
@@ -262,7 +294,7 @@ function stopCommand(message, serverQueue) {
     if (!serverQueue) return message.channel.send('There is nothing playing that I could stop for you.')
     serverQueue.songs = []
     serverQueue.connection.dispatcher.end('Stop command has been used!')
-    return undefined;
+    return message.channel.send('Goodbye.');
 }
 
 async function handleVideo(video, receivedMessage, voiceChannel, playlist = false) {
@@ -327,7 +359,7 @@ function play(guild, song) {
 	serverQueue.textChannel.send(`🎶 Start playing: **${song.title}**`);
 }
 
-function earrapeCommand(message, serverQu){
+function volumeCommand(message, serverQu){
     const args = message.content.split(' ');
     if (!message.member.voiceChannel) return message.channel.send('You are not in a voice channel!')
     if (!serverQu) return message.channel.send('There is nothing playing.')
@@ -335,6 +367,38 @@ function earrapeCommand(message, serverQu){
     serverQu.volume = args[1];
     serverQu.connection.dispatcher.setVolumeLogarithmic(args[1] / 5)
     return message.channel.send(`I set the volume to: **${args[1]}**`)
+}
+
+function volumeCommand(message, serverQu){
+    const args = message.content.split(' ');
+    if (!message.member.voiceChannel) return message.channel.send('You are not in a voice channel!')
+    if (!serverQu) return message.channel.send('There is nothing playing.')
+    if (!args[1]) return message.channel.send(`The current volume is: **${serverQu.volume}**`)
+    serverQu.volume = args[1];
+    serverQu.connection.dispatcher.setVolumeLogarithmic(args[1] / 5)
+    return message.channel.send(`I set the volume to: **${args[1]}**`)
+}
+
+function earrapeCommand(message, serverQu){
+    const args = message.content.split(' ');
+    if (!message.member.voiceChannel) return message.channel.send('You are not in a voice channel!')
+    if (!serverQu) return message.channel.send('There is nothing playing.')
+    if (!args[1]) return message.channel.send(`You didn't specify what you wanted.`)
+    if (args[1].toLowerCase() == "on") {
+        const volumeA = new String('100');
+        serverQu.volume = volumeA;
+        serverQu.connection.dispatcher.setVolumeLogarithmic(volumeA / 5)
+        return message.channel.send(`**EMBRACE THE EARRAPE.**`)
+    }
+    else if (args[1].toLowerCase() == "off") {
+        const volumeA = new String('5');
+        serverQu.volume = volumeA
+        serverQu.connection.dispatcher.setVolumeLogarithmic(volumeA / 5)
+        return message.channel.send(`Peace has returned.`)
+    }
+    else {
+        return message.channel.send(`The command is invalid.`)
+    }
 }
 
 function nowPlayingRequest(message, serverQueue) {

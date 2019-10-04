@@ -15,11 +15,14 @@
   "author": "Dragonflares",
   "license": "",
   "dependencies": {
+    "ascii-table": "0.0.9",
+    "common-tags": "^1.8.0",
     "discord.js": "^11.5.1",
     "ffmpeg": "0.0.4",
     "ffmpeg-static": "^2.6.0",
     "fs": "0.0.1-security",
     "highlight.js": "^9.15.10",
+    "jimp": "^0.8.4",
     "opusscript": "0.0.7",
     "simple-youtube-api": "^5.2.1",
     "ytdl-core": "^0.29.7"

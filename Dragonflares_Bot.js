@@ -1,5 +1,5 @@
 const { Client, Collection } = require('discord.js');
-const Util = require('discord.js')
+const Discord = require('discord.js')
 const client = new Client()
 const {
     prefix,
@@ -64,8 +64,11 @@ client.on("message", async message => {
 
 async function triggerXp(receivedMessage)
 {
-    if(!xp[receivedMessage.author.id]) {
-        xp[receivedMessage.author.id] = {
+    if(!xp[receivedMessage.guild.id]){
+        xp[receivedMessage.guild.id] = {}
+    }
+    if(!xp[receivedMessage.guild.id][receivedMessage.author.id]) {
+        xp[receivedMessage.guild.id][receivedMessage.author.id] = {
             xp: 0,
             level: 1
         };
@@ -80,18 +83,18 @@ async function triggerXp(receivedMessage)
         xpAdd = Math.floor(Math.random() * 7) + 8
     }
 
-    xp[receivedMessage.author.id].xp = xp[receivedMessage.author.id].xp +  xpAdd;
+    xp[receivedMessage.guild.id][receivedMessage.author.id].xp = xp[receivedMessage.guild.id][receivedMessage.author.id].xp +  xpAdd;
 
-    let nxtlevel = xp[receivedMessage.author.id].level * 300;
+    let nxtlevel = xp[receivedMessage.guild.id][receivedMessage.author.id].level * 300;
 
 
-    if(xp[receivedMessage.author.id].xp >= nxtlevel) {
-        xp[receivedMessage.author.id].xp = xp[receivedMessage.author.id].xp - nxtlevel;
-        xp[receivedMessage.author.id].level = xp[receivedMessage.author.id].level + 1
+    if(xp[receivedMessage.guild.id][receivedMessage.author.id].xp >= nxtlevel) {
+        xp[receivedMessage.guild.id][receivedMessage.author.id].xp = xp[receivedMessage.guild.id][receivedMessage.author.id].xp - nxtlevel;
+        xp[receivedMessage.guild.id][receivedMessage.author.id].level = xp[receivedMessage.guild.id][receivedMessage.author.id].level + 1
         let leveleupEmbed = new Discord.RichEmbed()
         .setTitle("Level UP!")
         .setColor("a500ff")
-        .addField(`Congratulations ${receivedMessage.author.tag}! You are now level ${xp[receivedMessage.author.id].level}!`,
+        .addField(`Congratulations ${receivedMessage.author.tag}! You are now level ${xp[receivedMessage.guild.id][receivedMessage.author.id].level}!`,
          `Thanks for so many contributions`)
 
         receivedMessage.channel.send(leveleupEmbed)

@@ -9,7 +9,7 @@ const placeholder = new Map();
 module.exports = {
     name: "rank",
     category: "info",
-    description: "Gives the current xp you currently have.",
+    description: "Gives the xp and the level you currently have.",
     usage: "<id | mention>",
     run: async (client, message, args, queue) => {
         const key = `${message.guild.id}-${message.author.id}`;
@@ -55,7 +55,7 @@ async function profile(message, score) {
       
       buildRank.drawImage(background, 0, 0, rankImage.width, rankImage.height)
       const curlevel = xp[message.guild.id][message.author.id].level
-      buildRank.fillStyle = '#f9c7fd'
+      buildRank.fillStyle = '#00fff8'
 
       buildRank.font = '20px "Noodle"'
       buildRank.fillText(guildMember.nickname, '110', '50')
@@ -80,7 +80,7 @@ async function profile(message, score) {
       const XP_BAR_WIDTH = 470/2
       roundRect(buildRank, XP_X, XP_Y + 5, XP_BAR_WIDTH, XP_BAR_HEIGHT, XPradius, true, true)
       //   XP Bar current
-      buildRank.fillStyle = '#f9c7fd'
+      buildRank.fillStyle = '#00fff8'
       roundRect(buildRank, XP_X, XP_Y + 5, XP_BAR_WIDTH* necessary, XP_BAR_HEIGHT, XPradius, true, true)
 
 
@@ -111,6 +111,12 @@ async function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
       for (var side in radius) {
           cornerRadius[side] = radius[side];
       }
+  }
+  else {
+    cornerRadius.upperRight = radius/2
+    cornerRadius.upperLeft = radius/2
+    cornerRadius.lowerRight = radius/2
+    cornerRadius.lowerLeft = radius/2
   }
 
   ctx.beginPath();

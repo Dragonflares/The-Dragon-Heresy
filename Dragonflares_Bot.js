@@ -14,6 +14,7 @@ let xp = require('./xp.json')
 
 client.commands = new Collection();
 client.aliases = new Collection();
+client.categories = fs.readdirSync("./commands/");
 
 const queue = new Map();
 

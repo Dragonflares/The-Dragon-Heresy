@@ -92,6 +92,30 @@ async function profile(message, client) {
       buildRank.fillStyle = '#00fff8'
       roundRect(buildRank, XP_X, XP_Y + 5, XP_BAR_WIDTH* necessary, XP_BAR_HEIGHT, XPradius, true, true)
 
+      let ring
+
+      if(xp.level < 3) {
+        ring = await TheCanvas.loadImage('./canvas/ranklevelborders/level0.png')
+      }
+      else if(xp.level < 5) {
+        ring = await TheCanvas.loadImage('./canvas/ranklevelborders/level3.png')
+      }
+      else if(xp.level < 10) {
+        ring = await TheCanvas.loadImage('./canvas/ranklevelborders/level5.png')
+      }
+      else if(xp.level < 15) {
+        ring = await TheCanvas.loadImage('./canvas/ranklevelborders/level10.png')
+      }
+      else{
+        ring = await TheCanvas.loadImage('./canvas/ranklevelborders/level15.png')
+      }
+      if(xp.level < 15){
+        buildRank.drawImage(ring, 14, 18, 94, 94)
+      }
+      else {
+        buildRank.drawImage(ring, 11, 15, 100, 100)
+      }
+
 
       buildRank.beginPath();
       buildRank.arc(60, 65, 40, 0, Math.PI * 2, true);

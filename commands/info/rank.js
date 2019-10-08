@@ -1,10 +1,10 @@
 const { registerFont, Canvas} = require('canvas');
 const TheCanvas = require('canvas')
 const { Attachment } = require('discord.js');
-const fetch = require('node-fetch');
-let xp = require('../../xp.json')
-const imageUrlRegex = /\?size=2048$/g;
-const placeholder = new Map();
+
+const SQLite = require("better-sqlite3");
+const sql = new SQLite('./Database/experience.sqlite');
+
 
 module.exports = {
     name: "rank",
@@ -12,16 +12,8 @@ module.exports = {
     description: "Gives the xp and the level you currently have.",
     usage: "<id | mention>",
     run: async (client, message, args, queue) => {
-        const key = `${message.guild.id}-${message.author.id}`;
-
         try {
-          if (!placeholder.has(key)) {
-            placeholder.set(key, {
-              user: message.author.id, guild: message.guild.id, points: 500, level: 17
-            });
-          }
-      
-          const buffer = await profile(message, placeholder.get(key));
+          const buffer = await profile(message, client);
           const filename = `profile-${message.author.id}.jpg`;
           const attachment = new Attachment(buffer, filename);
           await message.channel.send(attachment);
@@ -32,16 +24,24 @@ module.exports = {
         }
     }
 }
-async function profile(message, score) {
-    const key = `${message.guild.id}-${message.author.id}`;
+async function profile(message, client) {
+    const table = sql.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'xp';").get();
+    if (!table['count(*)']) {
+       sql.prepare("CREATE TABLE xp (id TEXT PRIMARY KEY, user TEXT, guild TEXT, experience INTEGER, level INTEGER);").run();
+       sql.prepare("CREATE UNIQUE INDEX idx_xp_id ON xp (id);").run();
+       sql.pragma("synchronous = 1");
+       sql.pragma("journal_mode = wal");
+    }
+    client.getExp = sql.prepare("SELECT * FROM xp WHERE user = ? AND guild = ?");
+    client.setExp = sql.prepare("INSERT OR REPLACE INTO xp (id, user, guild, experience, level) VALUES (@id, @user, @guild, @experience, @level);")
+
     const member = message.author;
     const guildMember = message.guild.members.get(member.id)
-    if(!xp[message.guild.id][message.author.id]){
-      message.channel.send(`You haven't done any talk in this server.`)
-      return;
-    }
-    let nxtlevel = xp[message.guild.id][message.author.id].level * 300;
-    let necessary = xp[message.guild.id][message.author.id].xp / nxtlevel
+    let xp = client.getExp.get(message.author.id, message.guild.id);
+    const curlevel = xp.level
+    let nxtlevel = curlevel * 300
+    let necessary = xp.experience / nxtlevel
+
     try {
       const foxCavalier = './fonts/Fox_Cavalier.otf'
       const batmanfont = "./fonts/batman_forever/batmfa__.ttf"
@@ -54,11 +54,20 @@ async function profile(message, score) {
       const background = await TheCanvas.loadImage('./canvas/canvasbackground.jpg')
       
       buildRank.drawImage(background, 0, 0, rankImage.width, rankImage.height)
-      const curlevel = xp[message.guild.id][message.author.id].level
+      
       buildRank.fillStyle = '#00fff8'
 
-      buildRank.font = '20px "Noodle"'
-      buildRank.fillText(guildMember.nickname, '110', '50')
+      if(!guildMember.nickname){
+
+        buildRank.font = '20px "Noodle"'
+        buildRank.fillText(guildMember.user.username, '110', '50')
+      }
+      else{
+        buildRank.font = '20px "Noodle"'
+        buildRank.fillText(guildMember.nickname, '110', '50')
+      }
+
+
 
       buildRank.font = '14px "Noodle"'
       buildRank.fillText('Level:', '315', '65')
@@ -73,7 +82,7 @@ async function profile(message, score) {
       buildRank.fillText('XP', XP_X, XP_Y,)
       buildRank.font = '12px "Noodle"'
       buildRank.fillText('progress', XP_X + 15, XP_Y)
-      buildRank.fillText(`${xp[message.guild.id][message.author.id].xp} / ${nxtlevel}`, '325', '90')
+      buildRank.fillText(`${xp.experience} / ${nxtlevel}`, '325', '90')
       //   XP Bar
       buildRank.fillStyle = '#313131'
       const XP_BAR_HEIGHT = 13

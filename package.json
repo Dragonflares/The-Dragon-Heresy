@@ -16,6 +16,7 @@
   "license": "",
   "dependencies": {
     "ascii-table": "0.0.9",
+    "better-sqlite3": "^5.4.3",
     "canvas": "^2.6.0",
     "canvas-constructor": "^3.1.0",
     "common-tags": "^1.8.0",
@@ -26,6 +27,7 @@
     "highlight.js": "^9.15.10",
     "jimp": "^0.8.4",
     "node-fetch": "^2.6.0",
+    "node-gyp": "^6.0.0",
     "opusscript": "0.0.7",
     "simple-youtube-api": "^5.2.1",
     "ytdl-core": "^0.29.7"

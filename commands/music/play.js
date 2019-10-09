@@ -35,7 +35,7 @@ module.exports = {
             const videos = await playlist.getVideos();
             for (const video of Object.values(videos)) {
                 const video2 = await youtube.getVideoByID(video.id); // eslint-disable-line no-await-in-loop
-                await handleVideo(video2, message, voiceChannel, true, queue); // eslint-disable-line no-await-in-loop
+                await handleVideo(video2, message, voiceChannel, true, queue, client); // eslint-disable-line no-await-in-loop
             }
             return message.channel.send(`✅ Playlist: **${playlist.title}** has been added to the queue!`);
         } else {
@@ -68,12 +68,12 @@ Please provide a value to select one of the search results ranging from 1-10.
                     return message.channel.send('🆘 I could not obtain any search results.');
                 }
             }
-            return handleVideo(video, message, voiceChannel, false, queue);
+            return handleVideo(video, message, voiceChannel, false, queue, client);
         }
     }
 }
 
-async function handleVideo(video, receivedMessage, voiceChannel, playlist = false, queue) {
+async function handleVideo(video, receivedMessage, voiceChannel, playlist = false, queue, client) {
 	const serverQueue = queue.get(receivedMessage.guild.id)
 	console.log(video)
 	const song = {
@@ -97,7 +97,7 @@ async function handleVideo(video, receivedMessage, voiceChannel, playlist = fals
 		try {
 			var connection = await voiceChannel.join()
 			queueConstruct.connection = connection;
-			play(receivedMessage.guild, queueConstruct.songs[0], queue)
+			play(receivedMessage.guild, queueConstruct.songs[0], queue, client)
 		} catch (error) {
 			console.error(`I could not join the voice channel: ${error}`)
 			queue.delete(receivedMessage.guild.id);
@@ -112,11 +112,11 @@ async function handleVideo(video, receivedMessage, voiceChannel, playlist = fals
 	return undefined
 }
 
-function play(guild, song, queue) {
+function play(guild, song, queue, client) {
 	const serverQueue = queue.get(guild.id);
 
 	if (!song) {
-		serverQueue.voiceChannel.leave();
+        client.setTimeout(leave(serverQueue), 1000)
 		queue.delete(guild.id);
 		return;
 	}
@@ -127,10 +127,14 @@ function play(guild, song, queue) {
 			if (reason === 'Stream is not generating quickly enough.') console.log('Song ended.');
 			else console.log(reason);
 			serverQueue.songs.shift();
-			play(guild, serverQueue.songs[0], queue);
+			play(guild, serverQueue.songs[0], queue, client);
 		})
 		.on('error', error => console.error(error));
 	dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
 
 	serverQueue.textChannel.send(`🎶 Start playing: **${song.title}**`);
+}
+
+function leave(serverQueue){
+    serverQueue.voiceChannel.leave()
 }

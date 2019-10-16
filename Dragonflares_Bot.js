@@ -12,9 +12,11 @@ const SQLite = require("better-sqlite3");
 const sql = new SQLite('./Database/experience.sqlite');
 
 
+
 client.commands = new Collection();
 client.aliases = new Collection();
 client.categories = fs.readdirSync("./commands/");
+
 
 const queue = new Map();
 
@@ -22,6 +24,7 @@ const queue = new Map();
 ["commands"].forEach(handler => {
     require(`./handlers/${handler}`)(client);
 });
+
 
 client.on('ready', () => {
 
@@ -64,13 +67,17 @@ client.on("message", async message => {
     const args = message.content.slice(prefix.length).trim().split(/ +/g);
     const cmd = args.shift().toLowerCase();
     
-    if (cmd.length === 0) return;
+    if (cmd.length === 0) return message.channel.send("There's no command mentioned.");
     let command = client.commands.get(cmd);
     if (!command) command = client.commands.get(client.aliases.get(cmd));
 
     // If a command is finally found, run the command
-    if (command) 
-        command.run(client, message, args, queue);
+    if (command) {
+        command.run(client, message, args, queue)
+    }
+    else {
+        message.channel.send("That's no valid command!")
+    }
 });
 
 

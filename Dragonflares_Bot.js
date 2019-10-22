@@ -7,17 +7,25 @@ const {
     youtubeToken
 }= require("./auth.json")
 const fs = require('fs')
-
+const Enmap = require('enmap')
 const SQLite = require("better-sqlite3");
 const sql = new SQLite('./Database/experience.sqlite');
 
 
-
+client.playersDB = new Enmap({
+    name: 'players',
+    autoFetch: true,
+    fetchAll: false,
+    dataDir: "./Database/Hades' Star/",
+    polling: true
+})
 client.commands = new Collection();
 client.aliases = new Collection();
 client.categories = fs.readdirSync("./commands/");
 
-
+(async function() {
+    await client.playersDB.defer;
+});
 const queue = new Map();
 
 // Run the command loader

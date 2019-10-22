@@ -1,10 +1,10 @@
 let TechData = require("../../../Database/Hades' Star/techs.json")
 
 module.exports = {
-    name: "updatetech",
+    name: "promoterank",
     category: "hades' star",
     subcategory: "info",
-    description: "Updates the level of a specific tech you own.",
+    description: "Promotes a player in a Corp.",
     usage: "[command | alias]",
     run: async (client, message, args) => {
         let member = message.guild.member(message.author)
@@ -82,19 +82,5 @@ module.exports = {
         })
 
         const messagesplit = message.content.split(" ")
-        const tech = messagesplit[1]
-
-        if(!tech) return message.channel.send(`Please specify the tech you want to update.`)
-
-        if(!TechData[tech]) return message.channel.send(`There's no tech with said name!`)
-        const techlevel = messagesplit[2] 
-
-        if(!techlevel) return message.channel.send(`Please specify the level of the tech you want to update.`)
-
-        if((0 > techlevel) || Number(TechData[tech].Level[TechData[tech].Level.length - 1]) < (techlevel)) {
-            return message.channel.send(`The level you gave is invalid for that tech!`)
-        }
-        client.playersDB.set(`${message.author.id}`, parseInt(techlevel, 10), `techs.${tech}`)
-        return message.channel.send(`Tech level updated.`)
     }
 }

@@ -1,10 +1,11 @@
 let TechData = require("../../../Database/Hades' Star/techs.json")
+let { RichEmbed } = require("discord.js")
 
 module.exports = {
     name: "playertech",
     category: "hades' star",
     subcategory: "info",
-    description: "Shows info about a certain player.",
+    description: "Shows the techs of a certain player in your corp.",
     usage: "[command | alias]",
     run: async (client, message, args) => {
         let member = message.guild.member(message.author)
@@ -12,6 +13,7 @@ module.exports = {
         client.playersDB.ensure(`${message.author.id}`, {
             user: member.user.username,
             rank: 'Member',
+            corp: `${message.guild.id}`,
             timezone: '+0',
             battleship: {
                 name: "",
@@ -82,5 +84,158 @@ module.exports = {
         })
 
         const messagesplit = message.content.split(" ")
+        let ProfileEmbed = new RichEmbed().setColor("RANDOM")
+        const user = message.mentions.users.first()
+        if(!user){
+            const member = message.guild.member(message.author);
+            ProfileEmbed.setTitle(`**Player: ${member.nickname} **`)
+            if(!messagesplit[1]){
+                let economytechs = ""
+                let weapontechs = ""
+                let miningtechs = ""
+                let shieldtechs = ""
+                let supporttechs = ""
+                let foundweapontech= 0 
+                let foundeconomytech= 0 
+                let foundminingtech= 0 
+                let foundshieldtech = 0
+                let foundsupporttech = 0
+                for(let techname1 in TechData){ 
+                    if(TechData[techname1].Category === "Economy") {
+                        let techlevel = await client.playersDB.get(`${message.author.id}`, `techs.${techname1}`)
+                        if(techlevel > 0) {
+                            economytechs += `${techname1} ${techlevel}.\n`
+                            foundeconomytech = 1
+                        }
+                    }
+                }
+                for(let techname2 in TechData) { 
+                    if(TechData[techname2].Category === "Mining") {
+                        let techlevel = await client.playersDB.get(`${message.author.id}`, `techs.${techname2}`)
+                        if(techlevel > 0) {
+                            miningtechs += `${techname2} ${techlevel}.\n`
+                            foundminingtech = 1
+                        }
+                    }
+                }
+                for(let techname3 in TechData) { 
+                    if(TechData[techname3].Category === "Weapons") {
+                        let techlevel = await client.playersDB.get(`${message.author.id}`, `techs.${techname3}`)
+                        if(techlevel > 0) {
+                            weapontechs += `${techname3} ${techlevel}.\n`
+                            foundweapontech = 1
+                        }
+                    }
+                }
+                for(let techname4 in TechData) { 
+                    if(TechData[techname4].Category === "Support") {
+                        let techlevel = await client.playersDB.get(`${message.author.id}`, `techs.${techname4}`)
+                        if(techlevel > 0) {
+                            shieldtechs += `${techname4} ${techlevel}.\n`
+                            foundshieldtech = 1
+                        }
+                    }
+                }
+                for(let techname5 in TechData) { 
+                    if(TechData[techname5].Category === "Shields") {
+                        let techlevel = await client.playersDB.get(`${message.author.id}`, `techs.${techname5}`)
+                        if(techlevel > 0) {
+                            supporttechs += `${techname5} ${techlevel}.\n`
+                            foundsupporttech = 1
+                        }
+                    }
+                }
+                
+                if(foundeconomytech) ProfileEmbed.addField("*Economy*", `${economytechs}`)
+                if(foundminingtech) ProfileEmbed.addField("*Mining*", `${miningtechs}`)
+                if(foundweapontech) ProfileEmbed.addField("*Weapons*", `${weapontechs}`)
+                if(foundshieldtech) ProfileEmbed.addField("*Shields*", `${shieldtechs}`)
+                if(foundsupporttech) ProfileEmbed.addField("*Support*", `${supporttechs}`)
+
+                if(foundeconomytech == 0 && foundminingtech == 0 && foundweapontech == 0 && foundshieldtech == 0 && foundsupporttech == 0){
+                    ProfileEmbed.setDescription("No techs found!")
+                }
+            }
+            else {
+
+            }
+            return message.channel.send(ProfileEmbed)
+        }
+        else {
+            const member = message.guild.member(user);
+            ProfileEmbed.setTitle(`**Player: ${member.nickname} **`)
+            if(!messagesplit[1]){
+                let economytechs = ""
+                let weapontechs = ""
+                let miningtechs = ""
+                let shieldtechs = ""
+                let supporttechs = ""
+    
+                let foundweapontech= 0 
+                let foundeconomytech= 0 
+                let foundminingtech= 0 
+                let foundshieldtech = 0
+                let foundsupporttech = 0
+                for(let techname1 in TechData){ 
+                    if(TechData[techname1].Category === "Economy") {
+                        let techlevel = await client.playersDB.get(`${user.id}`, `techs.${techname1}`)
+                        if(techlevel > 0) {
+                            economytechs += `${techname1} ${techlevel}.\n`
+                            foundeconomytech = 1
+                        }
+                    }
+                }
+                for(let techname2 in TechData) { 
+                    if(TechData[techname2].Category === "Mining") {
+                        let techlevel = await client.playersDB.get(`${user.id}`, `techs.${techname2}`)
+                        if(techlevel > 0) {
+                            miningtechs += `${techname2} ${techlevel}.\n`
+                            foundminingtech = 1
+                        }
+                    }
+                }
+                for(let techname3 in TechData) { 
+                    if(TechData[techname3].Category === "Weapons") {
+                        let techlevel = await client.playersDB.get(`${user.id}`, `techs.${techname3}`)
+                        if(techlevel > 0) {
+                            weapontechs += `${techname3} ${techlevel}.\n`
+                            foundweapontech = 1
+                        }
+                    }
+                }
+                for(let techname4 in TechData) { 
+                    if(TechData[techname4].Category === "Support") {
+                        let techlevel = await client.playersDB.get(`${user.id}`, `techs.${techname4}`)
+                        if(techlevel > 0) {
+                            shieldtechs += `${techname4} ${techlevel}.\n`
+                            foundshieldtech = 1
+                        }
+                    }
+                }
+                for(let techname5 in TechData) { 
+                    if(TechData[techname5].Category === "Shields") {
+                        let techlevel = await client.playersDB.get(`${user.id}`, `techs.${techname5}`)
+                        if(techlevel > 0) {
+                            supporttechs += `${techname5} ${techlevel}.\n`
+                            foundsupporttech = 1
+                        }
+                    }
+                }
+                
+                if(foundeconomytech) ProfileEmbed.addField("*Economy*", `${economytechs}`)
+                if(foundminingtech) ProfileEmbed.addField("*Mining*", `${miningtechs}`)
+                if(foundweapontech) ProfileEmbed.addField("*Weapons*", `${weapontechs}`)
+                if(foundshieldtech) ProfileEmbed.addField("*Shields*", `${shieldtechs}`)
+                if(foundsupporttech) ProfileEmbed.addField("*Support*", `${supporttechs}`)
+
+                if(foundeconomytech == 0 && foundminingtech ==0 && foundweapontech == 0 && foundshieldtech == 0 && foundsupporttech == 0){
+                    ProfileEmbed.setDescription("No techs found!")
+                }
+            }
+            else {
+
+            }
+            return message.channel.send(ProfileEmbed)
+        }
     }
 }

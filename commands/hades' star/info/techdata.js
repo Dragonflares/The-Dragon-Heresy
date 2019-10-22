@@ -14,12 +14,46 @@ module.exports = {
         const tech = message.content.split(" ")
 
         if(!tech[1]) {
-            let techs = ""
-            for(let techname in TechData) { 
-                techs += `${techname}\n`
-            }
+            let economytechs = ""
+            let weapontechs = ""
+            let miningtechs = ""
+            let shieldtechs = ""
+            let supporttechs = ""
+
             embed.setTitle(`**Known Techs**`)
-            embed.setDescription(techs)
+
+            for(let techname1 in TechData){ 
+                if(TechData[techname1].Category === "Economy") {
+                    economytechs += `${techname1}.\n`
+                }
+            }
+            for(let techname2 in TechData) { 
+                if(TechData[techname2].Category === "Mining") {
+                    miningtechs += `${techname2}.\n`
+                }
+            }
+            for(let techname3 in TechData) { 
+                if(TechData[techname3].Category === "Weapons") {
+                    weapontechs += `${techname3}.\n`
+                }
+            }
+            for(let techname4 in TechData) { 
+                if(TechData[techname4].Category === "Support") {
+                    supporttechs += `${techname4}.\n`
+                }
+            }
+            for(let techname5 in TechData) { 
+                if(TechData[techname5].Category === "Shields") {
+                        shieldtechs += `${techname5}.\n`
+                }
+            }
+
+            embed.addField("*Economy*", `${economytechs}`)
+            embed.addField("*Mining*", `${miningtechs}`)
+            embed.addField("*Weapons*", `${weapontechs}`)
+            embed.addField("*Shields*", `${shieldtechs}`)
+            embed.addField("*Support*", `${supporttechs}`)
+
             return message.channel.send(embed)
         }
         else {

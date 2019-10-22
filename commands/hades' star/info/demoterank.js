@@ -12,6 +12,7 @@ module.exports = {
         client.playersDB.ensure(`${message.author.id}`, {
             user: member.user.username,
             rank: 'Member',
+            corp: `${message.guild.id}`,
             timezone: '+0',
             battleship: {
                 name: "",

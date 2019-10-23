@@ -90,7 +90,7 @@ module.exports = {
             target = message.guild.member(message.author)
         }
         else {
-            target = message.guild.member(message.user)
+            target = message.guild.member(user)
         }  
 
         let ProfileEmbed = new RichEmbed().setColor("RANDOM")

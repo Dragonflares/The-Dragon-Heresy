@@ -145,8 +145,9 @@ module.exports = {
                 case "First Officer": {
                     if(memberrank === "Officer") {
                         message.channel.send("Are you sure you want to promote this person to First Officer? Yes/No")
+                        let response
                         try {
-                            let response = await message.channel.awaitMessages(message2 => message2.content.length < 4 , {
+                            response = await message.channel.awaitMessages(message2 => message2.content.length < 4 , {
                                 maxMatches: 1,
                                 time: 20000,
                                 errors: ['time', 'length']

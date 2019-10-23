@@ -100,6 +100,7 @@ module.exports = {
         let playertimezone = client.playersDB.get(`${target.id}`,`timezone`)
         ProfileEmbed.addField(`*Rank*`, playerrank)
         ProfileEmbed.addField(`*Time Zone*`, playertimezone) 
+        ProfileEmbed.setFooter("For the techs this player has, use &techdata, for their white star battleship, use &playerbattleship")
         
         return message.channel.send(ProfileEmbed)
     }

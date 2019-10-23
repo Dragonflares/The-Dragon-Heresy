@@ -7,10 +7,10 @@ module.exports = {
     description: "Promotes a player in a Corp.",
     usage: "[command | alias]",
     run: async (client, message, args) => {
-        let member = message.guild.member(message.author)
+        let member2 = message.guild.member(message.author)
 
         client.playersDB.ensure(`${message.author.id}`, {
-            user: member.user.username,
+            user: member2.user.username,
             rank: 'Member',
             corp: `${message.guild.id}`,
             timezone: '+0',
@@ -85,7 +85,7 @@ module.exports = {
         const messagesplit = message.content.split(" ")
 
         const mentionedusers = message.mentions.users
-        if(mentionedusers.size() > 1) return message.channel.send("You've mentioned more than one user!")
+        if(mentionedusers.size > 1) return message.channel.send("You've mentioned more than one user!")
         const member = message.guild.member(mentionedusers.first())
         let author = message.guild.member(message.author)
         if(!member) {

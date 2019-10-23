@@ -128,7 +128,7 @@ module.exports = {
                     }
                 }
                 for(let techname4 in TechData) { 
-                    if(TechData[techname4].Category === "Support") {
+                    if(TechData[techname4].Category === "Shields") {
                         let techlevel = await client.playersDB.get(`${message.author.id}`, `techs.${techname4}`)
                         if(techlevel > 0) {
                             shieldtechs += `${techname4} ${techlevel}.\n`
@@ -137,7 +137,7 @@ module.exports = {
                     }
                 }
                 for(let techname5 in TechData) { 
-                    if(TechData[techname5].Category === "Shields") {
+                    if(TechData[techname5].Category === "Support") {
                         let techlevel = await client.playersDB.get(`${message.author.id}`, `techs.${techname5}`)
                         if(techlevel > 0) {
                             supporttechs += `${techname5} ${techlevel}.\n`
@@ -157,14 +157,36 @@ module.exports = {
                 }
             }
             else {
-
+                let foundtech = 0
+                let techs = ""
+                let category
+                for(let techname in TechData){ 
+                    if(TechData[techname].Category === messagesplit[1]) {
+                        let techlevel = await client.playersDB.get(`${message.author.id}`, `techs.${techname}`)
+                        if(techlevel > 0) {
+                            techs += `${techname} ${techlevel}.\n`
+                            if(!foundtech) {
+                                category = TechData[techname].Category
+                            }
+                            foundtech = 1
+                        }
+                    }
+                }
+                if(!foundtech) ProfileEmbed.setDescription("No techs were found!")
+                else {
+                    ProfileEmbed.addField(`*${category}*`, `${techs}`)
+                }
             }
             return message.channel.send(ProfileEmbed)
         }
         else {
+
             const member = message.guild.member(user);
+            const playerguild = client.playersDB.get(`${member.id}`, `corp`)
+            const authorguild = client.playersDB.get(`${message.author.id}`, `corp`)            
+            if(!(playerguild === authorguild)) return message.channel.send("You don't belong to the corp this player is at!")
             ProfileEmbed.setTitle(`**Player: ${member.nickname} **`)
-            if(!messagesplit[1]){
+            if(!messagesplit[2]){
                 let economytechs = ""
                 let weapontechs = ""
                 let miningtechs = ""
@@ -204,7 +226,7 @@ module.exports = {
                     }
                 }
                 for(let techname4 in TechData) { 
-                    if(TechData[techname4].Category === "Support") {
+                    if(TechData[techname4].Category === "Shields") {
                         let techlevel = await client.playersDB.get(`${user.id}`, `techs.${techname4}`)
                         if(techlevel > 0) {
                             shieldtechs += `${techname4} ${techlevel}.\n`
@@ -213,7 +235,7 @@ module.exports = {
                     }
                 }
                 for(let techname5 in TechData) { 
-                    if(TechData[techname5].Category === "Shields") {
+                    if(TechData[techname5].Category === "Support") {
                         let techlevel = await client.playersDB.get(`${user.id}`, `techs.${techname5}`)
                         if(techlevel > 0) {
                             supporttechs += `${techname5} ${techlevel}.\n`
@@ -233,7 +255,24 @@ module.exports = {
                 }
             }
             else {
-
+                let foundtech = 0
+                let techs = ""
+                for(let techname in TechData){ 
+                    if(TechData[techname].Category === messagesplit[2]) {
+                        let techlevel = await client.playersDB.get(`${user.id}`, `techs.${techname}`)
+                        if(techlevel > 0) {
+                            techs += `${techname} ${techlevel}.\n`
+                            if(!foundtech) {
+                                category = TechData[techname].Category
+                            }
+                            foundtech = 1
+                        }
+                    }
+                }
+                if(!foundtech) ProfileEmbed.setDescription("No techs were found!")
+                else {
+                    ProfileEmbed.addField(`*${category}*`, `${techs}`)
+                }
             }
             return message.channel.send(ProfileEmbed)
         }

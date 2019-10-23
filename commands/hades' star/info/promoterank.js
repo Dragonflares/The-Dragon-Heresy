@@ -160,10 +160,10 @@ module.exports = {
                         if(response.first().content.toLowerCase() === "yes") {
                             client.playersDB.set(`${member.id}`, "First Officer", "rank")
                             client.playersDB.set(`${author.id}`, "Officer", "rank")
-                            return channel.message.send("You've succesfully promoted this person to First Officer. You have been demoted to Officer.")
+                            return message.channel.send("You've succesfully promoted this person to First Officer. You have been demoted to Officer.")
                         }
                         if(response.first().content.toLowerCase() === "no") {
-                            return channel.message.send("You are still our First Officer! Whew!")
+                            return message.channel.send("You are still our First Officer! Whew!")
                         }
                         else {
                             return message.channel.send("Invalid confirmation.");

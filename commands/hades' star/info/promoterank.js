@@ -157,12 +157,12 @@ module.exports = {
                             console.error(err);
                             return message.channel.send("Invalid confirmation.");
                         }
-                        if(response.content === "Yes") {
+                        if(response.first().content.toLowerCase() === "yes") {
                             client.playersDB.set(`${member.id}`, "First Officer", "rank")
                             client.playersDB.set(`${author.id}`, "Officer", "rank")
                             return channel.message.send("You've succesfully promoted this person to First Officer. You have been demoted to Officer.")
                         }
-                        if(response.content === "No") {
+                        if(response.first().content.toLowerCase() === "no") {
                             return channel.message.send("You are still our First Officer! Whew!")
                         }
                         else {

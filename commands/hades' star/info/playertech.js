@@ -8,10 +8,15 @@ module.exports = {
     description: "Shows the techs of a certain player in your corp.",
     usage: "[command | alias]",
     run: async (client, message, args) => {
-        let member = message.guild.member(message.author)
+        let targetb
+        let userb = message.mentions.users.first()
+        if(!userb){
+            targetb = message.guild.member(message.author)
+        }
+        else targetb = message.guild.member(userb)
 
-        client.playersDB.ensure(`${message.author.id}`, {
-            user: member.user.username,
+        client.playersDB.ensure(`${targetb.id}`, {
+            user: targetb.user.username,
             rank: 'Member',
             corp: `${message.guild.id}`,
             timezone: '+0',
@@ -82,6 +87,7 @@ module.exports = {
                 OmegaRocket: 0
             }
         })
+
 
         const messagesplit = message.content.split(" ")
         let ProfileEmbed = new RichEmbed().setColor("RANDOM")

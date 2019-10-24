@@ -83,7 +83,9 @@ async function profile(message, client) {
       buildRank.fillText('XP', XP_X, XP_Y,)
       buildRank.font = '12px "Noodle"'
       buildRank.fillText('progress', XP_X + 15, XP_Y)
-      buildRank.fillText(`${xp.experience} / ${nxtlevel}`, '315', '90')
+      var text = buildRank.measureText(`${xp.experience} / ${nxtlevel}`)
+      var textposition = 345 - text.width
+      buildRank.fillText(`${xp.experience} / ${nxtlevel}`, `${textposition}`, '90')
       buildRank.fillStyle = '#a8a8a8'
       buildRank.font = '10px "Noodle"'
       buildRank.fillText('xp', '355', '90')

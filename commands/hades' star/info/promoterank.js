@@ -7,10 +7,15 @@ module.exports = {
     description: "Promotes a player in a Corp.",
     usage: "[command | alias]",
     run: async (client, message, args) => {
-        let member2 = message.guild.member(message.author)
+        let targetb
+        let user = message.mentions.users.first()
+        if(!user){
+            targetb = message.guild.member(message.author)
+        }
+        else targetb = message.guild.member(user)
 
-        client.playersDB.ensure(`${message.author.id}`, {
-            user: member2.user.username,
+        client.playersDB.ensure(`${targetb.id}`, {
+            user: targetb.user.username,
             rank: 'Member',
             corp: `${message.guild.id}`,
             timezone: '+0',

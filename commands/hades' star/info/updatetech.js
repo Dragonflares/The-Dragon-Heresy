@@ -7,10 +7,15 @@ module.exports = {
     description: "Updates the level of a specific tech you own.",
     usage: "[command | alias]",
     run: async (client, message, args) => {
-        let member = message.guild.member(message.author)
+        let targetb
+        let user = message.mentions.users.first()
+        if(!user){
+            targetb = message.guild.member(message.author)
+        }
+        else return message.channel.send("You cannot set another player's tech!")
 
-        client.playersDB.ensure(`${message.author.id}`, {
-            user: member.user.username,
+        client.playersDB.ensure(`${targetb.id}`, {
+            user: targetb.user.username,
             rank: 'Member',
             corp: `${message.guild.id}`,
             timezone: '+0',

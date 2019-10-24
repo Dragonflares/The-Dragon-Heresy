@@ -8,10 +8,15 @@ module.exports = {
     description: "Shows info about yourself or a certain player.",
     usage: "[command | alias]",
     run: async (client, message, args) => {
-        let member = message.guild.member(message.author)
+        let targetb
+        let userb = message.mentions.users.first()
+        if(!userb){
+            targetb = message.guild.member(message.author)
+        }
+        else targetb = message.guild.member(userb)
 
-        client.playersDB.ensure(`${message.author.id}`, {
-            user: member.user.username,
+        client.playersDB.ensure(`${targetb.id}`, {
+            user: targetb.user.username,
             rank: 'Member',
             corp: `${message.guild.id}`,
             timezone: '+0',
@@ -84,7 +89,7 @@ module.exports = {
         })
 
         const messagesplit = message.content.split(" ")
-        let targetid
+        let target
         const user = message.mentions.users.first()
         if(!user) {
             target = message.guild.member(message.author)

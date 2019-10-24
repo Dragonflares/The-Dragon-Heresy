@@ -7,10 +7,15 @@ module.exports = {
     description: "Changes the player time zone, please use +/-<number>.",
     usage: "[command | alias]",
     run: async (client, message, args) => {
-        let member = message.guild.member(message.author)
+        let targetb
+        let user = message.mentions.users.first()
+        if(!user){
+            targetb = message.guild.member(message.author)
+        }
+        else return message.channel.send("You can't set another player's time zone.")
 
-        client.playersDB.ensure(`${message.author.id}`, {
-            user: member.user.username,
+        client.playersDB.ensure(`${targetb.id}`, {
+            user: targetb.user.username,
             rank: 'Member',
             corp: `${message.guild.id}`,
             timezone: '+0',

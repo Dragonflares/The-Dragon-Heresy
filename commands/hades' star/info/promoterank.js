@@ -41,8 +41,8 @@ module.exports = {
                         let guildmembers = message.guild.members.values()
                         for(let member of guildmembers)
                         {
-                            client.playersDB.ensure(`${targetb.id}`, new Player(targetb, message))
-                            client.playersDB.set(`${member.id}`, `${targetb.user.username}`, "name")
+                            client.playersDB.ensure(`${member.id}`, new Player(member, message))
+                            client.playersDB.set(`${member.id}`, `${member.user.username}`, "name")
                             memberrank = client.playersDB.get(`${member.id}`, "rank")
                             if(memberrank === "First Officer"){
                                 

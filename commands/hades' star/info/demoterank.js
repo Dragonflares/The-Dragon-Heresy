@@ -50,5 +50,6 @@ module.exports = {
                 return channel.message.send(`I've successfully demoted ${member.nickname}`)
             }
         }
+        return message.channel.send("You have to be at least an Officer to demote someone!")
     }
 }

@@ -31,6 +31,32 @@ module.exports = {
             return message.channel.send(`The level you gave is invalid for that tech!`)
         }
         client.playersDB.set(`${message.author.id}`, parseInt(techlevel, 10), `techs.${tech}`)
+        let techcategory = TechData[tech].Category
+
+        if(techcategory === "Weapons") {
+            let battleshiptech = client.playersDB.get(`${message.author.id}`, `battleship.weapon`)
+            let techname = battleshiptech.split(" ")
+            if(techname[0] === tech){
+                client.playersDB.set(`${message.author.id}`, `${tech} ${techlevel}`, `battleship.weapon`)
+            }
+        }
+        else if(techcategory === "Shields") {
+            let battleshiptech = client.playersDB.get(`${message.author.id}`, `battleship.shield`)
+            let techname = battleshiptech.split(" ")
+            if(techname[0] === `${tech}`){
+                client.playersDB.set(`${message.author.id}`, `${tech} ${techlevel}`, `battleship.shield`)
+            }
+        }
+        else if(techcategory === "Support") {
+            let battleshiptech = client.playersDB.get(`${message.author.id}`, `battleship.support`)
+            for(let techb of battleshiptech){
+                let techname = techb.split(" ")
+                if(techname[0] === tech){
+                    client.playersDB.remove(`${message.author.id}`, `${battleshiptech}`, `battleship.support`)
+                    client.playersDB.push(`${message.author.id}`, `${tech} ${techlevel}`, `battleship.support`)
+                }
+            }
+        }
         return message.channel.send(`Tech level updated.`)
     }
 }

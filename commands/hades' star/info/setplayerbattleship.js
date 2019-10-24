@@ -27,7 +27,7 @@ module.exports = {
         try {
             battleshipname = await message.channel.awaitMessages(message2 => message2.content.length < 16 , {
                 maxMatches: 1,
-                time: 20000,
+                time: 40000,
                 errors: ['time', 'length']
             });
         } catch (err) {
@@ -39,7 +39,7 @@ module.exports = {
         try {
             battleshiplevel = await message.channel.awaitMessages(message2 => message2.content < 7 && message2.content > 0 , {
                 maxMatches: 1,
-                time: 20000,
+                time: 40000,
                 errors: ['time', 'level']
             });
         } catch (err) {
@@ -51,7 +51,7 @@ module.exports = {
         try {
             battleshipweapon = await message.channel.awaitMessages(message2 => TechData[message2] && TechData[message2].Category === "Weapons", {
                 maxMatches: 1,
-                time: 20000,
+                time: 40000,
                 errors: ['time', 'name']
             });
         } catch (err) {
@@ -63,7 +63,7 @@ module.exports = {
         try {
             battleshipshield = await message.channel.awaitMessages(message2 => TechData[message2] && TechData[message2].Category === "Shields", {
                 maxMatches: 1,
-                time: 20000,
+                time: 40000,
                 errors: ['time', 'name']
             });
         } catch (err) {

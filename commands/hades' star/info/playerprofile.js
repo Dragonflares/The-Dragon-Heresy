@@ -29,13 +29,14 @@ module.exports = {
         }  
 
         let ProfileEmbed = new RichEmbed().setColor("RANDOM")
-        ProfileEmbed.setTitle(`Player: **${target.nickname}**`)
+        if(!target.nickname) ProfileEmbed.setTitle(`Player: **${target.user.username}**`)
+        else ProfileEmbed.setTitle(`Player: **${target.nickname}**`)
         let playerrank = client.playersDB.get(`${target.id}`,`rank`)
         let playercorp = client.playersDB.get(`${target.id}`,`corp`)
         let playertimezone = client.playersDB.get(`${target.id}`,`timezone`)
         ProfileEmbed.addField(`*Rank*`, playerrank)
         ProfileEmbed.addField(`*Time Zone*`, `GMT ${playertimezone}`) 
-        ProfileEmbed.setFooter("For the techs this player has, use &techdata, for their white star battleship, use &playerbattleship")
+        ProfileEmbed.setFooter("For the techs this player has, use &playertech, for their white star battleship, use &playerbattleship")
         
         return message.channel.send(ProfileEmbed)
     }

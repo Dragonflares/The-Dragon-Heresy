@@ -2,7 +2,7 @@ let TechData = require("../../../Database/Hades' Star/techs.json")
 let Player = require("../../../player.js")
 
 module.exports = {
-    name: "promoterank",
+    name: "promote",
     category: "hades' star",
     subcategory: "info",
     description: "Promotes a player in a Corp.",

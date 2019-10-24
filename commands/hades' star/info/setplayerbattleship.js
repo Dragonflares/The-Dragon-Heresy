@@ -91,7 +91,7 @@ module.exports = {
                 try {
                     battleshipsupport = await message.channel.awaitMessages(message2 => TechData[message2] && TechData[message2].Category === "Support", {
                         maxMatches: 1,
-                        time: 20000,
+                        time: 40000,
                         errors: ['time', 'name']
                     });
                 } catch (err) {

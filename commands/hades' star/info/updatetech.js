@@ -52,7 +52,7 @@ module.exports = {
             for(let techb of battleshiptech){
                 let techname = techb.split(" ")
                 if(techname[0] === tech){
-                    client.playersDB.remove(`${message.author.id}`, `${battleshiptech}`, `battleship.support`)
+                    client.playersDB.remove(`${message.author.id}`, `${techb}`, `battleship.support`)
                     client.playersDB.push(`${message.author.id}`, `${tech} ${techlevel}`, `battleship.support`)
                 }
             }

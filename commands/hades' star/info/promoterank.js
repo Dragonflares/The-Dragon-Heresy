@@ -6,7 +6,7 @@ module.exports = {
     category: "hades' star",
     subcategory: "info",
     description: "Promotes a player in a Corp.",
-    usage: "[command | alias]",
+    usage: "&promote <member>.",
     run: async (client, message, args) => {
         let targetb
         let user = message.mentions.users.first()

@@ -39,7 +39,7 @@ function getAll(client, message) {
         embed.setTitle(`Dragonflares Bot commands`)
         embed.addField(stripIndents`**${category[0].toUpperCase() + category.slice(1)}**`, `${subcatcommands(category)}`)
     }
-    
+    embed.setFooter("use &help plus the name of the command for usage information.")
     return message.channel.send(embed);
 }
 
@@ -56,7 +56,7 @@ function getCMD(client, message, input) {
     if (cmd.description) info += `\n**Description**: ${cmd.description}`;
     if (cmd.usage) {
         info += `\n**Usage**: ${cmd.usage}`;
-        embed.setFooter(`Syntax: <> = required, [] = optional`);
+        embed.setFooter(`Syntax: <> = required, () = optional`);
     }
 
     return message.channel.send(embed.setColor("GREEN").setDescription(info));

@@ -6,7 +6,7 @@ module.exports = {
     category: "hades' star",
     subcategory: "info",
     description: "Sets the player's intended battleship for White Stars.",
-    usage: "[command | alias]",
+    usage: "&setplayerbattleship, then asnwer the bot's questions. Don't state any levels unless asked for.",
     run: async (client, message, args) => {
         let targetb
         let user = message.mentions.users.first()

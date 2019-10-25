@@ -7,7 +7,7 @@ module.exports = {
     category: "hades' star",
     subcategory: "info",
     description: "Shows the current white star battleship a player has.",
-    usage: "[command | alias]",
+    usage: "&playerbattleship (player)",
     run: async (client, message, args) => {
         let targetb
         let userb = message.mentions.users.first()

@@ -6,7 +6,7 @@ module.exports = {
     category: "hades' star",
     subcategory: "info",
     description: "Updates the level of a specific tech you own.",
-    usage: "[command | alias]",
+    usage: "&updatetech <tech>(no blank spaces) <level>",
     run: async (client, message, args) => {
         let targetb
         let user = message.mentions.users.first()

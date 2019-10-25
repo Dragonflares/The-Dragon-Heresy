@@ -5,8 +5,8 @@ module.exports = {
     name: "settimezone",
     category: "hades' star",
     subcategory: "info",
-    description: "Changes the player time zone, please use +/-<number>.",
-    usage: "[command | alias]",
+    description: "Changes your time zone, please use +/-<number>.",
+    usage: "&settimezone +/-<number>",
     run: async (client, message, args) => {
         let targetb
         let user = message.mentions.users.first()

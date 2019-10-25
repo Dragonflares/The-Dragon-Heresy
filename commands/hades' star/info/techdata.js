@@ -6,8 +6,8 @@ module.exports = {
     aliases: ["h"],
     category: "hades' star",
     subcategory: "info",
-    description: "Returns info about a certain tech in a certain level.",
-    usage: "[command | alias]",
+    description: "Returns info about a certain tech in a certain level. Not stating any tech will show all existing techs, stating a tech will show it's description and max level. Stating a level will give detailed info on it",
+    usage: "&techdata (tech) (level)",
     run: async (client, message, args) => {
         let embed = new RichEmbed()
             .setColor("RANDOM")
@@ -24,27 +24,27 @@ module.exports = {
 
             for(let techname1 in TechData){ 
                 if(TechData[techname1].Category === "Economy") {
-                    economytechs += `${techname1}.\n`
+                    economytechs += `${techname1}, `
                 }
             }
             for(let techname2 in TechData) { 
                 if(TechData[techname2].Category === "Mining") {
-                    miningtechs += `${techname2}.\n`
+                    miningtechs += `${techname2}, `
                 }
             }
             for(let techname3 in TechData) { 
                 if(TechData[techname3].Category === "Weapons") {
-                    weapontechs += `${techname3}.\n`
+                    weapontechs += `${techname3}, `
                 }
             }
             for(let techname4 in TechData) { 
                 if(TechData[techname4].Category === "Support") {
-                    supporttechs += `${techname4}.\n`
+                    supporttechs += `${techname4}, `
                 }
             }
             for(let techname5 in TechData) { 
                 if(TechData[techname5].Category === "Shields") {
-                        shieldtechs += `${techname5}.\n`
+                        shieldtechs += `${techname5}, `
                 }
             }
 

@@ -7,7 +7,7 @@ module.exports = {
     category: "hades' star",
     subcategory: "info",
     description: "Shows info about yourself or a certain player.",
-    usage: "[command | alias]",
+    usage: "&playerprofile (player)",
     run: async (client, message, args) => {
         let targetb
         let userb = message.mentions.users.first()

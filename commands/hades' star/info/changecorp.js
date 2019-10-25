@@ -15,7 +15,7 @@ module.exports = {
         }
         else return message.channel.send("You cannot change another person's corp!")
 
-        client.playersDB.ensure(`${targetb.id}`, new Player(targetb, message))
+        client.playersDB.ensure(`${targetb.id}`, Player.player(targetb, message))
 
         client.playersDB.set(`${targetb.id}`, "Member", "rank")
         client.playersDB.set(`${targetb.id}`, `${message.guild.id}`, "corp")

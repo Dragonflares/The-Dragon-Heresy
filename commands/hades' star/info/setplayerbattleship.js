@@ -15,7 +15,7 @@ module.exports = {
         }
         else return message.channel.send("You cannot set another player's battleship!")
 
-        client.playersDB.ensure(`${targetb.id}`, new Player(targetb, message))
+        client.playersDB.ensure(`${targetb.id}`, Player.player(targetb, message))
 
         
         let battleshipname

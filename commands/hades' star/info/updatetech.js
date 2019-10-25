@@ -15,7 +15,7 @@ module.exports = {
         }
         else return message.channel.send("You cannot set another player's tech!")
 
-        client.playersDB.ensure(`${targetb.id}`, new Player(targetb, message))
+        client.playersDB.ensure(`${targetb.id}`, Player.player(targetb, message))
 
         const messagesplit = message.content.split(" ")
         const tech = messagesplit[1]

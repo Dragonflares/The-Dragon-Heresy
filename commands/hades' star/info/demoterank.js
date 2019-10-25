@@ -15,7 +15,7 @@ module.exports = {
         }
         else targetb = message.guild.member(user)
 
-        client.playersDB.ensure(`${targetb.id}`, new Player(targetb, message))
+        client.playersDB.ensure(`${targetb.id}`, Player.player(targetb, message))
 
         const mentionedusers = message.mentions.users
         if(mentionedusers.size > 1) return message.channel.send("You've mentioned more than one user!")
@@ -36,7 +36,7 @@ module.exports = {
                 return channel.message.send(`I've successfully demoted ${member.user.username}`)
             }
         }
-        if(authorrank == "First Officer") {
+        else if(authorrank == "First Officer") {
             if(memberrank === "Member") return message.channel.send("You cannot demote this person any more! He's a Member!")
             if(memberrank === "Officer") {
                 client.playersDB.set(`${member.id}`,"Senior Member", "rank")
@@ -50,6 +50,6 @@ module.exports = {
                 return channel.message.send(`I've successfully demoted ${member.nickname}`)
             }
         }
-        return message.channel.send("You have to be at least an Officer to demote someone!")
+        else return message.channel.send("You have to be at least an Officer to demote someone!")
     }
 }

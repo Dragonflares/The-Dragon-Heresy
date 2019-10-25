@@ -15,7 +15,7 @@ module.exports = {
         }
         else targetb = message.guild.member(user)
 
-        client.playersDB.ensure(`${targetb.id}`, new Player(targetb, message))
+        client.playersDB.ensure(`${targetb.id}`, Player.player(targetb, message))
 
         const messagesplit = message.content.split(" ")
 
@@ -41,7 +41,7 @@ module.exports = {
                         let guildmembers = message.guild.members.values()
                         for(let member of guildmembers)
                         {
-                            client.playersDB.ensure(`${member.id}`, new Player(member, message))
+                            client.playersDB.ensure(`${member.id}`, Player.player(member, message))
                             client.playersDB.set(`${member.id}`, `${member.user.username}`, "name")
                             memberrank = client.playersDB.get(`${member.id}`, "rank")
                             if(memberrank === "First Officer"){

@@ -15,7 +15,7 @@ module.exports = {
         }
         else return message.channel.send("You can't set another player's time zone.")
 
-        client.playersDB.ensure(`${targetb.id}`, new Player(targetb, message))
+        client.playersDB.ensure(`${targetb.id}`, Player.player(targetb, message))
 
         const messagesplit = message.content.split(" ")
         if(!(messagesplit[1].startsWith("+") || messagesplit[1].startsWith("-"))) return message.channel.send("Invalid time zone.")

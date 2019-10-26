@@ -5,7 +5,7 @@ let Player = require("../../../player.js")
 module.exports = {
     name: "playerbattleship",
     category: "hades' star",
-    subcategory: "info",
+    subcategory: "ship",
     description: "Shows the current white star battleship a player has.",
     usage: "&playerbattleship (player)",
     run: async (client, message, args) => {

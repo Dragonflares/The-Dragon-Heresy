@@ -4,7 +4,7 @@ let Player = require("../../../player.js")
 module.exports = {
     name: "setplayerbattleship",
     category: "hades' star",
-    subcategory: "info",
+    subcategory: "ship",
     description: "Sets the player's intended battleship for White Stars.",
     usage: "&setplayerbattleship, then asnwer the bot's questions. Don't state any levels unless asked for.",
     run: async (client, message, args) => {

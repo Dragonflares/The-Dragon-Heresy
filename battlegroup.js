@@ -3,6 +3,7 @@ module.exports = {
         let member = {
             player : {},
             role: "",
+            support : ""
         }
         return member
     }

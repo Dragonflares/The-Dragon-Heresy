@@ -78,13 +78,36 @@ function techTree() {
 module.exports = {
     player: function (targetb, message) {
         let player = {
-            user : targetb.user.username,
+            name : targetb.user.username,
             rank : 'Member',
             corp : `${message.guild.id}`,
             timezone : '+0',
             battleship : battleship(),
+            miner : miner(),
+            transport : transport(),
             techs : techTree() ,
+            battlegroup : ""
         }
         return player
     }
+}
+
+function transport() {
+    let transport= {
+        name : "",
+        level: 0,
+        support : "",
+        economy: []
+    }
+    return transport
+}
+
+function miner() {
+    let miner= {
+        name : "",
+        level: 0,
+        support : "",
+        mining: []
+    }
+    return miner
 }

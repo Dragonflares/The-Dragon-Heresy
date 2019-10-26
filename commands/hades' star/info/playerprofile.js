@@ -16,7 +16,7 @@ module.exports = {
         }
         else targetb = message.guild.member(userb)
 
-        client.playersDB.ensure(`${targetb.id}`, Player.player(targetb, message))
+        client.playersPrimeDB.ensure(`${targetb.id}`, Player.player(targetb, message))
 
         const messagesplit = message.content.split(" ")
         let target
@@ -31,9 +31,9 @@ module.exports = {
         let ProfileEmbed = new RichEmbed().setColor("RANDOM")
         if(!target.nickname) ProfileEmbed.setTitle(`Player: **${target.user.username}**`)
         else ProfileEmbed.setTitle(`Player: **${target.nickname}**`)
-        let playerrank = client.playersDB.get(`${target.id}`,`rank`)
-        let playercorp = client.playersDB.get(`${target.id}`,`corp`)
-        let playertimezone = client.playersDB.get(`${target.id}`,`timezone`)
+        let playerrank = client.playersPrimeDB.get(`${target.id}`,`rank`)
+        let playercorp = client.playersPrimeDB.get(`${target.id}`,`corp`)
+        let playertimezone = client.playersPrimeDB.get(`${target.id}`,`timezone`)
         ProfileEmbed.addField(`*Rank*`, playerrank)
         ProfileEmbed.addField(`*Time Zone*`, `GMT ${playertimezone}`) 
         ProfileEmbed.setFooter("For the techs this player has, use &playertech, for their white star battleship, use &playerbattleship")

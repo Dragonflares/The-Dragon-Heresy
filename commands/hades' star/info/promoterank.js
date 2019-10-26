@@ -15,7 +15,7 @@ module.exports = {
         }
         else targetb = message.guild.member(user)
 
-        client.playersDB.ensure(`${targetb.id}`, Player.player(targetb, message))
+        client.playersPrimeDB.ensure(`${targetb.id}`, Player.player(targetb, message))
 
         const messagesplit = message.content.split(" ")
 
@@ -24,33 +24,33 @@ module.exports = {
         const member = message.guild.member(mentionedusers.first())
         let author = message.guild.member(message.author)
         if(!member) {
-            let memberguild = client.playersDB.get(`${author.id}`, "corp")
+            let memberguild = client.playersPrimeDB.get(`${author.id}`, "corp")
             if(!(memberguild === message.guild.id)) return message.channel.send("You are not in your corp's server!")
             if(author.highestRole.hasPermission("ADMINISTRATOR")){
-                let rank = client.playersDB.get(`${author.id}`, "rank")
+                let rank = client.playersPrimeDB.get(`${author.id}`, "rank")
                 switch(rank){
                     case "Member": {
-                        client.playersDB.set(`${author.id}`, "Senior Member", "rank")
+                        client.playersPrimeDB.set(`${author.id}`, "Senior Member", "rank")
                         break
                     }
                     case "Senior Member": {
-                        client.playersDB.set(`${author.id}`, "Officer", "rank")
+                        client.playersPrimeDB.set(`${author.id}`, "Officer", "rank")
                         break
                     }
                     case "Officer": {
                         let guildmembers = message.guild.members.values()
                         for(let member of guildmembers)
                         {
-                            client.playersDB.ensure(`${member.id}`, Player.player(member, message))
-                            client.playersDB.set(`${member.id}`, `${member.user.username}`, "name")
-                            memberrank = client.playersDB.get(`${member.id}`, "rank")
+                            client.playersPrimeDB.ensure(`${member.id}`, Player.player(member, message))
+                            client.playersPrimeDB.set(`${member.id}`, `${member.user.username}`, "name")
+                            memberrank = client.playersPrimeDB.get(`${member.id}`, "rank")
                             if(memberrank === "First Officer"){
                                 
-                                let membername = client.playersDB.get(`${member.id}`, "name")
+                                let membername = client.playersPrimeDB.get(`${member.id}`, "name")
                                 return message.channel.send(`There's already a First Officer! It's ${membername}.`)
                             }
                         }
-                        client.playersDB.set(`${author.id}`, "First Officer", "rank")
+                        client.playersPrimeDB.set(`${author.id}`, "First Officer", "rank")
                         break
                     }
                     case "First Officer": {
@@ -63,20 +63,20 @@ module.exports = {
         }
         else {
             if(member.id === author.id) return message.channel.send("You can't mention yourself for promotion!")
-            let memberguild = client.playersDB.get(`${member.id}`, "corp")
+            let memberguild = client.playersPrimeDB.get(`${member.id}`, "corp")
             if(!(memberguild === message.guild.id)) return message.channel.send("You are not in your corp's server!")
-            let memberrank = client.playersDB.get(`${member.id}`, "rank")
-            let authorrank = client.playersDB.get(`${author.id}`, "rank")
+            let memberrank = client.playersPrimeDB.get(`${member.id}`, "rank")
+            let authorrank = client.playersPrimeDB.get(`${author.id}`, "rank")
             switch(authorrank){
                 case "Officer": {
                     if(memberrank === "Officer") return message.channel.send("You can't promote another Officer!")
                     if(memberrank === "First Officer") return message.channel.send("You can't promote your First Officer beyond!")
                     if(memberrank === "Senior Member") {
-                        client.playersDB.set(`${member.id}`, "Officer", "rank")
+                        client.playersPrimeDB.set(`${member.id}`, "Officer", "rank")
                         return message.channel.send("You have succesfully promoted the other member")
                     }
                     else {
-                        client.playersDB.set(`${member.id}`, "Senior Member", "rank")
+                        client.playersPrimeDB.set(`${member.id}`, "Senior Member", "rank")
                         return message.channel.send("You have succesfully promoted the other member")
                     }
                 }
@@ -96,8 +96,8 @@ module.exports = {
                             return message.channel.send("Invalid confirmation.");
                         }
                         if(response.first().content.toLowerCase() === "yes") {
-                            client.playersDB.set(`${member.id}`, "First Officer", "rank")
-                            client.playersDB.set(`${author.id}`, "Officer", "rank")
+                            client.playersPrimeDB.set(`${member.id}`, "First Officer", "rank")
+                            client.playersPrimeDB.set(`${author.id}`, "Officer", "rank")
                             return message.channel.send("You've succesfully promoted this person to First Officer. You have been demoted to Officer.")
                         }
                         if(response.first().content.toLowerCase() === "no") {
@@ -108,11 +108,11 @@ module.exports = {
                         }
                     }
                     if(memberrank === "Senior Member") {
-                        client.playersDB.set(`${member.id}`, "Officer", "rank")
+                        client.playersPrimeDB.set(`${member.id}`, "Officer", "rank")
                         return message.channel.send("You have succesfully promoted the other member")
                     }
                     else {
-                        client.playersDB.set(`${member.id}`, "Senior Member", "rank")
+                        client.playersPrimeDB.set(`${member.id}`, "Senior Member", "rank")
                         return message.channel.send("You have succesfully promoted the other member")
                     }
                 }

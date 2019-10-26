@@ -16,7 +16,7 @@ module.exports = {
         }
         else targetb = message.guild.member(userb)
 
-        client.playersDB.ensure(`${targetb.id}`, Player.player(targetb, message))
+        client.playersPrimeDB.ensure(`${targetb.id}`, Player.player(targetb, message))
 
 
         const messagesplit = message.content.split(" ")
@@ -38,7 +38,7 @@ module.exports = {
                 let foundsupporttech = 0
                 for(let techname1 in TechData){ 
                     if(TechData[techname1].Category === "Economy") {
-                        let techlevel = await client.playersDB.get(`${message.author.id}`, `techs.${techname1}`)
+                        let techlevel = await client.playersPrimeDB.get(`${message.author.id}`, `techs.${techname1}`)
                         if(techlevel > 0) {
                             economytechs += `${techname1} ${techlevel}.\n`
                             foundeconomytech = 1
@@ -47,7 +47,7 @@ module.exports = {
                 }
                 for(let techname2 in TechData) { 
                     if(TechData[techname2].Category === "Mining") {
-                        let techlevel = await client.playersDB.get(`${message.author.id}`, `techs.${techname2}`)
+                        let techlevel = await client.playersPrimeDB.get(`${message.author.id}`, `techs.${techname2}`)
                         if(techlevel > 0) {
                             miningtechs += `${techname2} ${techlevel}.\n`
                             foundminingtech = 1
@@ -56,7 +56,7 @@ module.exports = {
                 }
                 for(let techname3 in TechData) { 
                     if(TechData[techname3].Category === "Weapons") {
-                        let techlevel = await client.playersDB.get(`${message.author.id}`, `techs.${techname3}`)
+                        let techlevel = await client.playersPrimeDB.get(`${message.author.id}`, `techs.${techname3}`)
                         if(techlevel > 0) {
                             weapontechs += `${techname3} ${techlevel}.\n`
                             foundweapontech = 1
@@ -65,7 +65,7 @@ module.exports = {
                 }
                 for(let techname4 in TechData) { 
                     if(TechData[techname4].Category === "Shields") {
-                        let techlevel = await client.playersDB.get(`${message.author.id}`, `techs.${techname4}`)
+                        let techlevel = await client.playersPrimeDB.get(`${message.author.id}`, `techs.${techname4}`)
                         if(techlevel > 0) {
                             shieldtechs += `${techname4} ${techlevel}.\n`
                             foundshieldtech = 1
@@ -74,7 +74,7 @@ module.exports = {
                 }
                 for(let techname5 in TechData) { 
                     if(TechData[techname5].Category === "Support") {
-                        let techlevel = await client.playersDB.get(`${message.author.id}`, `techs.${techname5}`)
+                        let techlevel = await client.playersPrimeDB.get(`${message.author.id}`, `techs.${techname5}`)
                         if(techlevel > 0) {
                             supporttechs += `${techname5} ${techlevel}.\n`
                             foundsupporttech = 1
@@ -98,7 +98,7 @@ module.exports = {
                 let category
                 for(let techname in TechData){ 
                     if(TechData[techname].Category === messagesplit[1]) {
-                        let techlevel = await client.playersDB.get(`${message.author.id}`, `techs.${techname}`)
+                        let techlevel = await client.playersPrimeDB.get(`${message.author.id}`, `techs.${techname}`)
                         if(techlevel > 0) {
                             techs += `${techname} ${techlevel}.\n`
                             if(!foundtech) {
@@ -118,8 +118,8 @@ module.exports = {
         else {
 
             const member = message.guild.member(user);
-            const playerguild = client.playersDB.get(`${member.id}`, `corp`)
-            const authorguild = client.playersDB.get(`${message.author.id}`, `corp`)            
+            const playerguild = client.playersPrimeDB.get(`${member.id}`, `corp`)
+            const authorguild = client.playersPrimeDB.get(`${message.author.id}`, `corp`)            
             if(!(playerguild === authorguild)) return message.channel.send("You don't belong to the corp this player is at!")
             ProfileEmbed.setTitle(`**Player: ${member.nickname} **`)
             if(!messagesplit[2]){
@@ -136,7 +136,7 @@ module.exports = {
                 let foundsupporttech = 0
                 for(let techname1 in TechData){ 
                     if(TechData[techname1].Category === "Economy") {
-                        let techlevel = await client.playersDB.get(`${user.id}`, `techs.${techname1}`)
+                        let techlevel = await client.playersPrimeDB.get(`${user.id}`, `techs.${techname1}`)
                         if(techlevel > 0) {
                             economytechs += `${techname1} ${techlevel}.\n`
                             foundeconomytech = 1
@@ -145,7 +145,7 @@ module.exports = {
                 }
                 for(let techname2 in TechData) { 
                     if(TechData[techname2].Category === "Mining") {
-                        let techlevel = await client.playersDB.get(`${user.id}`, `techs.${techname2}`)
+                        let techlevel = await client.playersPrimeDB.get(`${user.id}`, `techs.${techname2}`)
                         if(techlevel > 0) {
                             miningtechs += `${techname2} ${techlevel}.\n`
                             foundminingtech = 1
@@ -154,7 +154,7 @@ module.exports = {
                 }
                 for(let techname3 in TechData) { 
                     if(TechData[techname3].Category === "Weapons") {
-                        let techlevel = await client.playersDB.get(`${user.id}`, `techs.${techname3}`)
+                        let techlevel = await client.playersPrimeDB.get(`${user.id}`, `techs.${techname3}`)
                         if(techlevel > 0) {
                             weapontechs += `${techname3} ${techlevel}.\n`
                             foundweapontech = 1
@@ -163,7 +163,7 @@ module.exports = {
                 }
                 for(let techname4 in TechData) { 
                     if(TechData[techname4].Category === "Shields") {
-                        let techlevel = await client.playersDB.get(`${user.id}`, `techs.${techname4}`)
+                        let techlevel = await client.playersPrimeDB.get(`${user.id}`, `techs.${techname4}`)
                         if(techlevel > 0) {
                             shieldtechs += `${techname4} ${techlevel}.\n`
                             foundshieldtech = 1
@@ -172,7 +172,7 @@ module.exports = {
                 }
                 for(let techname5 in TechData) { 
                     if(TechData[techname5].Category === "Support") {
-                        let techlevel = await client.playersDB.get(`${user.id}`, `techs.${techname5}`)
+                        let techlevel = await client.playersPrimeDB.get(`${user.id}`, `techs.${techname5}`)
                         if(techlevel > 0) {
                             supporttechs += `${techname5} ${techlevel}.\n`
                             foundsupporttech = 1
@@ -195,7 +195,7 @@ module.exports = {
                 let techs = ""
                 for(let techname in TechData){ 
                     if(TechData[techname].Category === messagesplit[2]) {
-                        let techlevel = await client.playersDB.get(`${user.id}`, `techs.${techname}`)
+                        let techlevel = await client.playersPrimeDB.get(`${user.id}`, `techs.${techname}`)
                         if(techlevel > 0) {
                             techs += `${techname} ${techlevel}.\n`
                             if(!foundtech) {

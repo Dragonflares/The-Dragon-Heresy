@@ -65,25 +65,22 @@ module.exports = {
             if(techlevel == 0) return message.channel.send("You don't have this support module researched!")
             client.playersPrimeDB.set(`${message.author.id}`, `${transportsupport.first().content} ${techlevel}`, `transport.support`)
 
-            message.channel.send("Please state your transport's economy modules, pressing enter between each of them, if you have less of them installed than the max amount, then write Empty")
+            message.channel.send("Please state your transport's economy modules, pressing enter between each of them.")
             var i = 0
-            for(i ; i < parseInt(transportlevel.first().content) - 1 ; i++) {
+            for(i ; i < parseInt(transportlevel.first().content) ; i++) {
                 try {
-                    transporteconomy = await message.channel.awaitMessages(message2 => message2 === "Empty" || (TechData[message2] && TechData[message2].Category === "Mining"), {
+                    transporteconomy = await message.channel.awaitMessages(message2 => TechData[message2] && TechData[message2].Category === "Economy", {
                         maxMatches: 1,
                         time: 40000,
                         errors: ['time', 'name']
                     });
                 } catch (err) {
                     console.error(err);
-                    return message.channel.send("Invalid transport's economy modules.");
+                    return message.channel.send("Invalid transport's economy module.");
                 }
-                if(transporteconomy.first().content === "Empty"){}
-                else{
-                    let techlevel = await client.playersPrimeDB.get(`${message.author.id}`, `techs.${transporteconomy.first().content}`)
-                    if(techlevel == 0) return message.channel.send("You don't have this economy module researched!")
-                    client.playersPrimeDB.push(`${message.author.id}`, `${transporteconomy.first().content} ${techlevel}`, `transport.economy`)
-                }
+                let techlevel = await client.playersPrimeDB.get(`${message.author.id}`, `techs.${transporteconomy.first().content}`)
+                if(techlevel == 0) return message.channel.send("You don't have this economy module researched!")
+                client.playersPrimeDB.push(`${message.author.id}`, `${transporteconomy.first().content} ${techlevel}`, `transport.economy`)
             }
             return message.channel.send("Your transport for white stars is now set.")
         }

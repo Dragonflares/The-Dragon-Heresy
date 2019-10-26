@@ -65,11 +65,11 @@ module.exports = {
             if(techlevel == 0) return message.channel.send("You don't have this support module researched!")
             client.playersPrimeDB.set(`${message.author.id}`, `${minersupport.first().content} ${techlevel}`, `miner.support`)
 
-            message.channel.send("Please state your miner's mining modules, pressing enter between each of them, if you have less of them installed than the max amount, then write Empty")
+            message.channel.send("Please state your miner's mining modules, pressing enter between each of them.")
             var i = 0
             for(i ; i < parseInt(minerlevel.first().content) - 1 ; i++) {
                 try {
-                    minermining = await message.channel.awaitMessages(message2 => message2 === "Empty" || (TechData[message2] && TechData[message2].Category === "Mining"), {
+                    minermining = await message.channel.awaitMessages(message2 => TechData[message2] && TechData[message2].Category === "Mining", {
                         maxMatches: 1,
                         time: 40000,
                         errors: ['time', 'name']
@@ -78,12 +78,9 @@ module.exports = {
                     console.error(err);
                     return message.channel.send("Invalid miner's mining modules.");
                 }
-                if(minermining.first().content === "Empty"){}
-                else {
-                    let techlevel = await client.playersPrimeDB.get(`${message.author.id}`, `techs.${minermining.first().content}`)
-                    if(techlevel == 0) return message.channel.send("You don't have this mining module researched!")
-                    client.playersPrimeDB.push(`${message.author.id}`, `${minermining.first().content} ${techlevel}`, `miner.mining`)
-                }
+                let techlevel = await client.playersPrimeDB.get(`${message.author.id}`, `techs.${minermining.first().content}`)
+                if(techlevel == 0) return message.channel.send("You don't have this mining module researched!")
+                client.playersPrimeDB.push(`${message.author.id}`, `${minermining.first().content} ${techlevel}`, `miner.mining`)
             }
             return message.channel.send("Your miner for white stars is now set.")
         }

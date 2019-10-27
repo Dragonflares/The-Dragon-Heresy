@@ -12,7 +12,7 @@ module.exports = {
     run: async (client, message, args) => {
         let targetb
         if(message.mentions.users > 0) return message.channel.send("You can't tag members for this command.")
-        targetb = message.guild.member(user)
+        targetb = message.guild.member(message.author)
 
         client.playersPrimeDB.ensure(`${targetb.id}`, Player.player(targetb, message))
         client.battlegroups.ensure(`${message.guild.id}`, Battlegroup.guildbattlegroup())

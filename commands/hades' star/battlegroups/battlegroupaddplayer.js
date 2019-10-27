@@ -76,10 +76,17 @@ module.exports = {
                 return message.channel.send("Invalid confirmation.");
             }
         }
-        
+        let playersfound = client.battlegroups.get(`${message.guild.id}`, `${knownbattlegroup}.members`)
+        if(playersfound.indexOf(targetb.id) < 0) {
+            client.battlegroups.push(`${message.guild.id}`, targetb.id, `${knownbattlegroup}.members`)
+        }
+        let playerrole = client.playersRole.get(`${targetb.id}`, "role")
+        if(playerrole.toLowerCase() === "captain"){
+            return message.channel.send("You cannot change the captain's role without setting another Captain first!")
+        }
         client.playersRole.set(`${targetb.id}`, `${messagesplit[2]}`, "role")
         client.playersRole.set(`${targetb.id}`, `${targetb.id}`, "player")
-        client.battlegroups.push(`${message.guild.id}`, targetb.id, `${knownbattlegroup}.members`)
+        
 
         return message.channel.send("A member has been added to this battlegroup!")
     }

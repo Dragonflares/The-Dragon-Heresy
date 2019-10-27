@@ -5,7 +5,7 @@ module.exports = {
     name: "techdata",
     aliases: ["h"],
     category: "hades' star",
-    subcategory: "info",
+    subcategory: "corp member",
     description: "Returns info about a certain tech in a certain level.",
     usage: "&techdata (tech) (level). Not stating any tech will show all existing techs, stating a tech will show it's description and max level. Stating a level will give detailed info on it",
     run: async (client, message, args) => {

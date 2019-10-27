@@ -4,7 +4,7 @@ let Player = require("../../../player.js")
 module.exports = {
     name: "updatetech",
     category: "hades' star",
-    subcategory: "info",
+    subcategory: "corp member",
     description: "Updates the level of a specific tech you own.",
     usage: "&updatetech <tech>(no blank spaces) <level>",
     run: async (client, message, args) => {

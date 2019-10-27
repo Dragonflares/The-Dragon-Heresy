@@ -3,18 +3,21 @@ module.exports = {
         let member = {
             player : {},
             role: "",
-            support : ""
+            support: ""
         }
         return member
-    }
-}
-
-module.exports = {
+    },
+    guildbattlegroup: function() {
+        let guild = {
+            battlegroup1 : {},
+            battlegroup2 : {}
+        }
+        return guild
+    },
     battlegroup: function (message) {
         let battlegroup = {
             name : "",
-            captain: {},
-            corp : `${message.guild.id}`,
+            captain: "",
             members : []
         }
         return battlegroup

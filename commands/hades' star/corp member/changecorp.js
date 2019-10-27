@@ -4,7 +4,7 @@ let Player = require("../../../player.js")
 module.exports = {
     name: "changecorp",
     category: "hades' star",
-    subcategory: "info",
+    subcategory: "corp member",
     description: "Sets your corp as the Server you are now at.",
     usage: "&changecorp.",
     run: async (client, message, args) => {

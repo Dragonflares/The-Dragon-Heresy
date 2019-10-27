@@ -4,7 +4,7 @@ let Player = require("../../../player.js")
 module.exports = {
     name: "demote",
     category: "hades' star",
-    subcategory: "info",
+    subcategory: "corp member",
     description: "Demotes a player rank in a Corp.",
     usage: "&demote <member>.",
     run: async (client, message, args) => {

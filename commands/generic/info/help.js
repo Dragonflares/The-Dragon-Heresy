@@ -32,8 +32,7 @@ function getAll(client, message) {
     const commands = (category, subcategory) => {
         return client.commands
             .filter(cmd => cmd.category === category && subcategory === cmd.subcategory)
-            .map(cmd => `- \`${cmd.name}   - ${cmd.description}\``)
-            .join("\n");
+            .map(cmd => `\`${cmd.name} \``)
     }
     for(let category of client.categories) {
         embed.setTitle(`Dragonflares Bot commands`)

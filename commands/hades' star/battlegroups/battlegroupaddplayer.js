@@ -34,7 +34,7 @@ module.exports = {
         if(battlegroup1 === messagesplit[1]) knownbattlegroup = "battlegroup1"
         else if(battlegroup2 === messagesplit[1]) knownbattlegroup = "battlegroup2"
         else return message.channel.send("The battlegroup name provided is not a battlegroup you have set.")
-        if(!messagesplit[2] || messagesplit[2].contains("<@")) return message.channel.send("You must specify a category for this member!")
+        if(!messagesplit[2] || (messagesplit[1].indexOf("<@") > -1)) return message.channel.send("You must specify a category for this member!")
         if(messagesplit[2].toLowerCase() === "captain") {
             message.channel.send(`Are you sure you want to set ${targetb.user.username} as the new captain? Yes/No`)
             let response

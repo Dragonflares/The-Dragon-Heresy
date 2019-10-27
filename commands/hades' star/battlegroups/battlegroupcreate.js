@@ -24,7 +24,7 @@ module.exports = {
         else return message.channel.send("You must be at least an Officer to create a battlegroup!")
 
         const messagesplit = message.content.split(" ")
-        if(!messagesplit[1] || messagesplit[1].contains("<@")) return message.channel.send("You must specify a battlegroup name!")
+        if(!messagesplit[1] || (messagesplit[1].indexOf("<@") > -1)) return message.channel.send("You must specify a battlegroup name!")
 
         let battlegroup1 = client.battlegroups.get(`${message.guild.id}`, "battlegroup1.name")
         let battlegroup2 = client.battlegroups.get(`${message.guild.id}`, "battlegroup2.name")

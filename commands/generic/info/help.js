@@ -10,6 +10,7 @@ module.exports = {
     description: "Returns all commands, or one specific command info",
     usage: "[command | alias]",
     run: async (client, message, args) => {
+        if(message.mentions.users > 0) return message.channel.send("You can't tag members for this command.")
         if (args[0]) {
             return getCMD(client, message, args[0]);
         } else {

@@ -14,6 +14,7 @@ module.exports = {
     description: "Skips the current track.",
     usage: "<id | mention>",
     run: async (client, message, args, queue) => {
+        if(message.mentions.users > 0) return message.channel.send("You can't tag members for this command.")
         const serverQueue = queue.get(message.guild.id);
 
         if (!message.member.voiceChannel) return message.channel.send('You are not in a voice channel!');

@@ -6,6 +6,7 @@ module.exports = {
     description: "Mutes every other user, allowing for a 15 second announce, then unmutes everyone.",
     usage: "[command | alias]",
     run: async (client, message, args) => {
+        if(message.mentions.users > 0) return message.channel.send("You can't tag members for this command.")
         const actualVoiceChannel = message.member.voiceChannel
         if(!actualVoiceChannel){
              return message.channel.send(`You are not in a Voice Channel!`)

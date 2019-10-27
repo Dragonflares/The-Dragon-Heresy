@@ -14,6 +14,7 @@ module.exports = {
     description: "ON/OFF command. EMBRACE THE EARRAPE.",
     usage: "<id | mention>",
     run: async (client, message, args4, queue) => {
+        if(message.mentions.users > 0) return message.channel.send("You can't tag members for this command.")
         const serverQu = queue.get(message.guild.id);
 
 

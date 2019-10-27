@@ -15,6 +15,7 @@ module.exports = {
     description: "Adds a song/s to the queue.",
     usage: "<id | mention>",
     run: async (client, message, args5, queue) => {
+        if(message.mentions.users > 0) return message.channel.send("You can't tag members for this command.")
         const serverQueue = queue.get(message.guild.id);
 
         const args = message.content.split(' ');

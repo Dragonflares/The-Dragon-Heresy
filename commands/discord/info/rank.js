@@ -13,6 +13,7 @@ module.exports = {
     description: "Gives the xp and the level you currently have.",
     usage: "<id | mention>",
     run: async (client, message, args, queue) => {
+        if(message.mentions.users > 0) return message.channel.send("You can't tag members for this command.")
         try {
           const buffer = await profile(message, client);
           const filename = `profile-${message.author.id}.jpg`;

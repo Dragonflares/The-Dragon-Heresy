@@ -27,6 +27,10 @@ module.exports = {
         if(!messagesplit[1] || messagesplit[1].contains("<@")) return message.channel.send("You must specify a battlegroup name!")
 
         let battlegroup1 = client.battlegroups.get(`${message.guild.id}`, "battlegroup1.name")
+        let battlegroup2 = client.battlegroups.get(`${message.guild.id}`, "battlegroup2.name")
+        
+        if(battlegroup1 === messagesplit[1] || battlegroup2 === messagesplit[1]) return message.channel.send("You can't create a new battlegroup with the same name as one already created.")
+        
         let newbattlegroup = Battlegroup.battlegroup(message)
         newbattlegroup.name = messagesplit[1]
         newbattlegroup.captain = targetb.id
@@ -37,7 +41,7 @@ module.exports = {
             client.battlegroups.set(`${message.guild.id}`, targetb.id, "battlegroup1.captain")
         }
         else {
-            let battlegroup2 = client.battlegroups.get(`${message.guild.id}`, "battlegroup2.name")
+            
             if(!battlegroup2) {
                 
                 client.battlegroups.set(`${message.guild.id}`, newbattlegroup, "battlegroup2")

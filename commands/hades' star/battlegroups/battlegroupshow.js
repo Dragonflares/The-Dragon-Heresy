@@ -2,6 +2,9 @@ let TechData = require("../../../Database/Hades' Star/techs.json")
 let { RichEmbed } = require("discord.js")
 let Player = require("../../../player.js")
 let Battlegroup = require("../../../battlegroup.js")
+const { registerFont, Canvas} = require('canvas');
+const TheCanvas = require('canvas')
+const { Attachment } = require('discord.js');
 
 module.exports = {
     name: "listbattlegroup",
@@ -41,5 +44,43 @@ module.exports = {
             }
             return message.channel.send(battlegroupEmbed)
         }
+        else {
+
+            let battlegroup1name = client.battlegroups.get(`${message.guild.id}`, "battlegroup1.name")
+            let battlegroup2name = client.battlegroups.get(`${message.guild.id}`, "battlegroup2.name")
+            let targetbattlegroup
+            if(battlegroup1name === messagesplit[1]) targetbattlegroup = "battlegroup1"
+            else if(battlegroup2name === messagesplit[1]) targetbattlegroup = "battlegroup2"
+            else return message.channel.send("There's no battlegroup with this name in the corp!")
+
+            const buffer = await roster(message, client, targetbattlegroup);
+            const filename = `battlegroup-${messagesplit[1]}.jpg`;
+            const attachment = new Attachment(buffer, filename);
+            await message.channel.send(attachment);
+                
+
+        }
     }
+}
+
+async function roster(message, client, battlegroup) {
+    let guildmembers = message.guild.members
+    let battlegroupmembers = client.battlegroups.get(`${message.guild.id}`, `${battlegroup}.members`)
+    let battlegroupcaptain = client.battlegroups.get(`${message.guild.id}`, `${battlegroup}.captain`)
+    
+    const foxCavalier = './fonts/Fox_Cavalier.otf'
+    const batmanfont = "./fonts/batman_forever/batmfa__.ttf"
+    const bignoodle = './fonts/bignoodletitling/big_noodle_titling.ttf'
+    registerFont(batmanfont, {family: 'BatmanFonts'})
+    registerFont(foxCavalier, {family: 'FoxCavalier'})
+    registerFont(bignoodle, {family: "Noodle"})
+    const rosterImage = new Canvas(1200, 400 * (Math.trunc(battlegroupmembers.length / 5) + 0.8) )
+    const roster = rosterImage.getContext('2d')
+    const background = await TheCanvas.loadImage('./canvas/canvasbackground.jpg')
+    roster.drawImage(background, 0, 0, rosterImage.width, rosterImage.height)
+
+
+
+    return rosterImage.toBuffer();
+
 }

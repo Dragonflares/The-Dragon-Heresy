@@ -18,13 +18,16 @@ module.exports = {
         client.playersRole.ensure(`${targetb.id}`, Battlegroup.battlegroupMember())
 
         let messagesplit = message.content.split(" ")
-        if(!messagesplit[1] || !(messagesplit[1].toLowerCase() === "miner") || !(messagesplit[1].toLowerCase() === "transport"))
+        if(!messagesplit[1])
             return message.channel.send("You must specifiy a category of support ship! Either Miner, or Transport.")
-        if(messagesplit[1].toLowerCase() === "transport") {
+        else if(messagesplit[1].toLowerCase() === "transport") {
             client.playersRole.set(`${targetb.id}`, "Transport", "support")
         }
-        if(messagesplit[1].toLowerCase() === "miner") {
+        else if(messagesplit[1].toLowerCase() === "miner") {
             client.playersRole.set(`${targetb.id}`, "Miner", "support")
+        }
+        else {
+            return message.channel.send("You must specifiy a category of support ship! Either Miner, or Transport.")
         }
         return message.channel.send("Support ship set!")
     }

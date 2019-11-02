@@ -68,13 +68,18 @@ async function roster(message, client, battlegroup) {
     let guildmembers = message.guild.members
     let battlegroupmembers = client.battlegroups.get(`${message.guild.id}`, `${battlegroup}.members`)
     let battlegroupcaptain = client.battlegroups.get(`${message.guild.id}`, `${battlegroup}.captain`)
-    
+    if(battlegroupmembers.length < 5) return message.channel.send("There are not enough members in this battlegroup for a white star yet!")
     const foxCavalier = './fonts/Fox_Cavalier.otf'
     const batmanfont = "./fonts/batman_forever/batmfa__.ttf"
     const bignoodle = './fonts/bignoodletitling/big_noodle_titling.ttf'
+    const raidercrusader = './fonts/raider-crusader/raidercrusader.ttf'
+    const krazyhazy = './fonts/krazy-hazy/KrazyHazy.otf'
     registerFont(batmanfont, {family: 'BatmanFonts'})
     registerFont(foxCavalier, {family: 'FoxCavalier'})
     registerFont(bignoodle, {family: "Noodle"})
+    registerFont(raidercrusader, {family: "Crusader"})
+    registerFont(krazyhazy, {family: "Hazy"})
+
     const rosterImage = new Canvas(1200, 400 * (Math.trunc(battlegroupmembers.length / 5) + 0.8) )
     const roster = rosterImage.getContext('2d')
     const background = await TheCanvas.loadImage('./canvas/hadesbackground1.jpg')

@@ -14,7 +14,8 @@ module.exports = {
     usage: "&listbattlegroup (battlegroupname), no stating the name will show which battlegroups you've set",
     run: async (client, message, args) => {
         let battlegroupEmbed = new RichEmbed().setColor("RANDOM")
-        
+        client.battlegroups.ensure(`${message.guild.id}`, Battlegroup.guildbattlegroup())
+
         let messagesplit = message.content.split(" ")
         if(!messagesplit[1]) {
             battlegroupEmbed.setTitle("**Battlegroups**")
@@ -76,11 +77,23 @@ async function roster(message, client, battlegroup) {
     registerFont(bignoodle, {family: "Noodle"})
     const rosterImage = new Canvas(1200, 400 * (Math.trunc(battlegroupmembers.length / 5) + 0.8) )
     const roster = rosterImage.getContext('2d')
-    const background = await TheCanvas.loadImage('./canvas/canvasbackground.jpg')
+    const background = await TheCanvas.loadImage('./canvas/hadesbackground1.jpg')
     roster.drawImage(background, 0, 0, rosterImage.width, rosterImage.height)
-
-
-
+    
+    roster.fillStyle = '#fff400'
+    let captainname = client.playersPrimeDB.get(`${battlegroupcaptain}`, 'name')
+    let captainbattleship = client.playersPrimeDB.get(`${battlegroupcaptain}`, 'battleship')
+    let captainsupport = client.playersRole.get(`${battlegroupcaptain}`, 'support')
+    let captainsupportship
+    if(captainsupport.toLowerCase() === "transport") {
+        captainsupportship = client.playersPrimeDB.get(`${battlegroupcaptain}`, 'transport')
+    }
+    else if(captainsupport.toLowerCase() === "miner"){
+        captainsupportship = client.playersPrimeDB.get(`${battlegroupcaptain}`, 'miner')
+    }
+    roster.font = '26px "Noodle"'
+    roster.fillText(`Name: ${captainname}`, '100', '50')
+    
     return rosterImage.toBuffer();
 
 }

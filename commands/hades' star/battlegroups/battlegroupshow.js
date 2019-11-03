@@ -83,12 +83,12 @@ async function roster(message, client, battlegroup) {
     registerFont(raidercrusader, {family: "Crusader"})
     registerFont(krazyhazy, {family: "Hazy"})
 
-    const rosterImage = new Canvas(1700, 450 * (Math.trunc(battlegroupmembers.length / 5) + 0.8) )
+    const rosterImage = new Canvas(1700, 900 * (Math.trunc((battlegroupmembers.length / 5) + 0.8)) )
     const roster = rosterImage.getContext('2d')
     const background = await TheCanvas.loadImage('./canvas/hadesbackground1.jpg')
     roster.drawImage(background, 0, 0, rosterImage.width, rosterImage.height)
     
-    roster.fillStyle = '#fff400'
+    
     let captainname = client.playersPrimeDB.get(`${battlegroupcaptain}`, 'name')
     let captainbattleship = client.playersPrimeDB.get(`${battlegroupcaptain}`, 'battleship')
     let captainsupport = client.playersRole.get(`${battlegroupcaptain}`, 'support')
@@ -99,7 +99,11 @@ async function roster(message, client, battlegroup) {
     else if(captainsupport.toLowerCase() === "miner"){
         captainsupportship = client.playersPrimeDB.get(`${battlegroupcaptain}`, 'miner')
     }
-
+    roster.globalAlpha = 0.5
+    roster.fillStyle = "black"
+    roster.fillRect(100, 50, 275, 800)
+    roster.globalAlpha = 1
+    roster.fillStyle = '#fff400'
     roster.font = '40px "Crusader"'
     roster.fillText(`${captainname}`, '110', '65')
     roster.font = '28px "Crusader"'

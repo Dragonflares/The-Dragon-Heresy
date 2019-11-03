@@ -76,7 +76,7 @@ module.exports = {
                 const techkeys = Object.keys(TechData[tech[1]])
                 while(techkeys[a]){
                     
-                    if(techkeys[a] === "Description") {
+                    if(techkeys[a] === "Description" || techkeys[a] === "Category") {
                         embed.addField(`*${techkeys[a]}*`, `${techinfo[a]}`)
                     }
                     else {

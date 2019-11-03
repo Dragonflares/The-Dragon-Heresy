@@ -54,6 +54,9 @@ module.exports = {
             else if(battlegroup2name === messagesplit[1]) targetbattlegroup = "battlegroup2"
             else return message.channel.send("There's no battlegroup with this name in the corp!")
 
+            let battlegroupmembers = client.battlegroups.get(`${message.guild.id}`, `${targetbattlegroup}.members`)
+            if(battlegroupmembers.length < 5) return message.channel.send("There are not enough members in this battlegroup for a white star yet!")
+            
             const buffer = await roster(message, client, targetbattlegroup);
             const filename = `battlegroup-${messagesplit[1]}.jpg`;
             const attachment = new Attachment(buffer, filename);
@@ -68,7 +71,7 @@ async function roster(message, client, battlegroup) {
     let guildmembers = message.guild.members
     let battlegroupmembers = client.battlegroups.get(`${message.guild.id}`, `${battlegroup}.members`)
     let battlegroupcaptain = client.battlegroups.get(`${message.guild.id}`, `${battlegroup}.captain`)
-    if(battlegroupmembers.length < 5) return message.channel.send("There are not enough members in this battlegroup for a white star yet!")
+    
     const foxCavalier = './fonts/Fox_Cavalier.otf'
     const batmanfont = "./fonts/batman_forever/batmfa__.ttf"
     const bignoodle = './fonts/bignoodletitling/big_noodle_titling.ttf'
@@ -80,7 +83,7 @@ async function roster(message, client, battlegroup) {
     registerFont(raidercrusader, {family: "Crusader"})
     registerFont(krazyhazy, {family: "Hazy"})
 
-    const rosterImage = new Canvas(1200, 400 * (Math.trunc(battlegroupmembers.length / 5) + 0.8) )
+    const rosterImage = new Canvas(1700, 450 * (Math.trunc(battlegroupmembers.length / 5) + 0.8) )
     const roster = rosterImage.getContext('2d')
     const background = await TheCanvas.loadImage('./canvas/hadesbackground1.jpg')
     roster.drawImage(background, 0, 0, rosterImage.width, rosterImage.height)
@@ -96,9 +99,43 @@ async function roster(message, client, battlegroup) {
     else if(captainsupport.toLowerCase() === "miner"){
         captainsupportship = client.playersPrimeDB.get(`${battlegroupcaptain}`, 'miner')
     }
-    roster.font = '26px "Noodle"'
-    roster.fillText(`Name: ${captainname}`, '100', '50')
+
+    roster.font = '40px "Crusader"'
+    roster.fillText(`${captainname}`, '110', '65')
+    roster.font = '28px "Crusader"'
+    roster.fillText(`Role: Captain`, '110', '110')
+    roster.font = '20px "Crusader"'
+    roster.fillText(`Battleship`, '110', '145')
+    const captainbattleshipimage = await TheCanvas.loadImage(`./canvas/Battleship${captainbattleship.level}.png`)
     
+    roster.drawImage(captainbattleshipimage, 110, 175, 100, 240)
+
+    roster.strokeStyle = '#fff400'
+    roster.beginPath()
+    roster.lineWidth = 4
+    roster.moveTo(160, 235)
+    roster.lineTo(230, 235)
+
+    roster.font = '20px "Crusader"'
+    roster.fillText(`${captainbattleship.weapon}`, '235', '240')
+
+    roster.moveTo(160, 295)
+    roster.lineTo(230, 295)
+
+    roster.fillText(`${captainbattleship.shield}`, '235', '300')
+
+    roster.moveTo(160, 355)
+    roster.lineTo(230, 355)
+    let supportnumber = 0
+    for(let support of captainbattleship.support) {
+        let position = 360 + 20 * supportnumber
+        roster.fillText(`${support}`, '235', `${position}`)
+        supportnumber++
+    }
+
+    roster.closePath()
+    roster.stroke()
+
     return rosterImage.toBuffer();
 
 }

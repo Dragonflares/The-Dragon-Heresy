@@ -109,7 +109,7 @@ async function roster(message, client, battlegroup, page) {
     let captainbattleship = client.playersPrimeDB.get(`${battlegroupcaptain}`, `battleship`)
     let captainsupport = client.playersRolePrimeDB.get(`${battlegroupcaptain}`, `support`)
     let captainsupportship
-    roster.fillStyle = `#fff400`
+    roster.fillStyle = `#ffe803`
     roster.font = `20px "Crusader"`
     roster.fillText(`Page ${page}`, "839", "1025")
     let startingPoint
@@ -119,7 +119,7 @@ async function roster(message, client, battlegroup, page) {
         roster.fillStyle = "black"
         roster.fillRect(75, 75, 275, 925)
         roster.globalAlpha = 1
-        roster.fillStyle = `#fff400`
+        roster.fillStyle = `#ffe803`
         roster.font = `34px "Crusader"`
         wrapText(roster,captainname,85,95,275,34)
         roster.font = `28px "Crusader"`
@@ -130,7 +130,7 @@ async function roster(message, client, battlegroup, page) {
         
         roster.drawImage(captainbattleshipimage, 85, 265, 100, 240)
 
-        roster.strokeStyle = `#fff400`
+        roster.strokeStyle = `#ffe803`
 
         roster.lineWidth = 4
         roster.moveTo(135, 325)
@@ -161,7 +161,7 @@ async function roster(message, client, battlegroup, page) {
             roster.fillText(`Transport`, `85`, `565`)
             const captaintransportimage = await TheCanvas.loadImage(`./canvas/Transport${captainsupportship.level}.png`)
             roster.drawImage(captaintransportimage, 85, 590, 100, 140)
-            roster.strokeStyle = `#fff400`
+            roster.strokeStyle = `#ffe803`
             roster.lineWidth = 4
             roster.moveTo(135, 655)
             roster.lineTo(135, 595)
@@ -186,7 +186,7 @@ async function roster(message, client, battlegroup, page) {
             roster.fillText(`Miner`, `85`, `565`)
             const captainminerimage = await TheCanvas.loadImage(`./canvas/Miner${captainsupportship.level}.png`)
             roster.drawImage(captainminerimage, 85, 590, 100, 140)
-            roster.strokeStyle = `#fff400`
+            roster.strokeStyle = `#ffe803`
             roster.lineWidth = 4
             roster.moveTo(135, 655)
             roster.lineTo(135, 595)
@@ -232,7 +232,7 @@ async function roster(message, client, battlegroup, page) {
                 let membersupportship
 
                 roster.globalAlpha = 1
-                roster.fillStyle = `#fff400`
+                roster.fillStyle = `#ffe803`
                 roster.font = `34px "Crusader"`
                 wrapText(roster,membername,85+ 325 * startingPoint,95,275,34)
                 roster.font = `28px "Crusader"`
@@ -243,7 +243,7 @@ async function roster(message, client, battlegroup, page) {
                 
                 roster.drawImage(memberbattleshipimage, 85+ 325 * startingPoint, 265, 100, 240)
             
-                roster.strokeStyle = `#fff400`
+                roster.strokeStyle = `#ffe803`
             
                 roster.lineWidth = 4
                 roster.moveTo(135 + 325 * startingPoint, 325)
@@ -278,7 +278,7 @@ async function roster(message, client, battlegroup, page) {
                         roster.fillText(`Transport`, `${85 + 325 * startingPoint}`, `565`)
                         const membertransportimage = await TheCanvas.loadImage(`./canvas/Transport${membersupportship.level}.png`)
                         roster.drawImage(membertransportimage, 85 + 325 * startingPoint, 590, 100, 140)
-                        roster.strokeStyle = `#fff400`
+                        roster.strokeStyle = `#ffe803`
                         roster.lineWidth = 4
                         roster.moveTo(135 + 325 * startingPoint, 655)
                         roster.lineTo(135 + 325 * startingPoint, 595)
@@ -308,7 +308,7 @@ async function roster(message, client, battlegroup, page) {
                         roster.fillText(`Miner`, `${85 + 325 * startingPoint}`, `565`)
                         const membernminerimage = await TheCanvas.loadImage(`./canvas/Miner${membersupportship.level}.png`)
                         roster.drawImage(membernminerimage, 85 + 325 * startingPoint, 590, 100, 140)
-                        roster.strokeStyle = `#fff400`
+                        roster.strokeStyle = `#ffe803`
                         roster.lineWidth = 4
                         roster.moveTo(135 + 325 * startingPoint, 655)
                         roster.lineTo(135 + 325 * startingPoint, 595)

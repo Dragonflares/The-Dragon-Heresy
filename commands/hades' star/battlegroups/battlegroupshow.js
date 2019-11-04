@@ -93,11 +93,13 @@ async function roster(message, client, battlegroup, page) {
     const bignoodle = `./fonts/bignoodletitling/big_noodle_titling.ttf`
     const raidercrusader = `./fonts/raider-crusader/raidercrusader.ttf`
     const krazyhazy = `./fonts/krazy-hazy/KrazyHazy.otf`
+    const atarian = "./fonts/sf-atarian-system/SF Atarian System Bold.ttf"
     registerFont(batmanfont, {family: `BatmanFonts`})
     registerFont(foxCavalier, {family: `FoxCavalier`})
     registerFont(bignoodle, {family: "Noodle"})
     registerFont(raidercrusader, {family: "Crusader"})
     registerFont(krazyhazy, {family: "Hazy"})
+    registerFont(atarian, {family: "Atarian"})
 
     const rosterImage = new Canvas(1725, 1050)
     const roster = rosterImage.getContext(`2d`)
@@ -110,7 +112,7 @@ async function roster(message, client, battlegroup, page) {
     let captainsupport = client.playersRolePrimeDB.get(`${battlegroupcaptain}`, `support`)
     let captainsupportship
     roster.fillStyle = `#ffe803`
-    roster.font = `20px "Crusader"`
+    roster.font = `32px "Atarian"`
     roster.fillText(`Page ${page}`, "839", "1025")
     let startingPoint
     if(page === 1) {
@@ -120,14 +122,14 @@ async function roster(message, client, battlegroup, page) {
         roster.fillRect(75, 75, 275, 925)
         roster.globalAlpha = 1
         roster.fillStyle = `#ffe803`
-        roster.font = `34px "Crusader"`
+        roster.font = `40px "Atarian"`
         wrapText(roster,captainname,85,115,275,34)
-        roster.font = `28px "Crusader"`
+        roster.font = `32px "Atarian"`
         roster.strokeStyle = 'black'
         roster.lineWidth = 5
         roster.strokeText(`Role: Captain`, `85`, `200`)
         roster.fillText(`Role: Captain`, `85`, `200`)
-        roster.font = `20px "Crusader"`
+        roster.font = `26px "Atarian"`
         roster.strokeStyle = 'black'
         roster.lineWidth = 5
         roster.strokeText(`Battleship`, `85`, `235`)
@@ -142,7 +144,7 @@ async function roster(message, client, battlegroup, page) {
         roster.moveTo(135, 325)
         roster.lineTo(205, 325)
 
-        roster.font = `20px "Crusader"`
+        roster.font = `26px "Atarian"`
         roster.strokeStyle = 'black'
         roster.lineWidth = 5
         roster.strokeText(`${captainbattleship.weapon}`, `210`, `330`)
@@ -165,7 +167,7 @@ async function roster(message, client, battlegroup, page) {
             roster.lineTo(205, 445)
             let supportnumber = 0
             for(let support of captainbattleship.support) {
-                let position = 450 + 20 * supportnumber
+                let position = 450 + 25 * supportnumber
                 roster.strokeStyle = 'black'
                 roster.lineWidth = 5
                 roster.strokeText(`${support}`, `210`, `${position}`)
@@ -179,7 +181,7 @@ async function roster(message, client, battlegroup, page) {
         roster.stroke()
         if(captainsupport.toLowerCase() === "transport") {
             captainsupportship = client.playersPrimeDB.get(`${battlegroupcaptain}`, `transport`)
-            roster.font = `17px "Crusader"`
+            roster.font = `24px "Atarian"`
             roster.strokeStyle = 'black'
             roster.lineWidth = 5
             roster.strokeText(`Transport`, `85`, `565`)
@@ -193,7 +195,7 @@ async function roster(message, client, battlegroup, page) {
             roster.lineTo(205, 595)
             let economynumber = 0
             for(let economy of captainsupportship.economy) {
-                let position = 600 + 20 * economynumber
+                let position = 600 + 25 * economynumber
                 roster.strokeStyle = 'black'
                 roster.lineWidth = 5
                 roster.strokeText(`${economy}`, `210`, `${position}`)
@@ -213,7 +215,7 @@ async function roster(message, client, battlegroup, page) {
         }
         else if(captainsupport.toLowerCase() === "miner"){
             captainsupportship = client.playersPrimeDB.get(`${battlegroupcaptain}`, `miner`)
-            roster.font = `17px "Crusader"`
+            roster.font = `24px "Atarian"`
             roster.strokeStyle = 'black'
             roster.lineWidth = 5
             roster.strokeText(`Miner`, `85`, `565`)
@@ -227,7 +229,7 @@ async function roster(message, client, battlegroup, page) {
             roster.lineTo(205, 595)
             let economynumber = 0
             for(let economy of captainsupportship.mining) {
-                let position = 600 + 20 * economynumber
+                let position = 600 + 25 * economynumber
                 roster.strokeStyle = 'black'
                 roster.lineWidth = 5
                 roster.strokeText(`${economy}`, `210`, `${position}`)
@@ -277,12 +279,12 @@ async function roster(message, client, battlegroup, page) {
                 roster.strokeStyle = 'black'
                 roster.lineWidth = 5
                 roster.fillStyle = `#ffe803`
-                roster.font = `34px "Crusader"`
+                roster.font = `34px "Atarian"`
                 wrapText(roster,membername,85+ 325 * startingPoint,115,275,34)
-                roster.font = `28px "Crusader"`
+                roster.font = `28px "Atarian"`
                 roster.strokeText(`Role: ${memberrole}`, `${85+ 325 * startingPoint}`, `200`);
                 roster.fillText(`Role: ${memberrole}`, `${85+ 325 * startingPoint}`, `200`)
-                roster.font = `20px "Crusader"`
+                roster.font = `24px "Atarian"`
                 roster.strokeText(`Battleship`, `${85+ 325 * startingPoint}`, `235`)
                 roster.fillText(`Battleship`, `${85+ 325 * startingPoint}`, `235`)
                 const memberbattleshipimage = await TheCanvas.loadImage(`./canvas/Battleship${memberbattleship.level}.png`)
@@ -295,7 +297,7 @@ async function roster(message, client, battlegroup, page) {
                 roster.moveTo(135 + 325 * startingPoint, 325)
                 roster.lineTo(205 + 325 * startingPoint, 325)
             
-                roster.font = `20px "Crusader"`
+                roster.font = `24px "Atarian"`
                 roster.strokeStyle = 'black'
                 roster.lineWidth = 5
                 roster.strokeText(`${memberbattleship.weapon}`, `${210 + 325 * startingPoint}`, `330`)
@@ -318,7 +320,7 @@ async function roster(message, client, battlegroup, page) {
                     roster.lineTo(205 + 325 * startingPoint, 445)
                     let supportnumber = 0
                     for(let support of memberbattleship.support) {
-                        let position = 450 + 20 * supportnumber
+                        let position = 450 + 25 * supportnumber
                         roster.strokeStyle = 'black'
                         roster.lineWidth = 5
                         roster.strokeText(`${support}`, `${210 + 325 * startingPoint}`, `${position}`)
@@ -332,7 +334,7 @@ async function roster(message, client, battlegroup, page) {
                 roster.stroke()
                 if(membersupport.toLowerCase() === "transport") {
                     membersupportship = client.playersPrimeDB.get(`${bgmember}`, `transport`)
-                    roster.font = `17px "Crusader"`
+                    roster.font = `24px "Atarian"`
                     if(membersupportship.level === 0){
                         roster.strokeStyle = 'black'
                         roster.lineWidth = 5
@@ -353,7 +355,7 @@ async function roster(message, client, battlegroup, page) {
                         roster.lineTo(205 + 325 * startingPoint, 595)
                         let economynumber = 0
                         for(let economy of membersupportship.economy) {
-                            let position = 600 + 20 * economynumber
+                            let position = 600 + 25 * economynumber
                             roster.strokeStyle = 'black'
                             roster.lineWidth = 5
                             roster.strokeText(`${economy}`, `${210 + 325 * startingPoint}`, `${position}`)
@@ -376,7 +378,7 @@ async function roster(message, client, battlegroup, page) {
                 }
                 else if(membersupport.toLowerCase() === "miner"){
                     membersupportship = client.playersPrimeDB.get(`${bgmember}`, `miner`)
-                    roster.font = `17px "Crusader"`
+                    roster.font = `24px "Atarian"`
                     if(membersupportship.level === 0){
                         roster.strokeStyle = 'black'
                         roster.lineWidth = 5
@@ -397,7 +399,7 @@ async function roster(message, client, battlegroup, page) {
                         roster.lineTo(205 + 325 * startingPoint, 595)
                         let economynumber = 0
                         for(let economy of membersupportship.mining) {
-                            let position = 600 + 20 * economynumber
+                            let position = 600 + 25 * economynumber
                             roster.strokeStyle = 'black'
                             roster.lineWidth = 5
                             roster.strokeText(`${economy}`, `${210 + 325 * startingPoint}`, `${position}`)

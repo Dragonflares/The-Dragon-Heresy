@@ -6,7 +6,7 @@ module.exports = {
     category: "hades' star",
     subcategory: "ship",
     description: "Sets the player's intended miner for White Stars.",
-    usage: "&setplayerminer, then asnwer the bot's questions. Don't state any levels unless asked for.",
+    usage: "&setplayerminer, then answer the bot's questions. Don't state any levels unless asked for.",
     run: async (client, message, args) => {
         let targetb
         let user = message.mentions.users.first()
@@ -67,6 +67,7 @@ module.exports = {
 
             message.channel.send("Please state your miner's mining modules, pressing enter between each of them.")
             var i = 0
+            client.playersPrimeDB.set(`${message.author.id}`, [], `miner.mining`)
             for(i ; i < parseInt(minerlevel.first().content) - 1 ; i++) {
                 try {
                     minermining = await message.channel.awaitMessages(message2 => TechData[message2] && TechData[message2].Category === "Mining", {

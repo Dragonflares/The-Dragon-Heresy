@@ -2,16 +2,16 @@ let TechData = require("../../../Database/Hades' Star/techs.json")
 let { RichEmbed } = require("discord.js")
 let Player = require("../../../player.js")
 let Battlegroup = require("../../../battlegroup.js")
-const { registerFont, Canvas} = require('canvas');
-const TheCanvas = require('canvas')
-const { Attachment } = require('discord.js');
+const { registerFont, Canvas} = require(`canvas`);
+const TheCanvas = require(`canvas`)
+const { Attachment } = require(`discord.js`);
 
 module.exports = {
     name: "listbattlegroup",
-    category: "hades' star",
+    category: "hades` star",
     subcategory: "battlegroups",
-    description: "Show's this guild's battlegroups.",
-    usage: "&listbattlegroup (battlegroupname), no stating the name will show which battlegroups you've set",
+    description: "Show`s this guild`s battlegroups.",
+    usage: "&listbattlegroup (battlegroupname), no stating the name will show which battlegroups you`ve set",
     run: async (client, message, args) => {
         let battlegroupEmbed = new RichEmbed().setColor("RANDOM")
         client.battlegroups.ensure(`${message.guild.id}`, Battlegroup.guildbattlegroup())
@@ -20,7 +20,7 @@ module.exports = {
         if(!messagesplit[1]) {
             battlegroupEmbed.setTitle("**Battlegroups**")
             battlegroupEmbed.setFooter("You can specify a battlegroup name and get a detailed composition of the team")
-            if(message.mentions.users > 0) return message.channel.send("You can't mention a user for this command.")
+            if(message.mentions.users > 0) return message.channel.send("You can`t mention a user for this command.")
             let battlegroup1name = client.battlegroups.get(`${message.guild.id}`, "battlegroup1.name")
             let battlegroup1captain = client.battlegroups.get(`${message.guild.id}`, "battlegroup1.captain")
             let battlegroup2name = client.battlegroups.get(`${message.guild.id}`, "battlegroup2.name")
@@ -52,7 +52,7 @@ module.exports = {
             let targetbattlegroup
             if(battlegroup1name === messagesplit[1]) targetbattlegroup = "battlegroup1"
             else if(battlegroup2name === messagesplit[1]) targetbattlegroup = "battlegroup2"
-            else return message.channel.send("There's no battlegroup with this name in the corp!")
+            else return message.channel.send("There`s no battlegroup with this name in the corp!")
 
             let battlegroupmembers = client.battlegroups.get(`${message.guild.id}`, `${targetbattlegroup}.members`)
             if(battlegroupmembers.length < 5) return message.channel.send("There are not enough members in this battlegroup for a white star yet!")
@@ -72,74 +72,264 @@ async function roster(message, client, battlegroup) {
     let battlegroupmembers = client.battlegroups.get(`${message.guild.id}`, `${battlegroup}.members`)
     let battlegroupcaptain = client.battlegroups.get(`${message.guild.id}`, `${battlegroup}.captain`)
     
-    const foxCavalier = './fonts/Fox_Cavalier.otf'
+    const foxCavalier = `./fonts/Fox_Cavalier.otf`
     const batmanfont = "./fonts/batman_forever/batmfa__.ttf"
-    const bignoodle = './fonts/bignoodletitling/big_noodle_titling.ttf'
-    const raidercrusader = './fonts/raider-crusader/raidercrusader.ttf'
-    const krazyhazy = './fonts/krazy-hazy/KrazyHazy.otf'
-    registerFont(batmanfont, {family: 'BatmanFonts'})
-    registerFont(foxCavalier, {family: 'FoxCavalier'})
+    const bignoodle = `./fonts/bignoodletitling/big_noodle_titling.ttf`
+    const raidercrusader = `./fonts/raider-crusader/raidercrusader.ttf`
+    const krazyhazy = `./fonts/krazy-hazy/KrazyHazy.otf`
+    registerFont(batmanfont, {family: `BatmanFonts`})
+    registerFont(foxCavalier, {family: `FoxCavalier`})
     registerFont(bignoodle, {family: "Noodle"})
     registerFont(raidercrusader, {family: "Crusader"})
     registerFont(krazyhazy, {family: "Hazy"})
 
-    const rosterImage = new Canvas(1700, 900 * (Math.trunc((battlegroupmembers.length / 5) + 0.8)) )
-    const roster = rosterImage.getContext('2d')
-    const background = await TheCanvas.loadImage('./canvas/hadesbackground1.jpg')
+    const rosterImage = new Canvas(1725, 1050)
+    const roster = rosterImage.getContext(`2d`)
+    const background = await TheCanvas.loadImage(`./canvas/hadesbackground1.jpg`)
     roster.drawImage(background, 0, 0, rosterImage.width, rosterImage.height)
     
     
-    let captainname = client.playersPrimeDB.get(`${battlegroupcaptain}`, 'name')
-    let captainbattleship = client.playersPrimeDB.get(`${battlegroupcaptain}`, 'battleship')
-    let captainsupport = client.playersRole.get(`${battlegroupcaptain}`, 'support')
+    let captainname = client.playersPrimeDB.get(`${battlegroupcaptain}`, `name`)
+    let captainbattleship = client.playersPrimeDB.get(`${battlegroupcaptain}`, `battleship`)
+    let captainsupport = client.playersRole.get(`${battlegroupcaptain}`, `support`)
     let captainsupportship
-    if(captainsupport.toLowerCase() === "transport") {
-        captainsupportship = client.playersPrimeDB.get(`${battlegroupcaptain}`, 'transport')
-    }
-    else if(captainsupport.toLowerCase() === "miner"){
-        captainsupportship = client.playersPrimeDB.get(`${battlegroupcaptain}`, 'miner')
-    }
+
     roster.globalAlpha = 0.5
     roster.fillStyle = "black"
-    roster.fillRect(100, 50, 275, 800)
+    roster.fillRect(75, 75, 275, 925)
     roster.globalAlpha = 1
-    roster.fillStyle = '#fff400'
-    roster.font = '40px "Crusader"'
-    roster.fillText(`${captainname}`, '110', '65')
-    roster.font = '28px "Crusader"'
-    roster.fillText(`Role: Captain`, '110', '110')
-    roster.font = '20px "Crusader"'
-    roster.fillText(`Battleship`, '110', '145')
+    roster.fillStyle = `#fff400`
+    roster.font = `34px "Crusader"`
+    wrapText(roster,captainname,85,95,275,34)
+    roster.font = `28px "Crusader"`
+    roster.fillText(`Role: Captain`, `85`, `200`)
+    roster.font = `20px "Crusader"`
+    roster.fillText(`Battleship`, `85`, `235`)
     const captainbattleshipimage = await TheCanvas.loadImage(`./canvas/Battleship${captainbattleship.level}.png`)
     
-    roster.drawImage(captainbattleshipimage, 110, 175, 100, 240)
+    roster.drawImage(captainbattleshipimage, 85, 265, 100, 240)
 
-    roster.strokeStyle = '#fff400'
-    roster.beginPath()
+    roster.strokeStyle = `#fff400`
+
     roster.lineWidth = 4
-    roster.moveTo(160, 235)
-    roster.lineTo(230, 235)
+    roster.moveTo(135, 325)
+    roster.lineTo(205, 325)
 
-    roster.font = '20px "Crusader"'
-    roster.fillText(`${captainbattleship.weapon}`, '235', '240')
+    roster.font = `20px "Crusader"`
+    roster.fillText(`${captainbattleship.weapon}`, `210`, `330`)
 
-    roster.moveTo(160, 295)
-    roster.lineTo(230, 295)
+    roster.moveTo(135, 385)
+    roster.lineTo(205, 385)
 
-    roster.fillText(`${captainbattleship.shield}`, '235', '300')
-
-    roster.moveTo(160, 355)
-    roster.lineTo(230, 355)
-    let supportnumber = 0
-    for(let support of captainbattleship.support) {
-        let position = 360 + 20 * supportnumber
-        roster.fillText(`${support}`, '235', `${position}`)
-        supportnumber++
+    roster.fillText(`${captainbattleship.shield}`, `210`, `390`)
+    if(captainbattleship.level < 2) {}
+    else {
+        roster.moveTo(135, 445)
+        roster.lineTo(205, 445)
+        let supportnumber = 0
+        for(let support of captainbattleship.support) {
+            let position = 450 + 20 * supportnumber
+            roster.fillText(`${support}`, `210`, `${position}`)
+            supportnumber++
+        }
+    }
+    roster.stroke()
+    if(captainsupport.toLowerCase() === "transport") {
+        captainsupportship = client.playersPrimeDB.get(`${battlegroupcaptain}`, `transport`)
+        roster.font = `17px "Crusader"`
+        roster.fillText(`Transport`, `85`, `565`)
+        const captaintransportimage = await TheCanvas.loadImage(`./canvas/Transport${captainsupportship.level}.png`)
+        roster.drawImage(captaintransportimage, 85, 590, 100, 140)
+        roster.strokeStyle = `#fff400`
+        roster.lineWidth = 4
+        roster.moveTo(135, 655)
+        roster.lineTo(135, 595)
+        roster.lineTo(205, 595)
+        let economynumber = 0
+        for(let economy of captainsupportship.economy) {
+            let position = 560 + 20 * economynumber
+            roster.fillText(`${economy}`, `210`, `${position}`)
+            economynumber++
+        }
+        if(captainsupportship.level > 2 ) {
+            roster.moveTo(135, 700)
+            roster.lineTo(135, 760)
+            roster.lineTo(150, 760)
+            roster.fillText(`${captainsupportship.support}`, `155`, `765`)
+        }
+        roster.stroke()
+    }
+    else if(captainsupport.toLowerCase() === "miner"){
+        captainsupportship = client.playersPrimeDB.get(`${battlegroupcaptain}`, `miner`)
+        roster.font = `17px "Crusader"`
+        roster.fillText(`Miner`, `85`, `565`)
+        const captainminerimage = await TheCanvas.loadImage(`./canvas/Miner${captainsupportship.level}.png`)
+        roster.drawImage(captainminerimage, 85, 590, 100, 140)
+        roster.strokeStyle = `#fff400`
+        roster.lineWidth = 4
+        roster.moveTo(135, 655)
+        roster.lineTo(135, 595)
+        roster.lineTo(205, 595)
+        let economynumber = 0
+        for(let economy of captainsupportship.mining) {
+            let position = 600 + 20 * economynumber
+            roster.fillText(`${economy}`, `210`, `${position}`)
+            economynumber++
+        }
+        if(captainsupportship.level > 2 ) {
+            roster.moveTo(135, 700)
+            roster.lineTo(135, 760)
+            roster.lineTo(150, 760)
+            roster.fillText(`${captainsupportship.support}`, `155`, `765`)
+        }
+        roster.stroke()
+    }
+    else if (captainsupport.toLowerCase() === "") {
+        roster.fillText(`No support ship chosen`, `85`, `465`)
     }
 
-    roster.closePath()
-    roster.stroke()
+    //100, 50, 275, 800
+    let startingPoint = 1
+    for( let bgmember of battlegroupmembers){
+        if(startingPoint < 5) {
+
+            if(bgmember === battlegroupcaptain){}
+            else {
+                roster.globalAlpha = 0.5
+                roster.fillStyle = "black"
+                roster.fillRect(75 + 325 * startingPoint, 75, 275, 925)
+                
+                let membername = client.playersPrimeDB.get(`${bgmember}`, `name`)
+                let memberbattleship = client.playersPrimeDB.get(`${bgmember}`, `battleship`)
+                let membersupport = client.playersRole.get(`${bgmember}`, `support`)
+                let memberrole = client.playersRole.get(`${bgmember}`, `role`)
+                let membersupportship
+
+                roster.globalAlpha = 1
+                roster.fillStyle = `#fff400`
+                roster.font = `34px "Crusader"`
+                wrapText(roster,membername,85+ 325 * startingPoint,95,275,34)
+                roster.font = `28px "Crusader"`
+                roster.fillText(`Role: ${memberrole}`, `${85+ 325 * startingPoint}`, `200`)
+                roster.font = `20px "Crusader"`
+                roster.fillText(`Battleship`, `${85+ 325 * startingPoint}`, `235`)
+                const memberbattleshipimage = await TheCanvas.loadImage(`./canvas/Battleship${memberbattleship.level}.png`)
+                
+                roster.drawImage(memberbattleshipimage, 85+ 325 * startingPoint, 265, 100, 240)
+            
+                roster.strokeStyle = `#fff400`
+            
+                roster.lineWidth = 4
+                roster.moveTo(135 + 325 * startingPoint, 325)
+                roster.lineTo(205 + 325 * startingPoint, 325)
+            
+                roster.font = `20px "Crusader"`
+                roster.fillText(`${memberbattleship.weapon}`, `${210 + 325 * startingPoint}`, `330`)
+            
+                roster.moveTo(135 + 325 * startingPoint, 385)
+                roster.lineTo(205 + 325 * startingPoint, 385)
+            
+                roster.fillText(`${memberbattleship.shield}`, `${210 + 325 * startingPoint}`, `390`)
+                if(memberbattleship.level < 2){}
+                else {
+                    roster.moveTo(135 + 325 * startingPoint, 445)
+                    roster.lineTo(205 + 325 * startingPoint, 445)
+                    let supportnumber = 0
+                    for(let support of memberbattleship.support) {
+                        let position = 450 + 20 * supportnumber
+                        roster.fillText(`${support}`, `${210 + 325 * startingPoint}`, `${position}`)
+                        supportnumber++
+                    }
+                }
+                roster.stroke()
+                if(membersupport.toLowerCase() === "transport") {
+                    membersupportship = client.playersPrimeDB.get(`${bgmember}`, `transport`)
+                    roster.font = `17px "Crusader"`
+                    roster.fillText(`Transport`, `${85 + 325 * startingPoint}`, `565`)
+                    const membertransportimage = await TheCanvas.loadImage(`./canvas/Transport${membersupportship.level}.png`)
+                    roster.drawImage(membertransportimage, 85 + 325 * startingPoint, 590, 100, 140)
+                    roster.strokeStyle = `#fff400`
+                    roster.lineWidth = 4
+                    roster.moveTo(135 + 325 * startingPoint, 655)
+                    roster.lineTo(135 + 325 * startingPoint, 595)
+                    roster.lineTo(205 + 325 * startingPoint, 595)
+                    let economynumber = 0
+                    for(let economy of membersupportship.economy) {
+                        let position = 560 + 20 * economynumber
+                        roster.fillText(`${economy}`, `${210 + 325 * startingPoint}`, `${position}`)
+                        economynumber++
+                    }
+                    if(membersupportship.level > 2 ) {
+                        roster.moveTo(135 + 325 * startingPoint, 700)
+                        roster.lineTo(135 + 325 * startingPoint, 760)
+                        roster.lineTo(150 + 325 * startingPoint, 760)
+                        roster.fillText(`${membersupportship.support}`, `${155 + 325 * startingPoint}`, `765`)
+                    }
+                    roster.stroke()
+                }
+                else if(membersupport.toLowerCase() === "miner"){
+                    membersupportship = client.playersPrimeDB.get(`${bgmember}`, `miner`)
+                    roster.font = `17px "Crusader"`
+                    roster.fillText(`Miner`, `${85 + 325 * startingPoint}`, `565`)
+                    const membernminerimage = await TheCanvas.loadImage(`./canvas/Miner${membersupportship.level}.png`)
+                    roster.drawImage(membernminerimage, 85 + 325 * startingPoint, 590, 100, 140)
+                    roster.strokeStyle = `#fff400`
+                    roster.lineWidth = 4
+                    roster.moveTo(135 + 325 * startingPoint, 655)
+                    roster.lineTo(135 + 325 * startingPoint, 595)
+                    roster.lineTo(205 + 325 * startingPoint, 595)
+                    let economynumber = 0
+                    for(let economy of membersupportship.mining) {
+                        let position = 600 + 20 * economynumber
+                        roster.fillText(`${economy}`, `${210 + 325 * startingPoint}`, `${position}`)
+                        economynumber++
+                    }
+                    if(membersupportship.level > 2 ) {
+                        roster.moveTo(135 + 325 * startingPoint, 700)
+                        roster.lineTo(135 + 325 * startingPoint, 760)
+                        roster.lineTo(150 + 325 * startingPoint, 760)
+                        roster.fillText(`${membersupportship.support}`, `${155 + 325 * startingPoint}`, `765`)
+                    }
+                    roster.stroke()
+                }
+                else if (membersupportship === "") {
+                    roster.fillText(`No support ship chosen`, `${85 + 325 * startingPoint}`, `465`)
+                }
+
+
+
+
+                startingPoint++
+            }
+        }
+        else{
+            break
+        }
+    }
+
+
 
     return rosterImage.toBuffer();
 
 }
+
+
+function wrapText(context, text, x, y, maxWidth, lineHeight) {
+    var words = text.split(' ');
+    var line = '';
+
+    for(var n = 0; n < words.length; n++) {
+      var testLine = line + words[n] + ' ';
+      var metrics = context.measureText(testLine);
+      var testWidth = metrics.width;
+      if (testWidth > maxWidth && n > 0) {
+        context.fillText(line, x, y);
+        line = words[n] + ' ';
+        y += lineHeight;
+      }
+      else {
+        line = testLine;
+      }
+    }
+    context.fillText(line, x, y);
+  }

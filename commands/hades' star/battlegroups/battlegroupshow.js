@@ -353,7 +353,7 @@ async function roster(message, client, battlegroup, page) {
                         roster.lineTo(205 + 325 * startingPoint, 595)
                         let economynumber = 0
                         for(let economy of membersupportship.economy) {
-                            let position = 560 + 20 * economynumber
+                            let position = 600 + 20 * economynumber
                             roster.strokeStyle = 'black'
                             roster.lineWidth = 6
                             roster.strokeText(`${economy}`, `${210 + 325 * startingPoint}`, `${position}`)

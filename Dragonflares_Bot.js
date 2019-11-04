@@ -11,8 +11,7 @@ const Enmap = require('enmap')
 const SQLite = require("better-sqlite3");
 const sql = new SQLite('./Database/experience.sqlite');
 
-
-client.playersRole = new Enmap({
+client.playersRolePrimeDB = new Enmap({
     name: 'playersRole',
     autoFetch: true,
     fetchAll: false,
@@ -28,13 +27,6 @@ client.playersPrimeDB = new Enmap({
 })
 client.battlegroups = new Enmap({
     name: 'battlegroups',
-    autoFetch: true,
-    fetchAll: false,
-    dataDir: "./Database/Hades' Star/",
-    polling: true
-})
-client.playersDB = new Enmap({
-    name: 'players',
     autoFetch: true,
     fetchAll: false,
     dataDir: "./Database/Hades' Star/",

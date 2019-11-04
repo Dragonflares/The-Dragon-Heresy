@@ -15,7 +15,7 @@ module.exports = {
         let user = message.mentions.users.first()
         if(!user) return message.channel.send("You must assign a captain to this battlegroup!")
         else targetb = message.guild.member(user)
-        client.playersRole.ensure(`${targetb.id}`, Battlegroup.battlegroupMember())
+        client.playersRolePrimeDB.ensure(`${targetb.id}`, Battlegroup.battlegroupMember())
         client.playersPrimeDB.ensure(`${targetb.id}`, Player.player(targetb, message))
         client.battlegroups.ensure(`${message.guild.id}`, Battlegroup.guildbattlegroup())
 
@@ -34,11 +34,12 @@ module.exports = {
         let newbattlegroup = Battlegroup.battlegroup(message)
         newbattlegroup.name = messagesplit[1]
         newbattlegroup.captain = targetb.id
-        
+        let knownbattlegroup
         if(!battlegroup1) {
             client.battlegroups.set(`${message.guild.id}`, newbattlegroup, "battlegroup1")
             client.battlegroups.push(`${message.guild.id}`, targetb.id, "battlegroup1.members")
             client.battlegroups.set(`${message.guild.id}`, targetb.id, "battlegroup1.captain")
+            knownbattlegroup = "battlegroup1"
         }
         else {
             
@@ -47,11 +48,12 @@ module.exports = {
                 client.battlegroups.set(`${message.guild.id}`, newbattlegroup, "battlegroup2")
                 client.battlegroups.push(`${message.guild.id}`, targetb.id, "battlegroup2.members")
                 client.battlegroups.set(`${message.guild.id}`, targetb.id, "battlegroup2.captain")
+                knownbattlegroup = "battlegroup2"
             }
             else return message.channel.send("You are already at the maximum allowed amount of battlegroups!")
         }
-        client.playersRole.set(`${targetb.id}`, "Captain", "role")
-        client.playersRole.set(`${targetb.id}`, `${targetb.id}`, "player")
+        client.playersRolePrimeDB.set(`${targetb.id}`, "Captain", `role${knownbattlegroup}`)
+        client.playersRolePrimeDB.set(`${targetb.id}`, `${targetb.id}`, "player")
 
         return message.channel.send("Battlegroup set!")
     }

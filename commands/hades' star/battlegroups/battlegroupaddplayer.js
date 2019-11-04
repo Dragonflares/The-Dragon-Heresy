@@ -17,7 +17,7 @@ module.exports = {
         else targetb = message.guild.member(user)
 
         client.playersPrimeDB.ensure(`${targetb.id}`, Player.player(targetb, message))
-        client.playersRole.ensure(`${targetb.id}`, Battlegroup.battlegroupMember())
+        client.playersRolePrimeDB.ensure(`${targetb.id}`, Battlegroup.battlegroupMember())
 
         let authorrank = client.playersPrimeDB.get(`${message.author.id}`, "rank")
         if(authorrank === "Officer" || authorrank ==="First Officer"){}
@@ -64,7 +64,7 @@ module.exports = {
                     return message.channel.send("Aborting captain change.");
                 }
                 if(response2.first().content == "Captain") return message.channel.send("Nice joke, you cannot set him as Captain again to make a loop. Aborting process.")
-                client.playersRole.set(`${client.battlegroups.get(`${message.guild.id}`, `${knownbattlegroup}.captain`)}`, `${response2.first().content}`, "role")
+                client.playersRolePrimeDB.set(`${client.battlegroups.get(`${message.guild.id}`, `${knownbattlegroup}.captain`)}`, `${response2.first().content}`, `role${knownbattlegroup}`)
                 client.battlegroups.set(`${message.guild.id}`, targetb.id, `${knownbattlegroup}.captain`)
 
                 
@@ -80,12 +80,12 @@ module.exports = {
         if(playersfound.indexOf(targetb.id) < 0) {
             client.battlegroups.push(`${message.guild.id}`, targetb.id, `${knownbattlegroup}.members`)
         }
-        let playerrole = client.playersRole.get(`${targetb.id}`, "role")
+        let playerrole = client.playersRolePrimeDB.get(`${targetb.id}`, `role${knownbattlegroup}`)
         if(playerrole.toLowerCase() === "captain"){
             return message.channel.send("You cannot change the captain's role without setting another Captain first!")
         }
-        client.playersRole.set(`${targetb.id}`, `${messagesplit[2]}`, "role")
-        client.playersRole.set(`${targetb.id}`, `${targetb.id}`, "player")
+        client.playersRolePrimeDB.set(`${targetb.id}`, `${messagesplit[2]}`, `role${knownbattlegroup}`)
+        client.playersRolePrimeDB.set(`${targetb.id}`, `${targetb.id}`, "player")
         
 
         return message.channel.send("A member has been added to this battlegroup!")

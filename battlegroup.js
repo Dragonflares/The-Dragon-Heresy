@@ -2,7 +2,8 @@ module.exports = {
     battlegroupMember: function(){
         let member = {
             player : {},
-            role: "",
+            rolebattlegroup1: "",
+            rolebattlegroup2: "",
             support: ""
         }
         return member

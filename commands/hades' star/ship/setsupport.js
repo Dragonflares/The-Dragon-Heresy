@@ -15,16 +15,16 @@ module.exports = {
         targetb = message.guild.member(message.author)
        
         client.playersPrimeDB.ensure(`${targetb.id}`, Player.player(targetb, message))
-        client.playersRole.ensure(`${targetb.id}`, Battlegroup.battlegroupMember())
+        client.playersRolePrimeDB.ensure(`${targetb.id}`, Battlegroup.battlegroupMember())
 
         let messagesplit = message.content.split(" ")
         if(!messagesplit[1])
             return message.channel.send("You must specifiy a category of support ship! Either Miner, or Transport.")
         else if(messagesplit[1].toLowerCase() === "transport") {
-            client.playersRole.set(`${targetb.id}`, "Transport", "support")
+            client.playersRolePrimeDB.set(`${targetb.id}`, "Transport", "support")
         }
         else if(messagesplit[1].toLowerCase() === "miner") {
-            client.playersRole.set(`${targetb.id}`, "Miner", "support")
+            client.playersRolePrimeDB.set(`${targetb.id}`, "Miner", "support")
         }
         else {
             return message.channel.send("You must specifiy a category of support ship! Either Miner, or Transport.")

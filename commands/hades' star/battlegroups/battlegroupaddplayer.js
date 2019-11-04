@@ -92,14 +92,19 @@ module.exports = {
         if(playersfound.indexOf(targetb.id) < 0) {
             client.battlegroups.push(`${message.guild.id}`, targetb.id, `${knownbattlegroup}.members`)
         }
+        
         let playerrole = client.playersRolePrimeDB.get(`${targetb.id}`, `role${knownbattlegroup}`)
-        if(playerrole.toLowerCase() === "captain"){
+        if(!playerrole) {
+            client.playersRolePrimeDB.set(`${targetb.id}`, `${messagesplit[2]}`, `role${knownbattlegroup}`)
+            client.playersRolePrimeDB.set(`${targetb.id}`, `${targetb.id}`, "player")
+        }
+        else if(playerrole.toLowerCase() === "captain"){
             return message.channel.send("You cannot change the captain's role without setting another Captain first!")
         }
-        client.playersRolePrimeDB.set(`${targetb.id}`, `${messagesplit[2]}`, `role${knownbattlegroup}`)
-        client.playersRolePrimeDB.set(`${targetb.id}`, `${targetb.id}`, "player")
-        
-
+        else {
+            client.playersRolePrimeDB.set(`${targetb.id}`, `${messagesplit[2]}`, `role${knownbattlegroup}`)
+            client.playersRolePrimeDB.set(`${targetb.id}`, `${targetb.id}`, "player")
+        }
         return message.channel.send("A member has been added to this battlegroup!")
     }
 }

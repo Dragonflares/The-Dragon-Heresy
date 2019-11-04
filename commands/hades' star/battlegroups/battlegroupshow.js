@@ -319,7 +319,7 @@ async function roster(message, client, battlegroup, page) {
                     roster.stroke()
                 }
                 else if (membersupport.toLowerCase() === "") {
-                    roster.fillText(`No support ship chosen`, `${85 + 325 * startingPoint}`, `465`)
+                    roster.fillText(`No support ship chosen`, `${85 + 325 * startingPoint}`, `565`)
                 }
                 startingPoint++
             }

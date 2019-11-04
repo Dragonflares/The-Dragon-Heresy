@@ -24,15 +24,27 @@ module.exports = {
         else return message.channel.send("You must be at least an Officer to add someone to a battlegroup!")
 
         let battlegroup1 = client.battlegroups.get(`${message.guild.id}`, "battlegroup1.name")
+        let battlegroup1members = client.battlegroups.get(`${message.guild.id}`, "battlegroup2.members")
         let battlegroup2 = client.battlegroups.get(`${message.guild.id}`, "battlegroup2.name")
+        let battlegroup2members =client.battlegroups.get(`${message.guild.id}`, "battlegroup2.members")
         if(!battlegroup1) return message.channel.send("You have no battlegroups!")
 
 
         const messagesplit = message.content.split(" ")
         if(!messagesplit[1]) return message.channel.send("You must specify a battlegroup name!")
         let knownbattlegroup
-        if(battlegroup1 === messagesplit[1]) knownbattlegroup = "battlegroup1"
-        else if(battlegroup2 === messagesplit[1]) knownbattlegroup = "battlegroup2"
+        if(battlegroup1 === messagesplit[1]) {
+            if(battlegroup1members.length === 15){
+                return message.channel.send("This battlegroup is already at the max amount of members!")
+            }
+            knownbattlegroup = "battlegroup1"
+        }
+        else if(battlegroup2 === messagesplit[1]) {
+            if(battlegroup2members.length === 15){
+                return message.channel.send("This battlegroup is already at the max amount of members!")
+            }
+            knownbattlegroup = "battlegroup2"
+        }
         else return message.channel.send("There's no battlegroup with this name in the corp!")
         if(!messagesplit[2] || (messagesplit[2].indexOf("<@") > -1)) return message.channel.send("You must specify a category for this member!")
         if(messagesplit[2].toLowerCase() === "captain") {

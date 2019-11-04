@@ -52,7 +52,7 @@ module.exports = {
         client.playersPrimeDB.set(`${message.author.id}`,  [] , `transport.economy`)
         message.channel.send("Please state your transport's economy modules, pressing enter between each of them.")
         var i = 0
-        for(i ; i < (parseInt(transportlevel.first().content)+1) ; i++) {
+        for(i ; i < (parseInt(transportlevel.first().content)) ; i++) {
             try {
                 transporteconomy = await message.channel.awaitMessages(message2 => TechData[message2] && TechData[message2].Category === "Economy", {
                     maxMatches: 1,

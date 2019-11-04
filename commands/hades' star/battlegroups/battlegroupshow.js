@@ -271,52 +271,62 @@ async function roster(message, client, battlegroup, page) {
                 if(membersupport.toLowerCase() === "transport") {
                     membersupportship = client.playersPrimeDB.get(`${bgmember}`, `transport`)
                     roster.font = `17px "Crusader"`
-                    roster.fillText(`Transport`, `${85 + 325 * startingPoint}`, `565`)
-                    const membertransportimage = await TheCanvas.loadImage(`./canvas/Transport${membersupportship.level}.png`)
-                    roster.drawImage(membertransportimage, 85 + 325 * startingPoint, 590, 100, 140)
-                    roster.strokeStyle = `#fff400`
-                    roster.lineWidth = 4
-                    roster.moveTo(135 + 325 * startingPoint, 655)
-                    roster.lineTo(135 + 325 * startingPoint, 595)
-                    roster.lineTo(205 + 325 * startingPoint, 595)
-                    let economynumber = 0
-                    for(let economy of membersupportship.economy) {
-                        let position = 560 + 20 * economynumber
-                        roster.fillText(`${economy}`, `${210 + 325 * startingPoint}`, `${position}`)
-                        economynumber++
+                    if(membersupportship.level === 0){
+                        roster.fillText(`Transport not set`, `${85 + 325 * startingPoint}`, `565`)
                     }
-                    if(membersupportship.level > 2 ) {
-                        roster.moveTo(135 + 325 * startingPoint, 700)
-                        roster.lineTo(135 + 325 * startingPoint, 760)
-                        roster.lineTo(150 + 325 * startingPoint, 760)
-                        roster.fillText(`${membersupportship.support}`, `${155 + 325 * startingPoint}`, `765`)
+                    else {
+                        roster.fillText(`Transport`, `${85 + 325 * startingPoint}`, `565`)
+                        const membertransportimage = await TheCanvas.loadImage(`./canvas/Transport${membersupportship.level}.png`)
+                        roster.drawImage(membertransportimage, 85 + 325 * startingPoint, 590, 100, 140)
+                        roster.strokeStyle = `#fff400`
+                        roster.lineWidth = 4
+                        roster.moveTo(135 + 325 * startingPoint, 655)
+                        roster.lineTo(135 + 325 * startingPoint, 595)
+                        roster.lineTo(205 + 325 * startingPoint, 595)
+                        let economynumber = 0
+                        for(let economy of membersupportship.economy) {
+                            let position = 560 + 20 * economynumber
+                            roster.fillText(`${economy}`, `${210 + 325 * startingPoint}`, `${position}`)
+                            economynumber++
+                        }
+                        if(membersupportship.level > 2 ) {
+                            roster.moveTo(135 + 325 * startingPoint, 700)
+                            roster.lineTo(135 + 325 * startingPoint, 760)
+                            roster.lineTo(150 + 325 * startingPoint, 760)
+                            roster.fillText(`${membersupportship.support}`, `${155 + 325 * startingPoint}`, `765`)
+                        }
+                        roster.stroke()
                     }
-                    roster.stroke()
                 }
                 else if(membersupport.toLowerCase() === "miner"){
                     membersupportship = client.playersPrimeDB.get(`${bgmember}`, `miner`)
                     roster.font = `17px "Crusader"`
-                    roster.fillText(`Miner`, `${85 + 325 * startingPoint}`, `565`)
-                    const membernminerimage = await TheCanvas.loadImage(`./canvas/Miner${membersupportship.level}.png`)
-                    roster.drawImage(membernminerimage, 85 + 325 * startingPoint, 590, 100, 140)
-                    roster.strokeStyle = `#fff400`
-                    roster.lineWidth = 4
-                    roster.moveTo(135 + 325 * startingPoint, 655)
-                    roster.lineTo(135 + 325 * startingPoint, 595)
-                    roster.lineTo(205 + 325 * startingPoint, 595)
-                    let economynumber = 0
-                    for(let economy of membersupportship.mining) {
-                        let position = 600 + 20 * economynumber
-                        roster.fillText(`${economy}`, `${210 + 325 * startingPoint}`, `${position}`)
-                        economynumber++
+                    if(membersupportship.level === 0){
+                        roster.fillText(`Miner not set`, `${85 + 325 * startingPoint}`, `565`)
                     }
-                    if(membersupportship.level > 2 ) {
-                        roster.moveTo(135 + 325 * startingPoint, 700)
-                        roster.lineTo(135 + 325 * startingPoint, 760)
-                        roster.lineTo(150 + 325 * startingPoint, 760)
-                        roster.fillText(`${membersupportship.support}`, `${155 + 325 * startingPoint}`, `765`)
+                    else {
+                        roster.fillText(`Miner`, `${85 + 325 * startingPoint}`, `565`)
+                        const membernminerimage = await TheCanvas.loadImage(`./canvas/Miner${membersupportship.level}.png`)
+                        roster.drawImage(membernminerimage, 85 + 325 * startingPoint, 590, 100, 140)
+                        roster.strokeStyle = `#fff400`
+                        roster.lineWidth = 4
+                        roster.moveTo(135 + 325 * startingPoint, 655)
+                        roster.lineTo(135 + 325 * startingPoint, 595)
+                        roster.lineTo(205 + 325 * startingPoint, 595)
+                        let economynumber = 0
+                        for(let economy of membersupportship.mining) {
+                            let position = 600 + 20 * economynumber
+                            roster.fillText(`${economy}`, `${210 + 325 * startingPoint}`, `${position}`)
+                            economynumber++
+                        }
+                        if(membersupportship.level > 2 ) {
+                            roster.moveTo(135 + 325 * startingPoint, 700)
+                            roster.lineTo(135 + 325 * startingPoint, 760)
+                            roster.lineTo(150 + 325 * startingPoint, 760)
+                            roster.fillText(`${membersupportship.support}`, `${155 + 325 * startingPoint}`, `765`)
+                        }
+                        roster.stroke()
                     }
-                    roster.stroke()
                 }
                 else if (membersupport.toLowerCase() === "") {
                     roster.fillText(`No support ship chosen`, `${85 + 325 * startingPoint}`, `565`)

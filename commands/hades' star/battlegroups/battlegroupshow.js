@@ -132,8 +132,8 @@ async function roster(message, client, battlegroup, page) {
         roster.font = `26px "Atarian"`
         roster.strokeStyle = 'black'
         roster.lineWidth = 5
-        roster.strokeText(`Battleship`, `85`, `235`)
-        roster.fillText(`Battleship`, `85`, `235`)
+        roster.strokeText(`Battleship: ${captainbattleship.name}`, `85`, `235`)
+        roster.fillText(`Battleship: ${captainbattleship.name}`, `85`, `235`)
         const captainbattleshipimage = await TheCanvas.loadImage(`./canvas/Battleship${captainbattleship.level}.png`)
         
         roster.drawImage(captainbattleshipimage, 85, 265, 100, 240)
@@ -184,8 +184,8 @@ async function roster(message, client, battlegroup, page) {
             roster.font = `24px "Atarian"`
             roster.strokeStyle = 'black'
             roster.lineWidth = 5
-            roster.strokeText(`Transport`, `85`, `565`)
-            roster.fillText(`Transport`, `85`, `565`)
+            roster.strokeText(`Transport: ${captainsupportship.name}`, `85`, `565`)
+            roster.fillText(`Transport: ${captainsupportship.name}`, `85`, `565`)
             const captaintransportimage = await TheCanvas.loadImage(`./canvas/Transport${captainsupportship.level}.png`)
             roster.drawImage(captaintransportimage, 85, 660, 100, 140)
             roster.strokeStyle = `#ffe803`
@@ -218,8 +218,8 @@ async function roster(message, client, battlegroup, page) {
             roster.font = `24px "Atarian"`
             roster.strokeStyle = 'black'
             roster.lineWidth = 5
-            roster.strokeText(`Miner`, `85`, `565`)
-            roster.fillText(`Miner`, `85`, `565`)
+            roster.strokeText(`Miner: ${captainsupportship.name}`, `85`, `565`)
+            roster.fillText(`Miner: ${captainsupportship.name}`, `85`, `565`)
             const captainminerimage = await TheCanvas.loadImage(`./canvas/Miner${captainsupportship.level}.png`)
             roster.drawImage(captainminerimage, 85, 660, 100, 140)
             roster.strokeStyle = `#ffe803`
@@ -285,8 +285,8 @@ async function roster(message, client, battlegroup, page) {
                 roster.strokeText(`Role: ${memberrole}`, `${85+ 325 * startingPoint}`, `200`);
                 roster.fillText(`Role: ${memberrole}`, `${85+ 325 * startingPoint}`, `200`)
                 roster.font = `24px "Atarian"`
-                roster.strokeText(`Battleship`, `${85+ 325 * startingPoint}`, `235`)
-                roster.fillText(`Battleship`, `${85+ 325 * startingPoint}`, `235`)
+                roster.strokeText(`Battleship: ${memberbattleship.name}`, `${85+ 325 * startingPoint}`, `235`)
+                roster.fillText(`Battleship: ${memberbattleship.name}`, `${85+ 325 * startingPoint}`, `235`)
                 const memberbattleshipimage = await TheCanvas.loadImage(`./canvas/Battleship${memberbattleship.level}.png`)
                 
                 roster.drawImage(memberbattleshipimage, 85+ 325 * startingPoint, 265, 100, 240)
@@ -344,8 +344,8 @@ async function roster(message, client, battlegroup, page) {
                     else {
                         roster.strokeStyle = 'black'
                         roster.lineWidth = 5
-                        roster.strokeText(`Transport`, `${85 + 325 * startingPoint}`, `565`)
-                        roster.fillText(`Transport`, `${85 + 325 * startingPoint}`, `565`)
+                        roster.strokeText(`Transport: ${membersupportship.name}`, `${85 + 325 * startingPoint}`, `565`)
+                        roster.fillText(`Transport: ${membersupportship.name}`, `${85 + 325 * startingPoint}`, `565`)
                         const membertransportimage = await TheCanvas.loadImage(`./canvas/Transport${membersupportship.level}.png`)
                         roster.drawImage(membertransportimage, 85 + 325 * startingPoint, 660, 100, 140)
                         roster.strokeStyle = `#ffe803`
@@ -388,8 +388,8 @@ async function roster(message, client, battlegroup, page) {
                     else {
                         roster.strokeStyle = 'black'
                         roster.lineWidth = 5
-                        roster.strokeText(`Miner`, `${85 + 325 * startingPoint}`, `565`)
-                        roster.fillText(`Miner`, `${85 + 325 * startingPoint}`, `565`)
+                        roster.strokeText(`Miner: ${membersupportship.name}`, `${85 + 325 * startingPoint}`, `565`)
+                        roster.fillText(`Miner: ${membersupportship.name}`, `${85 + 325 * startingPoint}`, `565`)
                         const membernminerimage = await TheCanvas.loadImage(`./canvas/Miner${membersupportship.level}.png`)
                         roster.drawImage(membernminerimage, 85 + 325 * startingPoint, 660, 100, 140)
                         roster.strokeStyle = `#ffe803`

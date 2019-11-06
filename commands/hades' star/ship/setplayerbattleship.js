@@ -83,7 +83,7 @@ module.exports = {
         let techlevelshield = await client.playersPrimeDB.get(`${message.author.id}`, `techs.${battleshipshield.first().content}`)
         if(techlevelshield == 0) return message.channel.send("You don't have this shield researched!")
         client.playersPrimeDB.set(`${message.author.id}`, `${battleshipshield.first().content} ${techlevelshield}`, `battleship.shield`)
-        
+        client.playersPrimeDB.set(`${message.author.id}`, [], `battleship.support`)
         if(parseInt(battleshiplevel.first().content) > 1) {
             message.channel.send("Please state your battleship's support modules, pressing enter between each of them")
             var i = 0

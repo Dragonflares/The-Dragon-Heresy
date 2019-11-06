@@ -52,7 +52,7 @@ module.exports = {
             let targetbattlegroup
             if(battlegroup1name === messagesplit[1]) targetbattlegroup = "battlegroup1"
             else if(battlegroup2name === messagesplit[1]) targetbattlegroup = "battlegroup2"
-            else return message.channel.send("There`s no battlegroup with this name in the corp!")
+            else return message.channel.send("There's no battlegroup with this name in the corp!")
             let pages = 0
             let battlegroupmembers = client.battlegroups.get(`${message.guild.id}`, `${targetbattlegroup}.members`)
             if(battlegroupmembers.length < 5) return message.channel.send("There are not enough members in this battlegroup for a white star yet!")
@@ -124,7 +124,7 @@ async function roster(message, client, battlegroup, page) {
         roster.fillStyle = `#ffe803`
         roster.font = `40px "Atarian"`
         wrapText(roster,captainname,85,115,275,34)
-        roster.font = `32px "Atarian"`
+        roster.font = `34px "Atarian"`
         roster.strokeStyle = 'black'
         roster.lineWidth = 5
         roster.strokeText(`Role: Captain`, `85`, `200`)
@@ -181,73 +181,89 @@ async function roster(message, client, battlegroup, page) {
         roster.stroke()
         if(captainsupport.toLowerCase() === "transport") {
             captainsupportship = client.playersPrimeDB.get(`${battlegroupcaptain}`, `transport`)
-            roster.font = `24px "Atarian"`
-            roster.strokeStyle = 'black'
-            roster.lineWidth = 5
-            roster.strokeText(`Transport: ${captainsupportship.name}`, `85`, `565`)
-            roster.fillText(`Transport: ${captainsupportship.name}`, `85`, `565`)
-            const captaintransportimage = await TheCanvas.loadImage(`./canvas/Transport${captainsupportship.level}.png`)
-            roster.drawImage(captaintransportimage, 85, 660, 100, 140)
-            roster.strokeStyle = `#ffe803`
-            roster.lineWidth = 4
-            roster.moveTo(135, 695)
-            roster.lineTo(135, 595)
-            roster.lineTo(175, 595)
-            let economynumber = 0
-            for(let economy of captainsupportship.economy) {
-                let position = 600 + 25 * economynumber
+            if(captainsupportship.level === 0){
                 roster.strokeStyle = 'black'
                 roster.lineWidth = 5
-                roster.strokeText(`${economy}`, `185`, `${position}`)
-                roster.fillText(`${economy}`, `185`, `${position}`)
-                economynumber++
+                roster.strokeText(`Transport not set`, `85`, `565`)
+                roster.fillText(`Transport not set`, `85`, `565`)
             }
-            if(captainsupportship.level > 2 ) {
-                roster.moveTo(135, 750)
-                roster.lineTo(135, 810)
-                roster.lineTo(150, 810)
+            else {
+                roster.font = `27px "Atarian"`
                 roster.strokeStyle = 'black'
                 roster.lineWidth = 5
-                roster.strokeText(`${captainsupportship.support}`, `155`, `815`)
-                roster.fillText(`${captainsupportship.support}`, `155`, `815`)
+                roster.strokeText(`Transport: ${captainsupportship.name}`, `85`, `565`)
+                roster.fillText(`Transport: ${captainsupportship.name}`, `85`, `565`)
+                const captaintransportimage = await TheCanvas.loadImage(`./canvas/Transport${captainsupportship.level}.png`)
+                roster.drawImage(captaintransportimage, 85, 720, 80, 140)
+                roster.strokeStyle = `#ffe803`
+                roster.lineWidth = 4
+                roster.moveTo(125, 745)
+                roster.lineTo(125, 595)
+                roster.lineTo(155, 595)
+                let economynumber = 0
+                for(let economy of captainsupportship.economy) {
+                    let position = 600 + 25 * economynumber
+                    roster.strokeStyle = 'black'
+                    roster.lineWidth = 5
+                    roster.strokeText(`${economy}`, `165`, `${position}`)
+                    roster.fillText(`${economy}`, `165`, `${position}`)
+                    economynumber++
+                }
+                if(captainsupportship.level > 2 ) {
+                    roster.moveTo(135, 850)
+                    roster.lineTo(135, 910)
+                    roster.lineTo(150, 910)
+                    roster.strokeStyle = 'black'
+                    roster.lineWidth = 5
+                    roster.strokeText(`${captainsupportship.support}`, `155`, `915`)
+                    roster.fillText(`${captainsupportship.support}`, `155`, `915`)
+                }
+                roster.stroke()
             }
-            roster.stroke()
         }
         else if(captainsupport.toLowerCase() === "miner"){
             captainsupportship = client.playersPrimeDB.get(`${battlegroupcaptain}`, `miner`)
-            roster.font = `24px "Atarian"`
-            roster.strokeStyle = 'black'
-            roster.lineWidth = 5
-            roster.strokeText(`Miner: ${captainsupportship.name}`, `85`, `565`)
-            roster.fillText(`Miner: ${captainsupportship.name}`, `85`, `565`)
-            const captainminerimage = await TheCanvas.loadImage(`./canvas/Miner${captainsupportship.level}.png`)
-            roster.drawImage(captainminerimage, 85, 660, 100, 140)
-            roster.strokeStyle = `#ffe803`
-            roster.lineWidth = 4
-            roster.moveTo(135, 695)
-            roster.lineTo(135, 595)
-            roster.lineTo(175, 595)
-            let economynumber = 0
-            for(let economy of captainsupportship.mining) {
-                let position = 600 + 25 * economynumber
+            if(captainsupportship.level === 0){
                 roster.strokeStyle = 'black'
                 roster.lineWidth = 5
-                roster.strokeText(`${economy}`, `185`, `${position}`)
-                roster.fillText(`${economy}`, `185`, `${position}`)
-                economynumber++
+                roster.strokeText(`Miner not set`, `85`, `565`)
+                roster.fillText(`Miner not set`, `85`, `565`)
             }
-            if(captainsupportship.level > 2 ) {
+            else {
+                roster.font = `27px "Atarian"`
+                roster.strokeStyle = 'black'
+                roster.lineWidth = 5
+                roster.strokeText(`Miner: ${captainsupportship.name}`, `85`, `565`)
+                roster.fillText(`Miner: ${captainsupportship.name}`, `85`, `565`)
+                const captainminerimage = await TheCanvas.loadImage(`./canvas/Miner${captainsupportship.level}.png`)
+                roster.drawImage(captainminerimage, 85, 720, 100, 140)
                 roster.strokeStyle = `#ffe803`
-                roster.moveTo(135, 750)
-                roster.lineTo(135, 810)
-                roster.lineTo(150, 810)
-                roster.strokeStyle = 'black'
-                roster.lineWidth = 5
-                roster.strokeText(`${captainsupportship.support}`, `155`, `815`)
-                roster.fillText(`${captainsupportship.support}`, `155`, `815`)
+                roster.lineWidth = 4
+                roster.moveTo(135, 745)
+                roster.lineTo(135, 595)
+                roster.lineTo(155, 595)
+                let economynumber = 0
+                for(let economy of captainsupportship.mining) {
+                    let position = 600 + 25 * economynumber
+                    roster.strokeStyle = 'black'
+                    roster.lineWidth = 5
+                    roster.strokeText(`${economy}`, `165`, `${position}`)
+                    roster.fillText(`${economy}`, `165`, `${position}`)
+                    economynumber++
+                }
+                if(captainsupportship.level > 2 ) {
+                    roster.strokeStyle = `#ffe803`
+                    roster.moveTo(135, 850)
+                    roster.lineTo(135, 910)
+                    roster.lineTo(150, 910)
+                    roster.strokeStyle = 'black'
+                    roster.lineWidth = 5
+                    roster.strokeText(`${captainsupportship.support}`, `155`, `915`)
+                    roster.fillText(`${captainsupportship.support}`, `155`, `915`)
+                }
+                roster.strokeStyle = 'ffe803'
+                roster.stroke()
             }
-            roster.strokeStyle = 'ffe803'
-            roster.stroke()
         }
         else if (captainsupport.toLowerCase() === "") {
             roster.fillText(`No support ship chosen`, `85`, `465`)
@@ -279,12 +295,12 @@ async function roster(message, client, battlegroup, page) {
                 roster.strokeStyle = 'black'
                 roster.lineWidth = 5
                 roster.fillStyle = `#ffe803`
-                roster.font = `34px "Atarian"`
+                roster.font = `39px "Atarian"`
                 wrapText(roster,membername,85+ 325 * startingPoint,115,275,34)
                 roster.font = `28px "Atarian"`
                 roster.strokeText(`Role: ${memberrole}`, `${85+ 325 * startingPoint}`, `200`);
                 roster.fillText(`Role: ${memberrole}`, `${85+ 325 * startingPoint}`, `200`)
-                roster.font = `24px "Atarian"`
+                roster.font = `27px "Atarian"`
                 roster.strokeText(`Battleship: ${memberbattleship.name}`, `${85+ 325 * startingPoint}`, `235`)
                 roster.fillText(`Battleship: ${memberbattleship.name}`, `${85+ 325 * startingPoint}`, `235`)
                 const memberbattleshipimage = await TheCanvas.loadImage(`./canvas/Battleship${memberbattleship.level}.png`)
@@ -297,7 +313,7 @@ async function roster(message, client, battlegroup, page) {
                 roster.moveTo(135 + 325 * startingPoint, 325)
                 roster.lineTo(205 + 325 * startingPoint, 325)
             
-                roster.font = `24px "Atarian"`
+                roster.font = `27px "Atarian"`
                 roster.strokeStyle = 'black'
                 roster.lineWidth = 5
                 roster.strokeText(`${memberbattleship.weapon}`, `${210 + 325 * startingPoint}`, `330`)
@@ -334,7 +350,7 @@ async function roster(message, client, battlegroup, page) {
                 roster.stroke()
                 if(membersupport.toLowerCase() === "transport") {
                     membersupportship = client.playersPrimeDB.get(`${bgmember}`, `transport`)
-                    roster.font = `24px "Atarian"`
+                    roster.font = `27px "Atarian"`
                     if(membersupportship.level === 0){
                         roster.strokeStyle = 'black'
                         roster.lineWidth = 5
@@ -347,29 +363,29 @@ async function roster(message, client, battlegroup, page) {
                         roster.strokeText(`Transport: ${membersupportship.name}`, `${85 + 325 * startingPoint}`, `565`)
                         roster.fillText(`Transport: ${membersupportship.name}`, `${85 + 325 * startingPoint}`, `565`)
                         const membertransportimage = await TheCanvas.loadImage(`./canvas/Transport${membersupportship.level}.png`)
-                        roster.drawImage(membertransportimage, 85 + 325 * startingPoint, 660, 100, 140)
+                        roster.drawImage(membertransportimage, 85 + 325 * startingPoint, 720, 80, 140)
                         roster.strokeStyle = `#ffe803`
                         roster.lineWidth = 4
-                        roster.moveTo(135 + 325 * startingPoint, 695)
-                        roster.lineTo(135 + 325 * startingPoint, 595)
-                        roster.lineTo(175 + 325 * startingPoint, 595)
+                        roster.moveTo(125 + 325 * startingPoint, 745)
+                        roster.lineTo(125 + 325 * startingPoint, 595)
+                        roster.lineTo(155 + 325 * startingPoint, 595)
                         let economynumber = 0
                         for(let economy of membersupportship.economy) {
                             let position = 600 + 25 * economynumber
                             roster.strokeStyle = 'black'
                             roster.lineWidth = 5
-                            roster.strokeText(`${economy}`, `${185 + 325 * startingPoint}`, `${position}`)
-                            roster.fillText(`${economy}`, `${185 + 325 * startingPoint}`, `${position}`)
+                            roster.strokeText(`${economy}`, `${165 + 325 * startingPoint}`, `${position}`)
+                            roster.fillText(`${economy}`, `${165 + 325 * startingPoint}`, `${position}`)
                             economynumber++
                         }
                         if(membersupportship.level > 2 ) {
-                            roster.moveTo(135 + 325 * startingPoint, 750)
-                            roster.lineTo(135 + 325 * startingPoint, 810)
-                            roster.lineTo(150 + 325 * startingPoint, 810)
+                            roster.moveTo(135 + 325 * startingPoint, 850)
+                            roster.lineTo(135 + 325 * startingPoint, 910)
+                            roster.lineTo(150 + 325 * startingPoint, 910)
                             roster.strokeStyle = 'black'
                             roster.lineWidth = 5
-                            roster.strokeText(`${membersupportship.support}`, `${155 + 325 * startingPoint}`, `815`)
-                            roster.fillText(`${membersupportship.support}`, `${155 + 325 * startingPoint}`, `815`)
+                            roster.strokeText(`${membersupportship.support}`, `${155 + 325 * startingPoint}`, `915`)
+                            roster.fillText(`${membersupportship.support}`, `${155 + 325 * startingPoint}`, `915`)
                         }
                         roster.strokeStyle = `#ffe803`
                         roster.lineWidth = 4
@@ -378,7 +394,7 @@ async function roster(message, client, battlegroup, page) {
                 }
                 else if(membersupport.toLowerCase() === "miner"){
                     membersupportship = client.playersPrimeDB.get(`${bgmember}`, `miner`)
-                    roster.font = `24px "Atarian"`
+                    roster.font = `27px "Atarian"`
                     if(membersupportship.level === 0){
                         roster.strokeStyle = 'black'
                         roster.lineWidth = 5
@@ -391,29 +407,29 @@ async function roster(message, client, battlegroup, page) {
                         roster.strokeText(`Miner: ${membersupportship.name}`, `${85 + 325 * startingPoint}`, `565`)
                         roster.fillText(`Miner: ${membersupportship.name}`, `${85 + 325 * startingPoint}`, `565`)
                         const membernminerimage = await TheCanvas.loadImage(`./canvas/Miner${membersupportship.level}.png`)
-                        roster.drawImage(membernminerimage, 85 + 325 * startingPoint, 660, 100, 140)
+                        roster.drawImage(membernminerimage, 85 + 325 * startingPoint, 720, 100, 140)
                         roster.strokeStyle = `#ffe803`
                         roster.lineWidth = 4
-                        roster.moveTo(135 + 325 * startingPoint, 695)
+                        roster.moveTo(135 + 325 * startingPoint, 745)
                         roster.lineTo(135 + 325 * startingPoint, 595)
-                        roster.lineTo(175 + 325 * startingPoint, 595)
+                        roster.lineTo(155 + 325 * startingPoint, 595)
                         let economynumber = 0
                         for(let economy of membersupportship.mining) {
                             let position = 600 + 25 * economynumber
                             roster.strokeStyle = 'black'
                             roster.lineWidth = 5
-                            roster.strokeText(`${economy}`, `${185 + 325 * startingPoint}`, `${position}`)
-                            roster.fillText(`${economy}`, `${185 + 325 * startingPoint}`, `${position}`)
+                            roster.strokeText(`${economy}`, `${165 + 325 * startingPoint}`, `${position}`)
+                            roster.fillText(`${economy}`, `${165 + 325 * startingPoint}`, `${position}`)
                             economynumber++
                         }
                         if(membersupportship.level > 2 ) {
-                            roster.moveTo(135 + 325 * startingPoint, 750)
-                            roster.lineTo(135 + 325 * startingPoint, 810)
-                            roster.lineTo(150 + 325 * startingPoint, 810)
+                            roster.moveTo(135 + 325 * startingPoint, 850)
+                            roster.lineTo(135 + 325 * startingPoint, 910)
+                            roster.lineTo(150 + 325 * startingPoint, 910)
                             roster.strokeStyle = 'black'
                             roster.lineWidth = 5
-                            roster.strokeText(`${membersupportship.support}`, `${155 + 325 * startingPoint}`, `815`)
-                            roster.fillText(`${membersupportship.support}`, `${155 + 325 * startingPoint}`, `815`)
+                            roster.strokeText(`${membersupportship.support}`, `${155 + 325 * startingPoint}`, `915`)
+                            roster.fillText(`${membersupportship.support}`, `${155 + 325 * startingPoint}`, `915`)
                         }
                         roster.strokeStyle = `#ffe803`
                         roster.lineWidth = 4

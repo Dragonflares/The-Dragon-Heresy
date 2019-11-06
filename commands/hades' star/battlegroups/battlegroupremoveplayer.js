@@ -46,9 +46,12 @@ module.exports = {
             if(playerrole.toLowerCase() === "captain"){
                 return message.channel.send("You cannot kick the captain of this battlegroup without setting another Captain first!")
             }
-            
-
-
+            client.playersRolePrimeDB.set(`${targetb.id}`, "", `role${knownbattlegroup}`)
+            client.battlegroups.remove(`${message.guild.id}`, `${targetb.id}`, `${knownbattlegroup}.members`)
+            return message.channel.send(`I've succesfully removed this player from ${messagesplit[1]}`)
+        }
+        else {
+            return message.channel.send(`${user}does not belong to ${messagesplit[1]}!`)
         }
     }
 }

@@ -28,10 +28,18 @@ module.exports = {
 
         if(battlegroup1name === messagesplit[1]) {
             client.battlegroups.set(`${message.guild.id}`, "", "battlegroup1.name")
+            let members = client.battlegroups.get(`${message.guild.id}`, "battlegroup1.members")
+            for(let member of members){
+                client.playersRolePrimeDB.set(`${member}`, "", "rolebattlegroup1")
+            }
             client.battlegroups.set(`${message.guild.id}`, [], "battlegroup1.members")
         }
         else if(battlegroup2name === messagesplit[1]) {
             client.battlegroups.set(`${message.guild.id}`, "", "battlegroup2.name")
+            let members = client.battlegroups.get(`${message.guild.id}`, "battlegroup2.members")
+            for(let member of members){
+                client.playersRolePrimeDB.set(`${member}`, "", "rolebattlegroup2")
+            }
             client.battlegroups.set(`${message.guild.id}`, [], "battlegroup2.members")
         }
         else return message.channel.send("That's not a valid battlegroup name!")

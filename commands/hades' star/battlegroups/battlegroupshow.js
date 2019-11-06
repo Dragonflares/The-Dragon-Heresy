@@ -210,8 +210,8 @@ async function roster(message, client, battlegroup, page) {
                     economynumber++
                 }
                 if(captainsupportship.level > 2 ) {
-                    roster.moveTo(135, 850)
-                    roster.lineTo(135, 910)
+                    roster.moveTo(125, 850)
+                    roster.lineTo(125, 910)
                     roster.lineTo(150, 910)
                     roster.strokeStyle = 'black'
                     roster.lineWidth = 5
@@ -379,8 +379,8 @@ async function roster(message, client, battlegroup, page) {
                             economynumber++
                         }
                         if(membersupportship.level > 2 ) {
-                            roster.moveTo(135 + 325 * startingPoint, 850)
-                            roster.lineTo(135 + 325 * startingPoint, 910)
+                            roster.moveTo(125 + 325 * startingPoint, 850)
+                            roster.lineTo(125 + 325 * startingPoint, 910)
                             roster.lineTo(150 + 325 * startingPoint, 910)
                             roster.strokeStyle = 'black'
                             roster.lineWidth = 5

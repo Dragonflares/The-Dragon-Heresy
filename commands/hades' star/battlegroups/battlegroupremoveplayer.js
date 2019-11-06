@@ -4,11 +4,11 @@ let Player = require("../../../player.js")
 let Battlegroup = require("../../../battlegroup.js")
 
 module.exports = {
-    name: "battlegroupaddplayer",
+    name: "battlegroupremoveplayer",
     category: "hades' star",
     subcategory: "battlegroups",
-    description: "Add's a player to a white star battlegroup.",
-    usage: "&battlegroupaddplayer <battlegroupname> <role> <member>",
+    description: "Removes a player from a white star battlegroup.",
+    usage: "&battlegroupremoveplayer <battlegroupname> <member>",
     run: async (client, message, args) => {
         let targetb
         if(message.mentions.users > 1) return message.channel.send("You've mentioned more than one user.")

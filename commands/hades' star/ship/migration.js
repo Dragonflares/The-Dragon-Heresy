@@ -13,10 +13,10 @@ module.exports = {
         for(let member of guildmembers) { 
             await client.playersPrimeDB.ensure(`${member.id}`, Player.player(member, message)) 
             await client.playerDB.ensure(`${member.id}`, Player.player(member, message)) 
-            let user = client.playerDB.get(`${member.id}`, "user") 
+            let user = client.playersPrimeDB.get(`${member.id}`, "user") 
             let rank = client.playersPrimeDB.get(`${member.id}`, "rank") 
             let corp = client.playersPrimeDB.get(`${member.id}`, "corp") 
-            let timezone = client.playersPrimeD.get(`${member.id}`, "timezone") 
+            let timezone = client.playersPrimeDB.get(`${member.id}`, "timezone") 
             let battleship = client.playersPrimeDB.get(`${member.id}`, "battleship") 
             let techs = client.playersPrimeDB.get(`${member.id}`, "techs") 
             let miner = client.playersPrimeDB.get(`${member.id}`, "miner") 

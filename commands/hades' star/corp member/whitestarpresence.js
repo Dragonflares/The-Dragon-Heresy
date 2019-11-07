@@ -5,7 +5,7 @@ module.exports = {
     aliases: ["sws"],
     category: "hades' star",
     subcategory: "corp member",
-    description: "Sets if you are aviable or not for a White Star.",
+    description: "Sets if you are avaible or not for a White Star.",
     usage: "&setwhitestar <yes/no>",
     run: async (client, message, args) => {
         let targetb
@@ -13,7 +13,7 @@ module.exports = {
         if(!user){
             targetb = message.guild.member(message.author)
         }
-        else return message.channel.send("You can't set another player's white star aviability!")
+        else return message.channel.send("You can't set another player's white star avaibility!")
 
         client.playerDB.ensure(`${targetb.id}`, Player.player(targetb, message))
 
@@ -26,6 +26,6 @@ module.exports = {
         } 
         else return message.channel.send("Invalid declaration.")
         
-        return message.channel.send("Your White star aviability has been set.")
+        return message.channel.send("Your White star avaibility has been set.")
     }
 }

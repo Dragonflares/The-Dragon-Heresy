@@ -42,7 +42,7 @@ module.exports = {
         ProfileEmbed.addField(`*Time Zone*`, `GMT ${playertimezone}`) 
         ProfileEmbed.setFooter("For the techs this player has, use &playertech, for their white star battleship, use &playerbattleship")
         ProfileEmbed.addField(`*Red Star level*`, `${playerrslevel}`)
-        ProfileEmbed.addField(`*Aviable for White Stars*`, `${playerwhitestaron}`)
+        ProfileEmbed.addField(`*Avaible for White Stars*`, `${playerwhitestaron}`)
         return message.channel.send(ProfileEmbed)
     }
 }

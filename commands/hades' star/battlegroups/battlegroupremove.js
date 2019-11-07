@@ -15,10 +15,10 @@ module.exports = {
         if(message.mentions.users > 0) return message.channel.send("You can't tag members for this command.")
         targetb = message.guild.member(message.author)
 
-        client.playersPrimeDB.ensure(`${targetb.id}`, Player.player(targetb, message))
+        client.playerDB.ensure(`${targetb.id}`, Player.player(targetb, message))
         client.battlegroups.ensure(`${message.guild.id}`, Battlegroup.guildbattlegroup())
 
-        let authorrank = client.playersPrimeDB.get(`${message.author.id}`, "rank")
+        let authorrank = client.playerDB.get(`${message.author.id}`, "rank")
         if(authorrank === "Officer" || authorrank === "First Officer"){}
         else return message.channel.send("You must be at least an Officer to delete a battlegroup!")
 

@@ -16,7 +16,7 @@ module.exports = {
         }
         else return message.channel.send("You cannot set another player's miner!")
 
-        client.playersPrimeDB.ensure(`${targetb.id}`, Player.player(targetb, message))
+        client.playerDB.ensure(`${targetb.id}`, Player.player(targetb, message))
 
         
         let minername
@@ -46,9 +46,9 @@ module.exports = {
             console.error(err);
             return message.channel.send("Invalid miner level.");
         }
-        client.playersPrimeDB.set(`${message.author.id}`, `${minername.first().content}`, `miner.name`)
+        client.playerDB.set(`${message.author.id}`, `${minername.first().content}`, `miner.name`)
 
-        client.playersPrimeDB.set(`${message.author.id}`, minerlevel.first().content , `miner.level`)
+        client.playerDB.set(`${message.author.id}`, minerlevel.first().content , `miner.level`)
         
         if(parseInt(minerlevel.first().content) > 1) {
             message.channel.send("Please state your miner's support module")
@@ -62,13 +62,13 @@ module.exports = {
                 console.error(err);
                 return message.channel.send("Invalid miner's support module.");
             }
-            let techlevel = await client.playersPrimeDB.get(`${message.author.id}`, `techs.${minersupport.first().content}`)
+            let techlevel = await client.playerDB.get(`${message.author.id}`, `techs.${minersupport.first().content}`)
             if(techlevel == 0) return message.channel.send("You don't have this support module researched!")
-            client.playersPrimeDB.set(`${message.author.id}`, `${minersupport.first().content} ${techlevel}`, `miner.support`)
+            client.playerDB.set(`${message.author.id}`, `${minersupport.first().content} ${techlevel}`, `miner.support`)
 
             message.channel.send("Please state your miner's mining modules, pressing enter between each of them.")
             var i = 0
-            client.playersPrimeDB.set(`${message.author.id}`, [], `miner.mining`)
+            client.playerDB.set(`${message.author.id}`, [], `miner.mining`)
             for(i ; i < parseInt(minerlevel.first().content) - 1 ; i++) {
                 try {
                     minermining = await message.channel.awaitMessages(message2 => TechData[message2] && TechData[message2].Category === "Mining", {
@@ -80,9 +80,9 @@ module.exports = {
                     console.error(err);
                     return message.channel.send("Invalid miner's mining modules.");
                 }
-                let techlevel = await client.playersPrimeDB.get(`${message.author.id}`, `techs.${minermining.first().content}`)
+                let techlevel = await client.playerDB.get(`${message.author.id}`, `techs.${minermining.first().content}`)
                 if(techlevel == 0) return message.channel.send("You don't have this mining module researched!")
-                client.playersPrimeDB.push(`${message.author.id}`, `${minermining.first().content} ${techlevel}`, `miner.mining`)
+                client.playerDB.push(`${message.author.id}`, `${minermining.first().content} ${techlevel}`, `miner.mining`)
             }
             return message.channel.send("Your miner for white stars is now set.")
         }

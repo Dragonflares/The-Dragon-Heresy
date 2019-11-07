@@ -9,7 +9,7 @@ module.exports = {
     category: "hades' star",
     subcategory: "battlegroups",
     description: "Add's a player to a white star battlegroup.",
-    usage: "&battlegroupaddplayer <battlegroupname> <role> <member>",
+    usage: "&battlegroupaddmember <battlegroupname> <role> <member>",
     run: async (client, message, args) => {
         let targetb
         if(message.mentions.users > 1) return message.channel.send("You've mentioned more than one user.")
@@ -17,10 +17,10 @@ module.exports = {
         if(!user) targetb = message.guild.member(message.author)
         else targetb = message.guild.member(user)
 
-        client.playersPrimeDB.ensure(`${targetb.id}`, Player.player(targetb, message))
+        client.playerDB.ensure(`${targetb.id}`, Player.player(targetb, message))
         client.playersRolePrimeDB.ensure(`${targetb.id}`, Battlegroup.battlegroupMember())
 
-        let authorrank = client.playersPrimeDB.get(`${message.author.id}`, "rank")
+        let authorrank = client.playerDB.get(`${message.author.id}`, "rank")
         if(authorrank === "Officer" || authorrank ==="First Officer"){}
         else return message.channel.send("You must be at least an Officer to add someone to a battlegroup!")
 

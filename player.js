@@ -81,12 +81,13 @@ module.exports = {
             name : targetb.user.username,
             rank : 'Member',
             corp : `${message.guild.id}`,
+            rslevel : 1,
+            whitestaraviability : "Yes",
             timezone : '+0',
             battleship : battleship(),
             miner : miner(),
             transport : transport(),
-            techs : techTree() ,
-            battlegroup : ""
+            techs : techTree()
         }
         return player
     }

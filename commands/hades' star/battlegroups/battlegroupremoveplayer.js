@@ -9,7 +9,7 @@ module.exports = {
     category: "hades' star",
     subcategory: "battlegroups",
     description: "Removes a player from a white star battlegroup.",
-    usage: "&battlegroupremoveplayer <battlegroupname> <member>",
+    usage: "&battlegroupremovemember <battlegroupname> <member>",
     run: async (client, message, args) => {
         let targetb
         if(message.mentions.users > 1) return message.channel.send("You've mentioned more than one user.")
@@ -17,7 +17,7 @@ module.exports = {
         if(!user) return message.channel.send("You must specify who you are kicking!.")
         else targetb = message.guild.member(user)
 
-        client.playersPrimeDB.ensure(`${targetb.id}`, Player.player(targetb, message))
+        client.playerDB.ensure(`${targetb.id}`, Player.player(targetb, message))
         client.playersRolePrimeDB.ensure(`${targetb.id}`, Battlegroup.battlegroupMember())
 
         let battlegroup1 = client.battlegroups.get(`${message.guild.id}`, "battlegroup1.name")
@@ -37,7 +37,7 @@ module.exports = {
         else return message.channel.send("There's no battlegroup with this name in the corp!")
 
         let authorrole = client.playersRolePrimeDB.get(`${message.author.id}`, `role${knownbattlegroup}`)
-        let authorrank = client.playersPrimeDB.get(`${message.author.id}`, "rank")
+        let authorrank = client.playerDB.get(`${message.author.id}`, "rank")
         if(authorrank === "Officer" || authorrank ==="First Officer" || authorrole === "Captain"){}
         else return message.channel.send("You must be at least an Officer or this group's Captain to remove someone from this battlegroup!")
         

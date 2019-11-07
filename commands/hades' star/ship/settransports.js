@@ -16,7 +16,7 @@ module.exports = {
         }
         else return message.channel.send("You cannot set another player's transport!")
 
-        client.playersPrimeDB.ensure(`${targetb.id}`, Player.player(targetb, message))
+        client.playerDB.ensure(`${targetb.id}`, Player.player(targetb, message))
 
         
         let transportname
@@ -46,11 +46,11 @@ module.exports = {
             console.error(err);
             return message.channel.send("Invalid transport level.");
         }
-        client.playersPrimeDB.set(`${message.author.id}`, `${transportname.first().content}`, `transport.name`)
+        client.playerDB.set(`${message.author.id}`, `${transportname.first().content}`, `transport.name`)
 
-        client.playersPrimeDB.set(`${message.author.id}`, transportlevel.first().content , `transport.level`)
+        client.playerDB.set(`${message.author.id}`, transportlevel.first().content , `transport.level`)
         
-        client.playersPrimeDB.set(`${message.author.id}`,  [] , `transport.economy`)
+        client.playerDB.set(`${message.author.id}`,  [] , `transport.economy`)
         message.channel.send("Please state your transport's economy modules, pressing enter between each of them.")
         var i = 0
         for(i ; i < (parseInt(transportlevel.first().content)) ; i++) {
@@ -64,9 +64,9 @@ module.exports = {
                 console.error(err);
                 return message.channel.send("Invalid transport's economy module.");
             }
-            let techlevel = await client.playersPrimeDB.get(`${message.author.id}`, `techs.${transporteconomy.first().content}`)
+            let techlevel = await client.playerDB.get(`${message.author.id}`, `techs.${transporteconomy.first().content}`)
             if(techlevel == 0) return message.channel.send("You don't have this economy module researched!")
-            client.playersPrimeDB.push(`${message.author.id}`, `${transporteconomy.first().content} ${techlevel}`, `transport.economy`)
+            client.playerDB.push(`${message.author.id}`, `${transporteconomy.first().content} ${techlevel}`, `transport.economy`)
         }
         if(parseInt(transportlevel.first().content) > 2) {
             message.channel.send("Please state your transport's support module")
@@ -80,9 +80,9 @@ module.exports = {
                 console.error(err);
                 return message.channel.send("Invalid transport's support module.");
             }
-            let techlevel = await client.playersPrimeDB.get(`${message.author.id}`, `techs.${transportsupport.first().content}`)
+            let techlevel = await client.playerDB.get(`${message.author.id}`, `techs.${transportsupport.first().content}`)
             if(techlevel == 0) return message.channel.send("You don't have this support module researched!")
-            client.playersPrimeDB.set(`${message.author.id}`, `${transportsupport.first().content} ${techlevel}`, `transport.support`)
+            client.playerDB.set(`${message.author.id}`, `${transportsupport.first().content} ${techlevel}`, `transport.support`)
             return message.channel.send("Your transport for white stars is now set.")
         }
         else {

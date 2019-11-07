@@ -16,7 +16,7 @@ module.exports = {
         }
         else return message.channel.send("You cannot set another player's tech!")
 
-        client.playersPrimeDB.ensure(`${targetb.id}`, Player.player(targetb, message))
+        client.playerDB.ensure(`${targetb.id}`, Player.player(targetb, message))
 
         const messagesplit = message.content.split(" ")
         const tech = messagesplit[1]
@@ -31,30 +31,30 @@ module.exports = {
         if((0 > techlevel) || Number(TechData[tech].Level[TechData[tech].Level.length - 1]) < (techlevel)) {
             return message.channel.send(`The level you gave is invalid for that tech!`)
         }
-        client.playersPrimeDB.set(`${message.author.id}`, parseInt(techlevel, 10), `techs.${tech}`)
+        client.playerDB.set(`${message.author.id}`, parseInt(techlevel, 10), `techs.${tech}`)
         let techcategory = TechData[tech].Category
 
         if(techcategory === "Weapons") {
-            let battleshiptech = client.playersPrimeDB.get(`${message.author.id}`, `battleship.weapon`)
+            let battleshiptech = client.playerDB.get(`${message.author.id}`, `battleship.weapon`)
             let techname = battleshiptech.split(" ")
             if(techname[0] === tech){
-                client.playersPrimeDB.set(`${message.author.id}`, `${tech} ${techlevel}`, `battleship.weapon`)
+                client.playerDB.set(`${message.author.id}`, `${tech} ${techlevel}`, `battleship.weapon`)
             }
         }
         else if(techcategory === "Shields") {
-            let battleshiptech = client.playersPrimeDB.get(`${message.author.id}`, `battleship.shield`)
+            let battleshiptech = client.playerDB.get(`${message.author.id}`, `battleship.shield`)
             let techname = battleshiptech.split(" ")
             if(techname[0] === `${tech}`){
-                client.playersPrimeDB.set(`${message.author.id}`, `${tech} ${techlevel}`, `battleship.shield`)
+                client.playerDB.set(`${message.author.id}`, `${tech} ${techlevel}`, `battleship.shield`)
             }
         }
         else if(techcategory === "Support") {
-            let battleshiptech = client.playersPrimeDB.get(`${message.author.id}`, `battleship.support`)
+            let battleshiptech = client.playerDB.get(`${message.author.id}`, `battleship.support`)
             for(let techb of battleshiptech){
                 let techname = techb.split(" ")
                 if(techname[0] === tech){
-                    client.playersPrimeDB.remove(`${message.author.id}`, `${techb}`, `battleship.support`)
-                    client.playersPrimeDB.push(`${message.author.id}`, `${tech} ${techlevel}`, `battleship.support`)
+                    client.playerDB.remove(`${message.author.id}`, `${techb}`, `battleship.support`)
+                    client.playerDB.push(`${message.author.id}`, `${tech} ${techlevel}`, `battleship.support`)
                 }
             }
         }

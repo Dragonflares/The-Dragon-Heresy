@@ -17,7 +17,7 @@ module.exports = {
         }
         else targetb = message.guild.member(userb)
 
-        client.playersPrimeDB.ensure(`${targetb.id}`, Player.player(targetb, message))
+        client.playerDB.ensure(`${targetb.id}`, Player.player(targetb, message))
 
 
         const messagesplit = message.content.split(" ")
@@ -29,16 +29,16 @@ module.exports = {
         else {
             targetid = user.id
         }  
-        let minername = client.playersPrimeDB.get(`${targetid}`, `miner.name`)
+        let minername = client.playerDB.get(`${targetid}`, `miner.name`)
         if(minername === "") return message.channel.send("No miner has been set")
         let minerEmbed = new RichEmbed().setColor("PURPLE")
         minerEmbed.setTitle(`**${minername}**`)
-        let minerlevel = client.playersPrimeDB.get(`${targetid}`, `miner.level`)
+        let minerlevel = client.playerDB.get(`${targetid}`, `miner.level`)
         minerEmbed.addField("Level", `${minerlevel}`)
-        let minersupport = client.playersPrimeDB.get(`${targetid}`, `miner.support`)
+        let minersupport = client.playerDB.get(`${targetid}`, `miner.support`)
         minerEmbed.addField("Support", `${minersupport}`)
         if(minerlevel > 1) {
-            let minerminings = client.playersPrimeDB.get(`${targetid}`, `miner.mining`)
+            let minerminings = client.playerDB.get(`${targetid}`, `miner.mining`)
             let minings = ""
             for( let mining in minerminings){
                 minings += `${minerminings[mining]}\n`

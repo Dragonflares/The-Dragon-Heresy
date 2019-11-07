@@ -12,7 +12,7 @@ module.exports = {
     category: "hades` star",
     subcategory: "battlegroups",
     description: "Show`s this guild`s battlegroups.",
-    usage: "&listbattlegroup (battlegroupname), no stating the name will show which battlegroups you`ve set",
+    usage: "&battlegrouplist (battlegroupname), no stating the name will show which battlegroups you`ve set",
     run: async (client, message, args) => {
         let battlegroupEmbed = new RichEmbed().setColor("RANDOM")
         client.battlegroups.ensure(`${message.guild.id}`, Battlegroup.guildbattlegroup())
@@ -32,16 +32,16 @@ module.exports = {
                     return message.channel.send("There are no Battlegroups set in this Corp!")
                 }
                 else{
-                    battlegroupEmbed.addField(`*${battlegroup2name}*`, `Captain: ${client.playersPrimeDB.get(`${battlegroup2captain}`, "name")}`)
+                    battlegroupEmbed.addField(`*${battlegroup2name}*`, `Captain: ${client.playerDB.get(`${battlegroup2captain}`, "name")}`)
                 }
             }
             else {
                 if(!battlegroup2name){
-                    battlegroupEmbed.addField(`*${battlegroup1name}*`, `Captain: ${client.playersPrimeDB.get(`${battlegroup1captain}`, "name")}`)
+                    battlegroupEmbed.addField(`*${battlegroup1name}*`, `Captain: ${client.playerDB.get(`${battlegroup1captain}`, "name")}`)
                 }
                 else {
-                    battlegroupEmbed.addField(`*${battlegroup2name}*`, `Captain: ${client.playersPrimeDB.get(`${battlegroup2captain}`, "name")}`)
-                    battlegroupEmbed.addField(`*${battlegroup1name}*`, `Captain: ${client.playersPrimeDB.get(`${battlegroup1captain}`, "name")}`)
+                    battlegroupEmbed.addField(`*${battlegroup2name}*`, `Captain: ${client.playerDB.get(`${battlegroup2captain}`, "name")}`)
+                    battlegroupEmbed.addField(`*${battlegroup1name}*`, `Captain: ${client.playerDB.get(`${battlegroup1captain}`, "name")}`)
                 }
             }
             return message.channel.send(battlegroupEmbed)
@@ -108,8 +108,8 @@ async function roster(message, client, battlegroup, page) {
     roster.drawImage(background, 0, 0, rosterImage.width, rosterImage.height)
     
     
-    let captainname = client.playersPrimeDB.get(`${battlegroupcaptain}`, `name`)
-    let captainbattleship = client.playersPrimeDB.get(`${battlegroupcaptain}`, `battleship`)
+    let captainname = client.playerDB.get(`${battlegroupcaptain}`, `name`)
+    let captainbattleship = client.playerDB.get(`${battlegroupcaptain}`, `battleship`)
     let captainsupport = client.playersRolePrimeDB.get(`${battlegroupcaptain}`, `support`)
     let captainsupportship
     roster.fillStyle = `#ffe803`
@@ -181,7 +181,7 @@ async function roster(message, client, battlegroup, page) {
         roster.lineWidth = 4
         roster.stroke()
         if(captainsupport.toLowerCase() === "transport") {
-            captainsupportship = client.playersPrimeDB.get(`${battlegroupcaptain}`, `transport`)
+            captainsupportship = client.playerDB.get(`${battlegroupcaptain}`, `transport`)
             if(captainsupportship.level === 0){
                 roster.strokeStyle = 'black'
                 roster.lineWidth = 5
@@ -223,7 +223,7 @@ async function roster(message, client, battlegroup, page) {
             }
         }
         else if(captainsupport.toLowerCase() === "miner"){
-            captainsupportship = client.playersPrimeDB.get(`${battlegroupcaptain}`, `miner`)
+            captainsupportship = client.playerDB.get(`${battlegroupcaptain}`, `miner`)
             if(captainsupportship.level === 0){
                 roster.strokeStyle = 'black'
                 roster.lineWidth = 5
@@ -286,8 +286,8 @@ async function roster(message, client, battlegroup, page) {
                 roster.fillStyle = "black"
                 roster.fillRect(75 + 325 * startingPoint, 75, 275, 925)
 
-                let membername = client.playersPrimeDB.get(`${bgmember}`, `name`)
-                let memberbattleship = client.playersPrimeDB.get(`${bgmember}`, `battleship`)
+                let membername = client.playerDB.get(`${bgmember}`, `name`)
+                let memberbattleship = client.playerDB.get(`${bgmember}`, `battleship`)
                 let membersupport = client.playersRolePrimeDB.get(`${bgmember}`, `support`)
                 let memberrole = client.playersRolePrimeDB.get(`${bgmember}`, `role${battlegroup}`)
                 let membersupportship
@@ -350,7 +350,7 @@ async function roster(message, client, battlegroup, page) {
                 roster.lineWidth = 4
                 roster.stroke()
                 if(membersupport.toLowerCase() === "transport") {
-                    membersupportship = client.playersPrimeDB.get(`${bgmember}`, `transport`)
+                    membersupportship = client.playerDB.get(`${bgmember}`, `transport`)
                     roster.font = `27px "Atarian"`
                     if(membersupportship.level === 0){
                         roster.strokeStyle = 'black'
@@ -394,7 +394,7 @@ async function roster(message, client, battlegroup, page) {
                     }
                 }
                 else if(membersupport.toLowerCase() === "miner"){
-                    membersupportship = client.playersPrimeDB.get(`${bgmember}`, `miner`)
+                    membersupportship = client.playerDB.get(`${bgmember}`, `miner`)
                     roster.font = `27px "Atarian"`
                     if(membersupportship.level === 0){
                         roster.strokeStyle = 'black'

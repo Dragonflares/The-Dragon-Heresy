@@ -15,7 +15,7 @@ module.exports = {
         if(message.mentions.users > 0) return message.channel.send("You cannot set another player's support ship!")
         targetb = message.guild.member(message.author)
        
-        client.playersPrimeDB.ensure(`${targetb.id}`, Player.player(targetb, message))
+        client.playerDB.ensure(`${targetb.id}`, Player.player(targetb, message))
         client.playersRolePrimeDB.ensure(`${targetb.id}`, Battlegroup.battlegroupMember())
 
         let messagesplit = message.content.split(" ")

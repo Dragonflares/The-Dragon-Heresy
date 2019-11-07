@@ -25,6 +25,13 @@ client.playersPrimeDB = new Enmap({
     dataDir: "./Database/Hades' Star/",
     polling: true
 })
+client.playerDB = new Enmap({
+    name: 'player',
+    autoFetch: true,
+    fetchAll: false,
+    dataDir: "./Database/Hades' Star/",
+    polling: true
+})
 client.battlegroups = new Enmap({
     name: 'battlegroups',
     autoFetch: true,

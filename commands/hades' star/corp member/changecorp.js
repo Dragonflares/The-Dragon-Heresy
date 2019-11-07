@@ -16,10 +16,10 @@ module.exports = {
         }
         else return message.channel.send("You cannot change another person's corp!")
 
-        client.playersPrimeDB.ensure(`${targetb.id}`, Player.player(targetb, message))
+        client.playerDB.ensure(`${targetb.id}`, Player.player(targetb, message))
 
-        client.playersPrimeDB.set(`${targetb.id}`, "Member", "rank")
-        client.playersPrimeDB.set(`${targetb.id}`, `${message.guild.id}`, "corp")
+        client.playerDB.set(`${targetb.id}`, "Member", "rank")
+        client.playerDB.set(`${targetb.id}`, `${message.guild.id}`, "corp")
 
         return message.channel.send(`I've changed your home corp to ${message.guild.name}`)
     }

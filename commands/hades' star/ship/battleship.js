@@ -17,7 +17,7 @@ module.exports = {
         }
         else targetb = message.guild.member(userb)
 
-        client.playersPrimeDB.ensure(`${targetb.id}`, Player.player(targetb, message))
+        client.playerDB.ensure(`${targetb.id}`, Player.player(targetb, message))
 
 
         const messagesplit = message.content.split(" ")
@@ -29,18 +29,18 @@ module.exports = {
         else {
             targetid = user.id
         }  
-        let battleshipname = client.playersPrimeDB.get(`${targetid}`, `battleship.name`)
+        let battleshipname = client.playerDB.get(`${targetid}`, `battleship.name`)
         if(battleshipname === "") return message.channel.send("No battleship has been set")
         let battleshipEmbed = new RichEmbed().setColor("RED")
         battleshipEmbed.setTitle(`**${battleshipname}**`)
-        let battleshiplevel = client.playersPrimeDB.get(`${targetid}`, `battleship.level`)
+        let battleshiplevel = client.playerDB.get(`${targetid}`, `battleship.level`)
         battleshipEmbed.addField("Level", `${battleshiplevel}`)
-        let battleshipweapon = client.playersPrimeDB.get(`${targetid}`, `battleship.weapon`)
+        let battleshipweapon = client.playerDB.get(`${targetid}`, `battleship.weapon`)
         battleshipEmbed.addField("Weapon", `${battleshipweapon}`)
-        let battleshipshield = client.playersPrimeDB.get(`${targetid}`, `battleship.shield`)
+        let battleshipshield = client.playerDB.get(`${targetid}`, `battleship.shield`)
         battleshipEmbed.addField("Shield", `${battleshipshield}`)
         if(battleshiplevel > 1) {
-            let battleshipsupports = client.playersPrimeDB.get(`${targetid}`, `battleship.support`)
+            let battleshipsupports = client.playerDB.get(`${targetid}`, `battleship.support`)
             let supports = ""
             for( let support in battleshipsupports){
                 supports += `${battleshipsupports[support]}\n`

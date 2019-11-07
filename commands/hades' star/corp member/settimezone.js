@@ -16,13 +16,13 @@ module.exports = {
         }
         else return message.channel.send("You can't set another player's time zone.")
 
-        client.playersPrimeDB.ensure(`${targetb.id}`, Player.player(targetb, message))
+        client.playerDB.ensure(`${targetb.id}`, Player.player(targetb, message))
 
         const messagesplit = message.content.split(" ")
         if(!(messagesplit[1].startsWith("+") || messagesplit[1].startsWith("-"))) return message.channel.send("Invalid time zone.")
         let timezone = messagesplit[1].substring(1)
         if(isNaN(parseInt(timezone))) return message.channel.send("Invalid time zone.")
-        client.playersPrimeDB.set(`${message.author.id}`, messagesplit[1], "timezone")
+        client.playerDB.set(`${message.author.id}`, messagesplit[1], "timezone")
         return message.channel.send("Your timezone has been set.")
     }
 }

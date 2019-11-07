@@ -3,6 +3,7 @@ let Player = require("../../../player.js")
 
 module.exports = {
     name: "demote",
+    aliases: ["dem"],
     category: "hades' star",
     subcategory: "corp member",
     description: "Demotes a player rank in a Corp.",

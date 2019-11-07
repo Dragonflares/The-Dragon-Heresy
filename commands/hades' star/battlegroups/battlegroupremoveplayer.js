@@ -4,7 +4,8 @@ let Player = require("../../../player.js")
 let Battlegroup = require("../../../battlegroup.js")
 
 module.exports = {
-    name: "battlegroupremoveplayer",
+    name: "battlegroupremovemember",
+    aliases: ["bgrem"],
     category: "hades' star",
     subcategory: "battlegroups",
     description: "Removes a player from a white star battlegroup.",

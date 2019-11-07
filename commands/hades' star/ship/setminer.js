@@ -3,6 +3,7 @@ let Player = require("../../../player.js")
 
 module.exports = {
     name: "setplayerminer",
+    aliases: ["setm"],
     category: "hades' star",
     subcategory: "ship",
     description: "Sets the player's intended miner for White Stars.",

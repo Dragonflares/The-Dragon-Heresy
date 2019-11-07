@@ -4,7 +4,8 @@ let Player = require("../../../player.js")
 let Battlegroup = require("../../../battlegroup.js")
 
 module.exports = {
-    name: "battlegroupaddplayer",
+    name: "battlegroupaddmember",
+    aliases: ["bgadd"],
     category: "hades' star",
     subcategory: "battlegroups",
     description: "Add's a player to a white star battlegroup.",

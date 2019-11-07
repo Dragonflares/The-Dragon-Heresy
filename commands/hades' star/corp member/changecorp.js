@@ -3,6 +3,7 @@ let Player = require("../../../player.js")
 
 module.exports = {
     name: "changecorp",
+    aliases: ["ccorp"],
     category: "hades' star",
     subcategory: "corp member",
     description: "Sets your corp as the Server you are now at.",

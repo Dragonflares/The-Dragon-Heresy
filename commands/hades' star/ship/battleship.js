@@ -4,6 +4,7 @@ let Player = require("../../../player.js")
 
 module.exports = {
     name: "playerbattleship",
+    aliases: ["getbs"],
     category: "hades' star",
     subcategory: "ship",
     description: "Shows the current white star battleship a player has.",

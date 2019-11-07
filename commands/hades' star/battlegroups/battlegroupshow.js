@@ -7,7 +7,8 @@ const TheCanvas = require(`canvas`)
 const { Attachment } = require(`discord.js`);
 
 module.exports = {
-    name: "listbattlegroup",
+    name: "battlegrouplist",
+    aliases: ["bglist"],
     category: "hades` star",
     subcategory: "battlegroups",
     description: "Show`s this guild`s battlegroups.",

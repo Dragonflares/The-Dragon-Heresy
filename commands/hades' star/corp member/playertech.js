@@ -4,6 +4,7 @@ let Player = require("../../../player.js")
 
 module.exports = {
     name: "playertech",
+    aliases: ["ptech"],
     category: "hades' star",
     subcategory: "corp member",
     description: "Shows the techs of a certain player in your corp.",

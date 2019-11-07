@@ -3,6 +3,7 @@ let Player = require("../../../player.js")
 
 module.exports = {
     name: "settimezone",
+    aliases: ["stime"],
     category: "hades' star",
     subcategory: "corp member",
     description: "Changes your time zone, please use +/-<number>.",

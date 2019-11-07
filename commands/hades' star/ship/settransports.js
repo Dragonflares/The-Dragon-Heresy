@@ -3,6 +3,7 @@ let Player = require("../../../player.js")
 
 module.exports = {
     name: "setplayertransport",
+    aliases: ["settp"],
     category: "hades' star",
     subcategory: "ship",
     description: "Sets the player's intended transport for White Stars.",

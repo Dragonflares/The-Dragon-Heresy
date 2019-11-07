@@ -3,7 +3,7 @@ const { RichEmbed } = require("discord.js")
 
 module.exports = {
     name: "techdata",
-    aliases: ["h"],
+    aliases: ["td"],
     category: "hades' star",
     subcategory: "corp member",
     description: "Returns info about a certain tech in a certain level.",

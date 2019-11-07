@@ -5,6 +5,7 @@ let Battlegroup = require("../../../battlegroup.js")
 
 module.exports = {
     name: "setsupport",
+    aliases: ["setsp"],
     category: "hades' star",
     subcategory: "ship",
     description: "Sets which kind of support ship you are taking to the White Star.",

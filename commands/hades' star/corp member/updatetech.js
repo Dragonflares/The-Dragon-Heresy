@@ -3,6 +3,7 @@ let Player = require("../../../player.js")
 
 module.exports = {
     name: "updatetech",
+    aliases: ["ut"],
     category: "hades' star",
     subcategory: "corp member",
     description: "Updates the level of a specific tech you own.",

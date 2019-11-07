@@ -11,8 +11,8 @@ module.exports = {
     run: async (client, message, args) => { 
         let guildmembers = message.guild.members.values() 
         for(let member of guildmembers) { 
-            client.playersPrimeDB.ensure(`${member.id}`, Player.player(member, message)) 
-            client.playerDB.ensure(`${member.id}`, Player.player(member, message)) 
+            await client.playersPrimeDB.ensure(`${member.id}`, Player.player(member, message)) 
+            await client.playerDB.ensure(`${member.id}`, Player.player(member, message)) 
             let user = client.playerDB.get(`${member.id}`, "user") 
             let rank = client.playersPrimeDB.get(`${member.id}`, "rank") 
             let corp = client.playersPrimeDB.get(`${member.id}`, "corp") 

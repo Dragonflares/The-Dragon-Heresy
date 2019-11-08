@@ -57,6 +57,36 @@ module.exports = {
                     client.playerDB.push(`${message.author.id}`, `${tech} ${techlevel}`, `battleship.support`)
                 }
             }
+            let transporttech = client.playerDB.get(`${message.author.id}`, `transport.support`)
+            let techname = transporttech.split(" ")
+            if(techname[0] === tech){
+                client.playerDB.set(`${message.author.id}`, `${tech} ${techlevel}`, `transport.support`)
+            }
+            let minertech = client.playerDB.get(`${message.author.id}`, `miner.support`)
+            let techname = minertech.split(" ")
+            if(techname[0] === tech){
+                client.playerDB.set(`${message.author.id}`, `${tech} ${techlevel}`, `miner.support`)
+            }
+        }
+        else if(techcategory === "Economy"){
+            let transporttech = client.playerDB.get(`${message.author.id}`, `transport.support`)
+            for(let techb of transporttech){
+                let techname = techb.split(" ")
+                if(techname[0] === tech){
+                    client.playerDB.remove(`${message.author.id}`, `${techb}`, `transport.support`)
+                    client.playerDB.push(`${message.author.id}`, `${tech} ${techlevel}`, `transport.support`)
+                }
+            }
+        }
+        else if(techcategory === "Mining"){
+            let minertech = client.playerDB.get(`${message.author.id}`, `miner.support`)
+            for(let techb of minertech){
+                let techname = techb.split(" ")
+                if(techname[0] === tech){
+                    client.playerDB.remove(`${message.author.id}`, `${techb}`, `miner.support`)
+                    client.playerDB.push(`${message.author.id}`, `${tech} ${techlevel}`, `miner.support`)
+                }
+            }
         }
         return message.channel.send(`Tech level updated.`)
     }

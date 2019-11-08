@@ -69,22 +69,22 @@ module.exports = {
             }
         }
         else if(techcategory === "Economy"){
-            let transporttech = client.playerDB.get(`${message.author.id}`, `transport.support`)
+            let transporttech = client.playerDB.get(`${message.author.id}`, `transport.economy`)
             for(let techb of transporttech){
                 let techname = techb.split(" ")
                 if(techname[0] === tech){
-                    client.playerDB.remove(`${message.author.id}`, `${techb}`, `transport.support`)
-                    client.playerDB.push(`${message.author.id}`, `${tech} ${techlevel}`, `transport.support`)
+                    client.playerDB.remove(`${message.author.id}`, `${techb}`, `transport.economy`)
+                    client.playerDB.push(`${message.author.id}`, `${tech} ${techlevel}`, `transport.economy`)
                 }
             }
         }
         else if(techcategory === "Mining"){
-            let minertech = client.playerDB.get(`${message.author.id}`, `miner.support`)
+            let minertech = client.playerDB.get(`${message.author.id}`, `miner.mining`)
             for(let techb of minertech){
                 let techname = techb.split(" ")
                 if(techname[0] === tech){
-                    client.playerDB.remove(`${message.author.id}`, `${techb}`, `miner.support`)
-                    client.playerDB.push(`${message.author.id}`, `${tech} ${techlevel}`, `miner.support`)
+                    client.playerDB.remove(`${message.author.id}`, `${techb}`, `miner.mining`)
+                    client.playerDB.push(`${message.author.id}`, `${tech} ${techlevel}`, `miner.mining`)
                 }
             }
         }

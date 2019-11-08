@@ -58,13 +58,13 @@ module.exports = {
                 }
             }
             let transporttech = client.playerDB.get(`${message.author.id}`, `transport.support`)
-            let techname = transporttech.split(" ")
-            if(techname[0] === tech){
+            let technamea = transporttech.split(" ")
+            if(technamea[0] === tech){
                 client.playerDB.set(`${message.author.id}`, `${tech} ${techlevel}`, `transport.support`)
             }
             let minertech = client.playerDB.get(`${message.author.id}`, `miner.support`)
-            let techname = minertech.split(" ")
-            if(techname[0] === tech){
+            let technameb = minertech.split(" ")
+            if(technameb[0] === tech){
                 client.playerDB.set(`${message.author.id}`, `${tech} ${techlevel}`, `miner.support`)
             }
         }

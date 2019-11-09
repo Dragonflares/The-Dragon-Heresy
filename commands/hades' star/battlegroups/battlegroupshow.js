@@ -32,16 +32,32 @@ module.exports = {
                     return message.channel.send("There are no Battlegroups set in this Corp!")
                 }
                 else{
-                    battlegroupEmbed.addField(`*${battlegroup2name}*`, `Captain: ${client.playerDB.get(`${battlegroup2captain}`, "name")}`)
+                    let battlegroup2Members = client.battlegroups.get(`${message.guild.id}`, "battlegroup2.members")
+                    let bg2members = battlegroup2Members
+                    .filter(member => member != battlegroup2captain)
+                    .map(member => `${client.playerDB.get(`${member}`, "name")}`)
+                    battlegroupEmbed.addField(`*${battlegroup2name}*`, `Captain: ${client.playerDB.get(`${battlegroup2captain}`, "name")}\n Members: ${bg2members}`)
                 }
             }
             else {
                 if(!battlegroup2name){
-                    battlegroupEmbed.addField(`*${battlegroup1name}*`, `Captain: ${client.playerDB.get(`${battlegroup1captain}`, "name")}`)
+                    let battlegroup1Members = client.battlegroups.get(`${message.guild.id}`, "battlegroup1.members")
+                    let bg1members = battlegroup1Members
+                    .filter(member => member != battlegroup1captain)
+                    .map(member => `${client.playerDB.get(`${member}`, "name")}`)
+                    battlegroupEmbed.addField(`*${battlegroup1name}*`, `Captain: ${client.playerDB.get(`${battlegroup1captain}`, "name")}\n Members: ${bg1members}`)
                 }
                 else {
-                    battlegroupEmbed.addField(`*${battlegroup2name}*`, `Captain: ${client.playerDB.get(`${battlegroup2captain}`, "name")}`)
-                    battlegroupEmbed.addField(`*${battlegroup1name}*`, `Captain: ${client.playerDB.get(`${battlegroup1captain}`, "name")}`)
+                    let battlegroup1Members = client.battlegroups.get(`${message.guild.id}`, "battlegroup1.members")
+                    let bg1members = battlegroup1Members
+                    .filter(member => member != battlegroup1captain)
+                    .map(member => `${client.playerDB.get(`${member}`, "name")}`)
+                    let battlegroup2Members = client.battlegroups.get(`${message.guild.id}`, "battlegroup2.members")
+                    let bg2members = battlegroup2Members
+                    .filter(member => member != battlegroup2captain)
+                    .map(member => `${client.playerDB.get(`${member}`, "name")}`)
+                    battlegroupEmbed.addField(`*${battlegroup1name}*`, `Captain: ${client.playerDB.get(`${battlegroup1captain}`, "name")}\n Members: ${bg1members}`)
+                    battlegroupEmbed.addField(`*${battlegroup2name}*`, `Captain: ${client.playerDB.get(`${battlegroup2captain}`, "name")}\n Members: ${bg2members}`)
                 }
             }
             return message.channel.send(battlegroupEmbed)

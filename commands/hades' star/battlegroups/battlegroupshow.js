@@ -58,15 +58,15 @@ module.exports = {
             let battlegroupmembers = client.battlegroups.get(`${message.guild.id}`, `${targetbattlegroup}.members`)
             if(battlegroupmembers.length < 5) return message.channel.send("There are not enough members in this battlegroup for a white star yet!")
             else if(battlegroupmembers.length < 10){
-                pages = 2
-                console.log(pages)
-            }
-            else if(battlegroupmembers.length < 15){
                 pages = 3
                 console.log(pages)
             }
-            else if(battlegroupmembers.length === 15) {
+            else if(battlegroupmembers.length < 15){
                 pages = 4
+                console.log(pages)
+            }
+            else if(battlegroupmembers.length === 15) {
+                pages = 5
                 console.log(pages)
             }
             let a = 1

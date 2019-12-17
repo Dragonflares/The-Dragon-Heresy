@@ -1,15 +1,28 @@
-const { Client, Collection } = require('discord.js');
+const { Client, Collection } = require('discord.js')
 const Discord = require('discord.js')
 const client = new Client()
 const {
     prefix,
     token,
-    youtubeToken
+    youtubeToken,
+    mongodblog
 }= require("./auth.json")
 const fs = require('fs')
 const Enmap = require('enmap')
 const SQLite = require("better-sqlite3");
-const sql = new SQLite('./Database/experience.sqlite');
+const sql = new SQLite('./Database/experience.sqlite')
+const techsql = new SQLite("./Database/Hades' Star/techs.sqlite")
+const mongoose = require('mongoose')
+mongoose.connect(mongodblog, { useNewUrlParser: true })
+module.exports = mongoose;
+
+const db = mongoose.connection;
+db.on("error", () => {
+    console.log("> error occurred from the database");
+});
+db.once("open", () => {
+    console.log("> successfully opened the database");
+});
 
 client.playersRolePrimeDB = new Enmap({
     name: 'playersRole',

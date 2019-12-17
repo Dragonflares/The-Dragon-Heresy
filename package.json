@@ -28,6 +28,7 @@
     "fs": "0.0.1-security",
     "highlight.js": "^9.15.10",
     "jimp": "^0.8.4",
+    "mongoose": "^5.8.1",
     "node-fetch": "^2.6.0",
     "node-gyp": "^6.0.0",
     "opusscript": "0.0.7",

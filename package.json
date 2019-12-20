@@ -21,6 +21,7 @@
     "canvas": "^2.6.0",
     "canvas-constructor": "^3.1.0",
     "common-tags": "^1.8.0",
+    "discord-paginationembed": "^1.0.3",
     "discord.js": "^11.5.1",
     "enmap": "^5.2.1",
     "ffmpeg": "0.0.4",

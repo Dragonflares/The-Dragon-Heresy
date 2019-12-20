@@ -13,8 +13,14 @@ const SQLite = require("better-sqlite3");
 const sql = new SQLite('./Database/experience.sqlite')
 const techsql = new SQLite("./Database/Hades' Star/techs.sqlite")
 const mongoose = require('mongoose')
-mongoose.connect(mongodblog, { useNewUrlParser: true })
-module.exports = mongoose;
+const GuildModel = require('./Models/Guild')
+
+
+
+
+
+mongoose.connect(mongodblog, { useNewUrlParser: true, useUnifiedTopology: true })
+
 
 const db = mongoose.connection;
 db.on("error", () => {
@@ -23,6 +29,8 @@ db.on("error", () => {
 db.once("open", () => {
     console.log("> successfully opened the database");
 });
+
+module.exports = mongoose;
 
 client.playersRolePrimeDB = new Enmap({
     name: 'playersRole',
@@ -92,7 +100,7 @@ client.on('guildMemberAdd', member => {
     if (!channel) {
         return console.log('channel doesnt exist')
     }
-    channel.send(`Welcome ${member}! Feel free to read the RuleSet in the Rules channel and feel free to join any of our common chat channels, we are very happy to have you around. Come and say hi!`)
+    channel.send(`Welcome ${member}! May the Light of the Khala guide you.`)
 })
 
 client.on("message", async message => {

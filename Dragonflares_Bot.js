@@ -13,24 +13,22 @@ const SQLite = require("better-sqlite3");
 const sql = new SQLite('./Database/experience.sqlite')
 const techsql = new SQLite("./Database/Hades' Star/techs.sqlite")
 const mongoose = require('mongoose')
-const GuildModel = require('./Models/Guild')
 
 
-
-
-
+mongoose.set('useCreateIndex', true)
+mongoose.set('useFindAndModify', false);
 mongoose.connect(mongodblog, { useNewUrlParser: true, useUnifiedTopology: true })
 
 
-const db = mongoose.connection;
-db.on("error", () => {
+const mongodb = mongoose.connection;
+mongodb.on("error", () => {
     console.log("> error occurred from the database");
 });
-db.once("open", () => {
+mongodb.once("open", () => {
     console.log("> successfully opened the database");
 });
 
-module.exports = mongoose;
+client.db = mongodb;
 
 client.playersRolePrimeDB = new Enmap({
     name: 'playersRole',

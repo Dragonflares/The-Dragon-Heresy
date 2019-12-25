@@ -2,9 +2,10 @@ const {Schema, model} = require('mongoose')
 
 const Tech = Schema ({
     name: String,
-    level: String,
+    level: Number,
     category: String,
-    order: Int32Array
+    order: Number,
+    playerId: Number
 })
 
-module.exports = model("Tech", Tech)
+module.exports = model("Tech", Tech, "Tech")

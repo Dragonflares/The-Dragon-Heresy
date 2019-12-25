@@ -1,16 +1,17 @@
 const {Schema, model} = require('mongoose')
+const Mongoose = require('mongoose')
 
 const Battlegroup = Schema ({
-    Corp: String,
+    Corp: Number,
     name: String,
     captain: {
-        type: Schema.Types.ObjectId, ref: 'Member'
+        type: Mongoose.Types.ObjectId, ref: "Member"
     },
     members: [
-    {
-        type: Schema.Types.ObjectId, ref: 'Member'
-    }
-    ],
+        {
+            type: Mongoose.Types.ObjectId, ref: "Member"
+        }
+    ]
 })
 
-module.exports = model("Battlegroup", Battlegroup)
+module.exports = model("Battlegroup", Battlegroup, "Battlegroup")

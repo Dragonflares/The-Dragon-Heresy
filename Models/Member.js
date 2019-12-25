@@ -1,19 +1,23 @@
 const {Schema, model} = require('mongoose')
+const Mongoose = require('mongoose')
 
 const Member = Schema ({
     name: String,
+    discordId:{ 
+        type: Number,
+        required: true,
+        unique: true
+    },
     rank: String,
-    rslevel: String,
+    rslevel: Number,
     wsStatus: String,
-    Corp: {type: Schema.Types.ObjectId, ref: 'Corp'},
+    Corp: {type: Mongoose.Types.ObjectId, ref: "Corp"},
     timezone: String,
-    Battleship: {type: Schema.Types.ObjectId, ref: 'Battleship'},
-    Miner: {type: Schema.Types.ObjectId, ref: 'Miner'},
-    Transport: {type: Schema.Types.ObjectId, ref: 'Transport'},
     SupportShip: String,
-    techs: [
-        {type: Schema.Types.ObjectId, ref: 'Tech'}
-    ]
+    techs: [{ type: Schema.Types.ObjectId, ref: 'Tech' }],
+    battleship: { type: Schema.Types.ObjectId, ref: 'Battleship' },
+    transport: { type: Schema.Types.ObjectId, ref: 'Transport' },
+    miner: { type: Schema.Types.ObjectId, ref: 'Miner' }
 })
 
-module.exports = model("Member", Member)
+module.exports = model("Member", Member, "Member")

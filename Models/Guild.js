@@ -1,15 +1,17 @@
 const {Schema, model} = require('mongoose')
+const Mongoose = require('mongoose')
 
 const Corp = Schema ({
-    corpId: String,
+    corpId: Number,
     name: String,
-    level: Int32Array,
-    members: [
-    {
-        type: Schema.Types.ObjectId, ref: 'Member'
-    }
-    ],
-    battlegroups: [{type: Schema.Types.ObjectId, ref: 'Battlegroup'}]
+    level:{ 
+        type: Number,
+        default: 1
+    },
+    members: [{
+        type: Mongoose.Types.ObjectId, ref: "Member"
+    }],
+    battlegroups: [{type: Mongoose.Types.ObjectId, ref: "Battlegroup"}]
 })
 
-module.exports = model("Corp", Corp)
+module.exports = model("Corp", Corp, "Corp")

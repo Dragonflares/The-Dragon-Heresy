@@ -1,13 +1,14 @@
 const {Schema, model} = require('mongoose')
+const Mongoose = require('mongoose')
 
 const Battleship = Schema ({
     name: String,
-    level: Int32Array,
-    weapon: {type: Schema.Types.ObjectId, ref: 'Tech'},
-    shield: {type: Schema.Types.ObjectId, ref: 'Tech'},
+    level: Number,
+    weapon: {type: Mongoose.Types.ObjectId, ref: 'Techs'},
+    shield: {type: Mongoose.Types.ObjectId, ref: 'Techs'},
     support: [
-        {type: Schema.Types.ObjectId, ref: 'Tech'}
+        {type: Mongoose.Types.ObjectId, ref: 'Techs'}
     ]
 })
 
-module.exports = model("Battleship", Battleship)
+module.exports = model("Battleship", Battleship, "Battleship")

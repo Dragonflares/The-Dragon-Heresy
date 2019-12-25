@@ -6871,5 +6871,7 @@
             "64,000"
         ],
         "Description": "A strong, slow Rocket that can be launched within a limited range and does massive Area damage to all enemy ships when it reaches its destination.\nEnemy ships can fire on the Rocket using normal targeting rules. The rocket still delivers a small amount of Area damage on a smaller radius to enemy ships if neutralized before reaching its destination.\nBlueprints are obtained by researching level 10+ Tetrahedrons.\nSpeed: 600AU/m in Red Star. 60AU/h in White Star.\nCooldown: 10m in Red Star. 4d 4h in White Star.\n"
+        ,
+        "Category": "Support"
     }
 }

@@ -69,13 +69,13 @@ async function MigrateBattlegroup(message, client, corpBeta) {
             }
         )
         let battlegroup1Members = client.battlegroups.get(`${message.guild.id}`, "battlegroup1.members")
-        battlegroup1Members.forEach(member => {
+        await battlegroup1Members.forEach(member => {
             MemberModel.findOne({discordId: member.toString()}, (err, ObtainedMember) => {
                 if(member === battlegroup1captain) {
                     battlegroup1.captain = ObtainedMember._id
                 }
                 let knownbattlegroup = "battlegroup1"
-                ObtainedMember.battlegroupRank =  client.playersRolePrimeDB.set(`${member}`, `role${knownbattlegroup}`)
+                ObtainedMember.battlegroupRank = "Well, Something."
                 ObtainedMember.save()
                 battlegroup1.members.push(ObtainedMember)
             })
@@ -93,15 +93,19 @@ async function MigrateBattlegroup(message, client, corpBeta) {
             }
         )
         let battlegroup2Members = client.battlegroups.get(`${message.guild.id}`, "battlegroup2.members")
-        battlegroup2Members.forEach(member => {
+        await battlegroup2Members.forEach(member => {
             MemberModel.findOne({discordId: member.toString()}, (err, ObtainedMember) => {
-                if(member === battlegroup2captain) {
-                    battlegroup2.captain = ObtainedMember._id
+                if(member === "661308958585257995") {}
+                else {
+                        if(member === battlegroup2captain) {
+                        battlegroup2.captain = ObtainedMember._id
+                    }
+
+                    let knownbattlegroup = "battlegroup2"
+                    ObtainedMember.battlegroupRank = "Well, Something."
+                    ObtainedMember.save()
+                    battlegroup2.members.push(ObtainedMember)
                 }
-                let knownbattlegroup = "battlegroup2"
-                ObtainedMember.battlegroupRank =  client.playersRolePrimeDB.set(`${member}`, `role${knownbattlegroup}`)
-                ObtainedMember.save()
-                battlegroup2.members.push(ObtainedMember)
             })
         })
         corpBeta.battlegroups.push(battlegroup2)

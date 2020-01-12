@@ -1,4 +1,5 @@
 const {Schema, model} = require('mongoose')
+const Mongoose = require('mongoose')
 
 const Battlegroup = Schema ({
     Corp: String,

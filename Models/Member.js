@@ -1,21 +1,8 @@
 const {Schema, model} = require('mongoose')
+const Mongoose = require('mongoose')
 
 const Member = Schema ({
     name: String,
-<<<<<<< 5c9602f204adb29178889aec39bdc1adc3d9300d
-    rank: String,
-    rslevel: String,
-    wsStatus: String,
-    Corp: {type: Schema.Types.ObjectId, ref: 'Corp'},
-    timezone: String,
-    Battleship: {type: Schema.Types.ObjectId, ref: 'Battleship'},
-    Miner: {type: Schema.Types.ObjectId, ref: 'Miner'},
-    Transport: {type: Schema.Types.ObjectId, ref: 'Transport'},
-    SupportShip: String,
-    techs: [
-        {type: Schema.Types.ObjectId, ref: 'Tech'}
-    ]
-=======
     discordId:{ 
         type: String,
         required: true,
@@ -38,7 +25,6 @@ const Member = Schema ({
     battleship: { type: Mongoose.Types.ObjectId, ref: 'Battleship' },
     transport: { type: Mongoose.Types.ObjectId, ref: 'Transport' },
     miner: { type: Mongoose.Types.ObjectId, ref: 'Miner' }
->>>>>>> Bot version 1.0! Release to public
 })
 
 module.exports = model("Member", Member)

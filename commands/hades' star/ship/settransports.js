@@ -1,94 +1,142 @@
 let TechData = require("../../../Database/Hades' Star/techs.json")
-let Player = require("../../../player.js")
+let { RichEmbed } = require("discord.js")
+const Mongoose = require('mongoose')
+const GuildModel = require('../../../Models/Guild')
+const BattlegroupModel = require('../../../Models/Battlegroup')
+const BattleshipModel = require('../../../Models/Battleship')
+const MemberModel = require('../../../Models/Member')
+const MinerModel = require('../../../Models/Miner')
+const TechModel = require('../../../Models/Techs')
+const TransportModel = require('../../../Models/Transport')
 
 module.exports = {
-    name: "setplayertransport",
+    name: "settransport",
     aliases: ["settp"],
     category: "hades' star",
     subcategory: "ship",
-    description: "Sets the player's intended transport for White Stars.",
-    usage: "&setplayertransport, then asnwer the bot's questions. Don't state any levels unless asked for.",
+    description: "Sets the Member's intended transport for White Stars.",
+    usage: "&settransport, then asnwer the bot's questions. Don't state any levels unless asked for.",
     run: async (client, message, args) => {
         let targetb
         let user = message.mentions.users.first()
         if(!user){
             targetb = message.guild.member(message.author)
         }
-        else return message.channel.send("You cannot set another player's transport!")
-
-        client.playerDB.ensure(`${targetb.id}`, Player.player(targetb, message))
-
-        
-        let transportname
-        let transportlevel
-        let transporteconomy
-        let transportsupport
-        message.channel.send("Please name your transport")
-        try {
-            transportname = await message.channel.awaitMessages(message2 => message2.content.length < 16 , {
-                maxMatches: 1,
-                time: 40000,
-                errors: ['time', 'length']
-            });
-        } catch (err) {
-            console.error(err);
-            return message.channel.send("Invalid transport name, check if it's larger than 15 characters.");
+        else if(message.author.id === client.creator) {
+            targetb = user
         }
+        else return message.channel.send("You cannot set another Member's Transport!")
 
-        message.channel.send("Please state your transport's level")
-        try {
-            transportlevel = await message.channel.awaitMessages(message2 => message2.content < 7 && message2.content > 0 , {
-                maxMatches: 1,
-                time: 40000,
-                errors: ['time', 'level']
-            });
-        } catch (err) {
-            console.error(err);
-            return message.channel.send("Invalid transport level.");
-        }
-        client.playerDB.set(`${message.author.id}`, `${transportname.first().content}`, `transport.name`)
-
-        client.playerDB.set(`${message.author.id}`, transportlevel.first().content , `transport.level`)
-        
-        client.playerDB.set(`${message.author.id}`,  [] , `transport.economy`)
-        message.channel.send("Please state your transport's economy modules, pressing enter between each of them.")
-        var i = 0
-        for(i ; i < (parseInt(transportlevel.first().content)) ; i++) {
-            try {
-                transporteconomy = await message.channel.awaitMessages(message2 => TechData[message2] && TechData[message2].Category === "Economy", {
-                    maxMatches: 1,
-                    time: 40000,
-                    errors: ['time', 'name']
-                });
-            } catch (err) {
-                console.error(err);
-                return message.channel.send("Invalid transport's economy module.");
-            }
-            let techlevel = await client.playerDB.get(`${message.author.id}`, `techs.${transporteconomy.first().content}`)
-            if(techlevel == 0) return message.channel.send("You don't have this economy module researched!")
-            client.playerDB.push(`${message.author.id}`, `${transporteconomy.first().content} ${techlevel}`, `transport.economy`)
-        }
-        if(parseInt(transportlevel.first().content) > 2) {
-            message.channel.send("Please state your transport's support module")
-            try {
-                transportsupport = await message.channel.awaitMessages(message2 => TechData[message2] && TechData[message2].Category === "Support", {
-                    maxMatches: 1,
-                    time: 40000,
-                    errors: ['time', 'name']
-                });
-            } catch (err) {
-                console.error(err);
-                return message.channel.send("Invalid transport's support module.");
-            }
-            let techlevel = await client.playerDB.get(`${message.author.id}`, `techs.${transportsupport.first().content}`)
-            if(techlevel == 0) return message.channel.send("You don't have this support module researched!")
-            client.playerDB.set(`${message.author.id}`, `${transportsupport.first().content} ${techlevel}`, `transport.support`)
-            return message.channel.send("Your transport for white stars is now set.")
+        let member = (await MemberModel.findOne({discordId: targetb.id.toString()}).catch(err => console.log(err)))
+        if(!member) {
+            if(!user)
+                return message.channel.send("You haven't joined any Corporations yet! Join one to be able to have a Transport set.")
+            else
+                return message.channel.send("This Member hasn't joined any Corporations yet! Get them to join one to be able to have a Transport set")
         }
         else {
-            return message.channel.send("Your transport for white stars is now set.")
+            await MemberModel.findOne({discordId: targetb.id.toString()}).populate("Corp").exec((err, Obtained) => {
+                if(err) {
+                    message.channel.send("An unexpected error ocurred, we will see how to handle it.")
+                    return console.log(err)
+                }
+                else {
+                    if(Obtained.Corp.corpId != message.guild.id.toString())
+                        if(!user)
+                            return message.channel.send("You aren't on your Corp's main server.")
+                        else
+                            return message.channel.send("The Member you attempted to request a Transport from isn't from this Corporation.")
+                    TransportModel.findOne({_id: Obtained.transport}, (err, Transport) => {
+                        if(!Transport) {
+                            let NewTransport = new TransportModel({
+                                _id: new Mongoose.Types.ObjectId(),
+                                economy: []
+                            })
+                            Obtained.transport = NewTransport._id
+                            createModifyTransport(message, targetb, client, Obtained, NewTransport)
+                        }
+                        else {
+                            createModifyTransport(message, targetb, client, Obtained, Transport)
+                        }
+                    }).catch(err => console.log(err))
+                }
+            })
         }
-
-
     }
+}
+
+async function createModifyTransport(message, targetb, client, Obtained, Transport){
+    let transportname
+    let transportlevel
+    let transporteconomy
+    let transportsupport
+    message.channel.send("Please name your transport")
+    try {
+        transportname = await message.channel.awaitMessages(message2 => message2.content.length < 16 
+            && message2.author.id === targetb.id, {
+            maxMatches: 1,
+            time: 40000,
+            errors: ['time', 'length']
+        });
+    } catch (err) {
+        console.error(err);
+        return message.channel.send("Invalid transport name, check if it's larger than 15 characters.");
+    }
+
+    message.channel.send("Please state your transport's level")
+    try {
+        transportlevel = await message.channel.awaitMessages(message2 => message2.content < 7 && message2.content > 0 
+            && message2.author.id === targetb.id, {
+            maxMatches: 1,
+            time: 40000,
+            errors: ['time', 'level']
+        });
+    } catch (err) {
+        console.error(err);
+        return message.channel.send("Invalid transport level.");
+    }
+    
+    if(parseInt(transportlevel.first().content) > 1) {
+        message.channel.send("Please state your transport's support module")
+        try {
+            transportsupport = await message.channel.awaitMessages(message2 => TechData[message2] && TechData[message2].Category === "Support", {
+                maxMatches: 1,
+                time: 40000,
+                errors: ['time', 'name']
+            });
+        } catch (err) {
+            console.error(err);
+            return message.channel.send("Invalid transport's support module.");
+        }
+        let supporttech = await (TechModel.findOne({name: transportsupport.first().content, playerId: targetb.id.toString()}).catch(err => console.log(err)))
+        if(supporttech.level == 0) return message.channel.send("You don't have this support module researched!")
+        Transport.support = supporttech._id
+    }
+    let repetitions = parseInt(transportlevel.first().content)
+
+    Transport.name = transportname.first().content
+    Transport.level = parseInt(transportlevel.first().content)
+    Transport.economy = []
+
+    message.channel.send("Please state your transport's economy modules, pressing enter between each of them.")
+    var i = 0
+
+    for(i ; i < repetitions ; i++) {
+        try {
+            transporteconomy = await message.channel.awaitMessages(message2 => TechData[message2] && TechData[message2].Category === "Economy", {
+                maxMatches: 1,
+                time: 40000,
+                errors: ['time', 'name']
+            });
+        } catch (err) {
+            console.error(err);
+            return message.channel.send("Invalid transport's economy modules.");
+        }
+        let economytech = await (TechModel.findOne({name: transporteconomy.first().content, playerId: targetb.id.toString()}).catch(err => console.log(err)))
+        if(economytech.level == 0) return message.channel.send("You don't have this economy module researched!")
+        Transport.economy.push(economytech)
+    }
+    Transport.save()
+    Obtained.save()
+    return message.channel.send("Your transport for white stars is now set.")
 }

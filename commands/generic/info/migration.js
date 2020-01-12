@@ -40,13 +40,14 @@ module.exports = {
                 if(!corp) {
                     corpBeta = new GuildModel({
                         _id: new Mongoose.Types.ObjectId(),
-                        corpId: message.guild.id,
-                        name: message.guild.name
+                        corpId: message.guild.id.toString(),
+                        name: message.guild.name,
+                        members: []
                     })
                     corpBeta.save().catch(err => console.log(err))
                 }
                 corpmembers.forEach(member => {
-                    MemberModel.findOne({discordId: member.id}, (err, corpMember) => {
+                    MemberModel.findOne({discordId: member.id.toString()}, (err, corpMember) => {
                         if(err) console.log(err)
                         else{
                             client.playerDB.ensure(`${member.id}`, Cormyr.player(member, message))
@@ -58,12 +59,12 @@ module.exports = {
                                 }
                                 else {
                                     MigratePlayer(member, message, client, corpBeta)
+                                    setTimeout(saveCorporation, 25000, corpBeta)
                                 }
                             }
                         }
                     })
                 })
-                setTimeout(SaveCorp, 50000, corpBeta, message)
             }
         })
     }
@@ -74,7 +75,7 @@ async function MigratePlayer(member, message, client, corpBeta) {
     ThePlayer = new MemberModel({
         _id: new Mongoose.Types.ObjectId(),
         name: member.nickname,
-        discordId: member.id,
+        discordId: member.id.toString(),
         rank: client.playerDB.get(`${member.id}`,`rank`),
         rslevel: client.playerDB.get(`${member.id}`,`rslevel`),
         wsStatus: client.playerDB.get(`${member.id}`,`whitestaraviability`),
@@ -100,17 +101,12 @@ async function MigrateTech(member, techname, order, player, client) {
         level: techlevel,
         category: TechData[techname].Category,
         order: order,
-        playerId: member.id
+        playerId: member.id.toString()
     })
     player.techs.push(TECH)
     TECH.save().catch(err => console.log(err))
 }
 
-async function SaveCorp(corpBeta, message){
-    GuildModel.findByIdAndUpdate({_id: corpBeta._id},
-        {$set:{members: corpBeta.members}},
-        (err, newThing) =>
-        {
-            message.channel.send("Added " + corpBeta.members.length)
-        })
+async function saveCorporation(corpBeta) {
+    corpBeta.save()
 }

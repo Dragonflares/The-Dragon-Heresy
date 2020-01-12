@@ -1,6 +1,9 @@
 let TechData = require("../../../Database/Hades' Star/techs.json")
 let { RichEmbed } = require("discord.js")
-let Player = require("../../../player.js")
+const CorpModel = require("../../../Models/Guild")
+const MemberModel = require("../../../Models/Member")
+const Mongoose = require('mongoose')
+const TechModel = require("../../../Models/Techs")
 
 module.exports = {
     name: "playerprofile",
@@ -10,16 +13,6 @@ module.exports = {
     description: "Shows info about yourself or a certain player.",
     usage: "&playerprofile (player)",
     run: async (client, message, args) => {
-        let targetb
-        let userb = message.mentions.users.first()
-        if(!userb){
-            targetb = message.guild.member(message.author)
-        }
-        else targetb = message.guild.member(userb)
-
-        client.playerDB.ensure(`${targetb.id}`, Player.player(targetb, message))
-
-        const messagesplit = message.content.split(" ")
         let target
         const user = message.mentions.users.first()
         if(!user) {
@@ -28,21 +21,41 @@ module.exports = {
         else {
             target = message.guild.member(user)
         }  
-
-        let ProfileEmbed = new RichEmbed().setColor("RANDOM")
-        if(!target.nickname) ProfileEmbed.setTitle(`Player: **${target.user.username}**`)
-        else ProfileEmbed.setTitle(`Player: **${target.nickname}**`)
-        let playerrank = client.playerDB.get(`${target.id}`,`rank`)
-        let playercorp = client.playerDB.get(`${target.id}`,`corp`)
-        let playertimezone = client.playerDB.get(`${target.id}`,`timezone`)
-        let playerrslevel = client.playerDB.get(`${target.id}`,`rslevel`)
-        let playerwhitestaron = client.playerDB.get(`${target.id}`,`whitestaraviability`)
-
-        ProfileEmbed.addField(`*Rank*`, playerrank)
-        ProfileEmbed.addField(`*Time Zone*`, `GMT ${playertimezone}`) 
-        ProfileEmbed.setFooter("For the techs this player has, use &playertech, for their white star battleship, use &playerbattleship")
-        ProfileEmbed.addField(`*Red Star level*`, `${playerrslevel}`)
-        ProfileEmbed.addField(`*Avaible for White Stars*`, `${playerwhitestaron}`)
-        return message.channel.send(ProfileEmbed)
+        let CorpMember
+        let CorpMember2 = (await MemberModel.findOne({discordId: target.id.toString()}).catch(err => console.logg(err)))
+        if(!CorpMember2) {
+            if(!user) return message.channel.send("You were never part of a Corporation! You must join one to have a profile!")
+            else return message.channel.send("This Member isn't part of any Corporation, therefore has no profile.")
+        }
+        else {
+            await MemberModel.findOne({discordId: target.id.toString()}).populate("Corp").exec((err, result) => {
+                if(err) return console.log(err)
+                else {
+                    CorpMember = result
+                    return setTimeout(createProfile, 500, message, CorpMember)
+                }
+            })
+        }
     }
+}
+
+
+async function createProfile(message, CorpMember){
+    let ProfileEmbed = new RichEmbed().setColor("RANDOM")
+    ProfileEmbed.setTitle(`Player: **${CorpMember.name}**`)
+
+    let playerrank = CorpMember.rank
+    let playercorp = CorpMember.Corp.name
+    let playertimezone = CorpMember.timezone
+    let playerrslevel = CorpMember.rslevel
+    let playerwhitestaron = CorpMember.wsStatus
+
+    ProfileEmbed.addField(`*Corporation*`, `${playercorp}`)
+    ProfileEmbed.addField(`*Rank*`, playerrank)
+    ProfileEmbed.addField(`*Time Zone*`, `GMT ${playertimezone}`) 
+    ProfileEmbed.addField(`*Red Star level*`, `${playerrslevel}`)
+    ProfileEmbed.addField(`*Avaible for White Stars*`, `${playerwhitestaron}`)
+    ProfileEmbed.setFooter("For the techs this player has, use &playertech, for their white star battleship, use &playerbattleship")
+    
+    return message.channel.send(ProfileEmbed)
 }

@@ -1,4 +1,8 @@
-let TechData = require("../../../Database/Hades' Star/techs.json")
+const CorpModel = require("../../../Models/Guild")
+const MemberModel = require("../../../Models/Member")
+const Mongoose = require('mongoose')
+const TechModel = require("../../../Models/Techs")
+const TechData = require("../../../Database/Hades' Star/techs.json")
 let Player = require("../../../player.js")
 
 module.exports = {
@@ -9,14 +13,14 @@ module.exports = {
     description: "Updates the level of a specific tech you own.",
     usage: "&updatetech <tech>(no blank spaces) <level>",
     run: async (client, message, args) => {
-        let targetb
+        let target
         let user = message.mentions.users.first()
         if(!user){
-            targetb = message.guild.member(message.author)
+            target = message.guild.member(message.author)
         }
-        else return message.channel.send("You cannot set another player's tech!")
-
-        client.playerDB.ensure(`${targetb.id}`, Player.player(targetb, message))
+        else if(message.author.id === client.creator)
+            target = user
+        else return message.channel.send("You cannot set another Member's tech!")
 
         const messagesplit = message.content.split(" ")
         const tech = messagesplit[1]
@@ -31,63 +35,24 @@ module.exports = {
         if((0 > techlevel) || Number(TechData[tech].Level[TechData[tech].Level.length - 1]) < (techlevel)) {
             return message.channel.send(`The level you gave is invalid for that tech!`)
         }
-        client.playerDB.set(`${message.author.id}`, parseInt(techlevel, 10), `techs.${tech}`)
-        let techcategory = TechData[tech].Category
-
-        if(techcategory === "Weapons") {
-            let battleshiptech = client.playerDB.get(`${message.author.id}`, `battleship.weapon`)
-            let techname = battleshiptech.split(" ")
-            if(techname[0] === tech){
-                client.playerDB.set(`${message.author.id}`, `${tech} ${techlevel}`, `battleship.weapon`)
-            }
+        let MemberResult = (await MemberModel.findOne({discordId: target.id.toString()}))
+        if(!MemberResult)
+            return message.channel.send("You aren't part of any Corporation. Join a Corporation first.")
+        else{
+            MemberModel.findOne({discordId: target.id.toString()}).populate('Corp').exec((err, MemberDataResult) => {
+                if(err)
+                    return console.log(err)
+                if(MemberDataResult.Corp.corpId === message.guild.id.toString()) 
+                    return ModifyTech(tech, target, techlevel, message)    
+                else 
+                    return message.channel.send("You aren't on your Corporation's server!")
+            })
         }
-        else if(techcategory === "Shields") {
-            let battleshiptech = client.playerDB.get(`${message.author.id}`, `battleship.shield`)
-            let techname = battleshiptech.split(" ")
-            if(techname[0] === `${tech}`){
-                client.playerDB.set(`${message.author.id}`, `${tech} ${techlevel}`, `battleship.shield`)
-            }
-        }
-        else if(techcategory === "Support") {
-            let battleshiptech = client.playerDB.get(`${message.author.id}`, `battleship.support`)
-            for(let techb of battleshiptech){
-                let techname = techb.split(" ")
-                if(techname[0] === tech){
-                    client.playerDB.remove(`${message.author.id}`, `${techb}`, `battleship.support`)
-                    client.playerDB.push(`${message.author.id}`, `${tech} ${techlevel}`, `battleship.support`)
-                }
-            }
-            let transporttech = client.playerDB.get(`${message.author.id}`, `transport.support`)
-            let technamea = transporttech.split(" ")
-            if(technamea[0] === tech){
-                client.playerDB.set(`${message.author.id}`, `${tech} ${techlevel}`, `transport.support`)
-            }
-            let minertech = client.playerDB.get(`${message.author.id}`, `miner.support`)
-            let technameb = minertech.split(" ")
-            if(technameb[0] === tech){
-                client.playerDB.set(`${message.author.id}`, `${tech} ${techlevel}`, `miner.support`)
-            }
-        }
-        else if(techcategory === "Economy"){
-            let transporttech = client.playerDB.get(`${message.author.id}`, `transport.economy`)
-            for(let techb of transporttech){
-                let techname = techb.split(" ")
-                if(techname[0] === tech){
-                    client.playerDB.remove(`${message.author.id}`, `${techb}`, `transport.economy`)
-                    client.playerDB.push(`${message.author.id}`, `${tech} ${techlevel}`, `transport.economy`)
-                }
-            }
-        }
-        else if(techcategory === "Mining"){
-            let minertech = client.playerDB.get(`${message.author.id}`, `miner.mining`)
-            for(let techb of minertech){
-                let techname = techb.split(" ")
-                if(techname[0] === tech){
-                    client.playerDB.remove(`${message.author.id}`, `${techb}`, `miner.mining`)
-                    client.playerDB.push(`${message.author.id}`, `${tech} ${techlevel}`, `miner.mining`)
-                }
-            }
-        }
-        return message.channel.send(`Tech level updated.`)
     }
+}
+
+async function ModifyTech(tech, target, techlevel, message){
+    TechModel.findOneAndUpdate({name: tech, playerId: target.id.toString()}, {level: techlevel})
+    .catch(err => console.log(err))
+    return message.channel.send(`Tech level updated.`)
 }

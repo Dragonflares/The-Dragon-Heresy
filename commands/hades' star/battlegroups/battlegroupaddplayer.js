@@ -1,7 +1,13 @@
 let TechData = require("../../../Database/Hades' Star/techs.json")
 let { RichEmbed } = require("discord.js")
-let Player = require("../../../player.js")
-let Battlegroup = require("../../../battlegroup.js")
+const Mongoose = require('mongoose')
+const GuildModel = require('../../../Models/Guild')
+const BattlegroupModel = require('../../../Models/Battlegroup')
+const BattleshipModel = require('../../../Models/Battleship')
+const MemberModel = require('../../../Models/Member')
+const MinerModel = require('../../../Models/Miner')
+const TechModel = require('../../../Models/Techs')
+const TransportModel = require('../../../Models/Transport')
 
 module.exports = {
     name: "battlegroupaddmember",
@@ -16,43 +22,124 @@ module.exports = {
         let user = message.mentions.users.first()
         if(!user) targetb = message.guild.member(message.author)
         else targetb = message.guild.member(user)
-
-        client.playerDB.ensure(`${targetb.id}`, Player.player(targetb, message))
-        client.playersRolePrimeDB.ensure(`${targetb.id}`, Battlegroup.battlegroupMember())
-
-        let authorrank = client.playerDB.get(`${message.author.id}`, "rank")
-        if(authorrank === "Officer" || authorrank ==="First Officer"){}
-        else return message.channel.send("You must be at least an Officer to add someone to a battlegroup!")
-
-        let battlegroup1 = client.battlegroups.get(`${message.guild.id}`, "battlegroup1.name")
-        let battlegroup1members = client.battlegroups.get(`${message.guild.id}`, "battlegroup2.members")
-        let battlegroup2 = client.battlegroups.get(`${message.guild.id}`, "battlegroup2.name")
-        let battlegroup2members =client.battlegroups.get(`${message.guild.id}`, "battlegroup2.members")
-        if(!battlegroup1) return message.channel.send("You have no battlegroups!")
-
-
+        
         const messagesplit = message.content.split(" ")
-        if(!messagesplit[1]) return message.channel.send("You must specify a battlegroup name!")
-        let knownbattlegroup
-        if(battlegroup1 === messagesplit[1]) {
-            if(battlegroup1members.length === 15){
-                return message.channel.send("This battlegroup is already at the max amount of members!")
-            }
-            knownbattlegroup = "battlegroup1"
+        if(!messagesplit[1] || messagesplit[1].startsWith("<@")) return message.channel.send("You must specify a battlegroup name first!")
+
+        let officer
+
+        let author = (await MemberModel.findOne({discordId: message.author.id.toString()}).catch(err => console.log(err)))
+        if(!author) {
+            return message.channel.send("You haven't joined any Corporations yet! Join one to be able to be added to a White Star Battlegroup.")
         }
-        else if(battlegroup2 === messagesplit[1]) {
-            if(battlegroup2members.length === 15){
-                return message.channel.send("This battlegroup is already at the max amount of members!")
-            }
-            knownbattlegroup = "battlegroup2"
+        else {
+            await MemberModel.findOne({discordId: message.author.id.toString()}).populate("Corp").exec((err, authored) => {
+                if(err) {
+                    message.channel.send("An unexpected error ocurred, please contact my creator.")
+                    return console.log(err)
+                }
+                else if(authored.Corp.corpId != message.guild.id.toString()) {
+                    if(!user) {}
+                    else {
+                        return message.channel.send("You cannot add a Member to a White Star Battlegroup of a Corporation you don't belong to!")
+                    }
+                }
+                else {
+                    officer = authored
+                }
+            })
         }
-        else return message.channel.send("There's no battlegroup with this name in the corp!")
-        if(!messagesplit[2] || (messagesplit[2].indexOf("<@") > -1)) return message.channel.send("You must specify a category for this member!")
-        if(messagesplit[2].toLowerCase() === "captain") {
-            message.channel.send(`Are you sure you want to set ${targetb.user.username} as the new captain? Yes/No`)
-            let response
+        let BattlegroupMember
+
+        let member = (await MemberModel.findOne({discordId: targetb.id.toString()}).catch(err => console.log(err)))
+        if(!member) {
+            if(!user)
+                return message.channel.send("You haven't joined any Corporations yet! Join one to be able to be added to a White Star Battlegroup.")
+            else
+                return message.channel.send("This Member hasn't joined any Corporations yet! Get them to join yours to be added to a White Star Battlegroup.")
+        }
+        else {
+            await MemberModel.findOne({discordId: targetb.id.toString()}).populate("Corp").exec((err, Obtained) => {
+                if(err) {
+                    message.channel.send("An unexpected error ocurred, please contact my creator.")
+                    return console.log(err)
+                }
+                else {
+                    if(Obtained.Corp.corpId != message.guild.id.toString()) {
+                        if(!user)
+                            return message.channel.send("You cannot join a battlegroup of a different Corporation than your own!")
+                        else
+                            return message.channel.send("This Member isn't part of your Corporation.")
+                    }
+                    else {
+                        BattlegroupMember = Obtained
+                        BattlegroupCheck(officer, BattlegroupMember, message, client)
+                    }
+                }
+            })
+        }
+    }
+}
+
+async function BattlegroupCheck(officer, BattlegroupMember, message, client) {
+    BattlegroupModel.findOne({
+        Corp: message.guild.id.toString(), name: message.content.split(" ")[1]
+    }, (err, ObtainedBG) => {
+        if(!ObtainedBG) {
+            return message.channel.send("There's no battlegroup with said name in this Corporation!")
+        }
+        else {
+            if(officer.rank === "Officer" || officer.rank ==="First Officer") {
+                addMemberToBattlegroup(BattlegroupMember, message, client, ObtainedBG)
+            }  
+            else return message.channel.send("You must be at least an Officer to add someone to a battlegroup!")
+        }
+    }).catch(err => console.log(err))
+}
+
+async function addMemberToBattlegroup(BattlegroupMember, message, client, Battlegroup) {
+    let messagesplit = message.content.split(" ")
+    if(!messagesplit[2] || messagesplit[2].startsWith("<@")) return message.channel.send("You must specify a role for this Member.")
+    
+    if(!Battlegroup.members.includes(BattlegroupMember._id)) {
+        if(BattlegroupMember.battlegroupRank != "") {
+            return message.channel.send("This person belongs to another Battlegroup already!")
+        }
+        await captainValidation(BattlegroupMember, message, messagesplit, client, Battlegroup)
+        BattlegroupMember.battlegroupRank = messagesplit[2]
+        BattlegroupMember.save()
+        Battlegroup.members.push(BattlegroupMember)
+        Battlegroup.save()
+        message.channel.send("A member has been added to this battlegroup!")
+    }
+    else {
+        await captainValidation(BattlegroupMember, message, messagesplit, client, Battlegroup)
+        BattlegroupMember.battlegroupRank = messagesplit[2]
+        BattlegroupMember.save()
+        message.channel.send("The role of a Member in this Battlegroup has been updated")
+    }
+}
+
+async function captainValidation(BattlegroupMember, message, messagesplit, client, Battlegroup) {
+    if(messagesplit[2].toLowerCase() === "captain") {
+        message.channel.send(`Are you sure you want to set ${BattlegroupMember.name} as the new captain? Yes/No`)
+        let response
+        try {
+            response = await message.channel.awaitMessages(message2 => message2.content.length < 4 , {
+                maxMatches: 1,
+                time: 30000,
+                errors: ['time', 'length']
+            });
+        }
+        catch (err) {
+            console.error(err);
+            return message.channel.send("Invalid confirmation.");
+        }
+        if(response.first().content.toLowerCase() === "yes") {
+            message.channel.send("Which new role do you wish to give to the previous captain?")
+            let response2
             try {
-                response = await message.channel.awaitMessages(message2 => message2.content.length < 4 , {
+                response2 = await message.channel.awaitMessages(message2 => message2.content.length < 50 , {
                     maxMatches: 1,
                     time: 30000,
                     errors: ['time', 'length']
@@ -60,52 +147,29 @@ module.exports = {
             }
             catch (err) {
                 console.error(err);
-                return message.channel.send("Invalid confirmation.");
+                return message.channel.send("Aborting captain change.");
             }
-            if(response.first().content.toLowerCase() === "yes") {
-                message.channel.send("Which new role do you wish to give to the previous captain?")
-                let response2
-                try {
-                    response2 = await message.channel.awaitMessages(message2 => message2.content.length < 50 , {
-                        maxMatches: 1,
-                        time: 30000,
-                        errors: ['time', 'length']
-                    });
+            if(response2.first().content.toLowerCase() === "captain") return message.channel.send("Nice joke, you cannot set him as Captain again to make a loop. Aborting process.")
+            MemberModel.findOne({_id: Battlegroup.captain}, (err, Captain) => {
+                if(err) {
+                    message.channel.send("An unexpected error ocurred, please contact my creator.")
+                    return console.log(err)
                 }
-                catch (err) {
-                    console.error(err);
-                    return message.channel.send("Aborting captain change.");
+                else if(!Captain) {
+                    return message.channel.send("There's something weird about this")
                 }
-                if(response2.first().content == "Captain") return message.channel.send("Nice joke, you cannot set him as Captain again to make a loop. Aborting process.")
-                client.playersRolePrimeDB.set(`${client.battlegroups.get(`${message.guild.id}`, `${knownbattlegroup}.captain`)}`, `${response2.first().content}`, `role${knownbattlegroup}`)
-                client.battlegroups.set(`${message.guild.id}`, targetb.id, `${knownbattlegroup}.captain`)
-
-                
-            }
-            else if(response.first().content.toLowerCase() === "no") {
-                return message.channel.send("Well! Seems like our captain remains the same!")
-            }
-            else {
-                return message.channel.send("Invalid confirmation.");
-            }
+                else {
+                    Captain.battlegroupRank = response2.first().content
+                    Captain.save()
+                }
+            })
+            Battlegroup.captain = BattlegroupMember._id
         }
-        let playersfound = client.battlegroups.get(`${message.guild.id}`, `${knownbattlegroup}.members`)
-        if(playersfound.indexOf(targetb.id) < 0) {
-            client.battlegroups.push(`${message.guild.id}`, targetb.id, `${knownbattlegroup}.members`)
-        }
-        
-        let playerrole = client.playersRolePrimeDB.get(`${targetb.id}`, `role${knownbattlegroup}`)
-        if(!playerrole) {
-            client.playersRolePrimeDB.set(`${targetb.id}`, `${messagesplit[2]}`, `role${knownbattlegroup}`)
-            client.playersRolePrimeDB.set(`${targetb.id}`, `${targetb.id}`, "player")
-        }
-        else if(playerrole.toLowerCase() === "captain"){
-            return message.channel.send("You cannot change the captain's role without setting another Captain first!")
+        else if(response.first().content.toLowerCase() === "no") {
+            return message.channel.send("Well! Seems like our captain remains the same!")
         }
         else {
-            client.playersRolePrimeDB.set(`${targetb.id}`, `${messagesplit[2]}`, `role${knownbattlegroup}`)
-            client.playersRolePrimeDB.set(`${targetb.id}`, `${targetb.id}`, "player")
+            return message.channel.send("Invalid confirmation.");
         }
-        return message.channel.send("A member has been added to this battlegroup!")
     }
 }

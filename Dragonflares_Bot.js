@@ -2,6 +2,7 @@ const { Client, Collection } = require('discord.js')
 const Discord = require('discord.js')
 const client = new Client()
 const {
+    owner,
     prefix,
     token,
     youtubeToken,
@@ -19,6 +20,7 @@ mongoose.set('useCreateIndex', true)
 mongoose.set('useFindAndModify', false);
 mongoose.connect(mongodblog, { useNewUrlParser: true, useUnifiedTopology: true })
 
+client.creator = owner
 
 const mongodb = mongoose.connection;
 mongodb.on("error", () => {
@@ -29,6 +31,15 @@ mongodb.once("open", () => {
 });
 
 client.db = mongodb;
+client.db.createCollection("Corp")
+client.db.createCollection("Member")
+client.db.createCollection("Tech")
+client.db.createCollection("Battleship")
+client.db.createCollection("Battlegroup")
+client.db.createCollection("Miner")
+client.db.createCollection("Transport")
+
+
 
 client.playersRolePrimeDB = new Enmap({
     name: 'playersRole',

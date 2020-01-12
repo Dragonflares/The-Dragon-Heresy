@@ -1,7 +1,3 @@
-const { RichEmbed } = require("discord.js");
-const { stripIndents } = require("common-tags");
-const fs = require("fs")
-const {Schema, model} = require('mongoose')
 const Mongoose = require('mongoose')
 const GuildModel = require('../../../Models/Guild')
 const BattlegroupModel = require('../../../Models/Battlegroup')
@@ -32,7 +28,7 @@ module.exports = {
                 if(!corp) {
                     corpBeta = new GuildModel({
                         _id: new Mongoose.Types.ObjectId(),
-                        corpId: message.guild.id,
+                        corpId: message.guild.id.toString(),
                         name: message.guild.name
                     })
                     corpBeta.save().catch(err => console.log(err))
@@ -40,7 +36,7 @@ module.exports = {
                 MigrateBattlegroup(message,client, corpBeta)
                 setTimeout(SaveCorp, 25000, corpBeta, message)
                 corpmembers.forEach(member => {
-                    MemberModel.findOne({discordId: member.id}, (err, corpMember) => {
+                    MemberModel.findOne({discordId: member.id.toString()}, (err, corpMember) => {
                         if(err) console.log(err)
                         else{
                             client.playerDB.ensure(`${member.id}`, Cormyr.player(member, message))
@@ -68,37 +64,43 @@ async function MigrateBattlegroup(message, client, corpBeta) {
         let battlegroup1 = new BattlegroupModel(
             {
                 _id: new Mongoose.Types.ObjectId,
-                Corp: message.guild.id,
+                Corp: message.guild.id.toString(),
                 name: battlegroup1name
             }
         )
         let battlegroup1Members = client.battlegroups.get(`${message.guild.id}`, "battlegroup1.members")
         battlegroup1Members.forEach(member => {
-            MemberModel.findOne({discordId: member}, (err, ObtainedMember) => {
+            MemberModel.findOne({discordId: member.toString()}, (err, ObtainedMember) => {
                 if(member === battlegroup1captain) {
                     battlegroup1.captain = ObtainedMember._id
                 }
+                let knownbattlegroup = "battlegroup1"
+                ObtainedMember.battlegroupRank =  client.playersRolePrimeDB.set(`${member}`, `role${knownbattlegroup}`)
+                ObtainedMember.save()
                 battlegroup1.members.push(ObtainedMember)
             })
         })
         corpBeta.battlegroups.push(battlegroup1)
-        setTimeout(SaveBattlegroup, 12000, battlegroup1)
+        setTimeout(SaveBattlegroup, 5000, battlegroup1)
     }
     if(!battlegroup2name) {}
     else {
         let battlegroup2 = new BattlegroupModel(
             {
                 _id: new Mongoose.Types.ObjectId,
-                Corp: message.guild.id,
+                Corp: message.guild.id.toString(),
                 name: battlegroup2name
             }
         )
         let battlegroup2Members = client.battlegroups.get(`${message.guild.id}`, "battlegroup2.members")
         battlegroup2Members.forEach(member => {
-            MemberModel.findOne({discordId: member}, (err, ObtainedMember) => {
+            MemberModel.findOne({discordId: member.toString()}, (err, ObtainedMember) => {
                 if(member === battlegroup2captain) {
                     battlegroup2.captain = ObtainedMember._id
                 }
+                let knownbattlegroup = "battlegroup2"
+                ObtainedMember.battlegroupRank =  client.playersRolePrimeDB.set(`${member}`, `role${knownbattlegroup}`)
+                ObtainedMember.save()
                 battlegroup2.members.push(ObtainedMember)
             })
         })
@@ -138,7 +140,7 @@ async function MigrateBattleship(member, message, client) {
                     })  
             }
         }
-        MemberModel.findOneAndUpdate({discordId: member.id},{
+        MemberModel.findOneAndUpdate({discordId: member.id.toString()},{
             $set: {battleship: Battleship._id}
         }, (err, newThing) =>
         {
@@ -175,7 +177,7 @@ async function MigrateMiner(member, message, client) {
                     Miner.mining.push(techrequest)
                 })  
         }
-        MemberModel.findOneAndUpdate({discordId: member.id},{
+        MemberModel.findOneAndUpdate({discordId: member.id.toString()},{
             $set: {miner: Miner._id}
         }, (err, newThing) =>
         {
@@ -214,7 +216,7 @@ async function MigrateTransport(member, message, client) {
                 })  
         }
 
-        MemberModel.findOneAndUpdate({discordId: member.id},{
+        MemberModel.findOneAndUpdate({discordId: member.id.toString()},{
             $set: {transport: Transport._id}
         }, (err, newThing) =>
         {

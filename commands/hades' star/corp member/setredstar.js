@@ -1,4 +1,6 @@
-let Player = require("../../../player.js")
+const CorpModel = require("../../../Models/Guild")
+const MemberModel = require("../../../Models/Member")
+const Mongoose = require('mongoose')
 
 module.exports = {
     name: "setredstar",
@@ -8,19 +10,38 @@ module.exports = {
     description: "Changes your red star level.",
     usage: "&setredstar <level>",
     run: async (client, message, args) => {
-        let targetb
+        let target
         let user = message.mentions.users.first()
         if(!user){
-            targetb = message.guild.member(message.author)
+            target = message.guild.member(message.author)
         }
-        else return message.channel.send("You can't set another player's red star level!")
+        else if(message.author.id === client.creator)
+            target = user
+        else return message.channel.send("You cannot set another Member's Red Star Level!")
 
         client.playerDB.ensure(`${targetb.id}`, Player.player(targetb, message))
 
         const messagesplit = message.content.split(" ")
         let level = messagesplit[1]
-        if(isNaN(parseInt(level))) return message.channel.send("Invalid RedStar level.")
-        client.playerDB.set(`${message.author.id}`, messagesplit[1], "rslevel")
-        return message.channel.send("Your RedStar level has been set.")
+        if(isNaN(parseInt(level))) return message.channel.send("Invalid Red Star level.")
+        let MemberResult = (await MemberModel.findOne({discordId: target.id.toString()}))
+        if(!MemberResult)
+            return message.channel.send("You aren't part of any Corporation. Join a Corporation first.")
+        else{
+            MemberModel.findOne({discordId: target.id.toString()}).populate('Corp').exec((err, MemberDataResult) => {
+                if(err)
+                    return console.log(err)
+                if(MemberDataResult.Corp.corpId === message.guild.id.toString()) 
+                    return ModifyRedStarLevel(target, parseInt(level), message)    
+                else 
+                    return message.channel.send("You aren't on your Corporation's server!")
+            })
+        }
     }
+}
+
+async function ModifyRedStarLevel(target, NewRSLevel, message) {
+    MemberModel.findOneAndUpdate({discordId: target.id.toString()}, {rslevel: NewRSLevel})
+    .catch(err => console.log(err))
+    return message.channel.send(`Red Star level updated.`)
 }

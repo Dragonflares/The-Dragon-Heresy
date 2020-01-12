@@ -2,7 +2,7 @@ const CorpModel = require("../../../Models/Guild")
 const MemberModel = require("../../../Models/Member")
 const Mongoose = require('mongoose')
 const TechModel = require("../../../Models/Techs")
-const TechData = require("../../../Database/Hades' Star/techs.json")
+const TechData = require("../../../techs.json")
 let Player = require("../../../player.js")
 
 module.exports = {

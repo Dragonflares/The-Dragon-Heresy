@@ -1,4 +1,4 @@
-let TechData = require("../../../Database/Hades' Star/techs.json")
+const TechData = require("../../../techs.json")
 const { RichEmbed } = require("discord.js")
 
 module.exports = {

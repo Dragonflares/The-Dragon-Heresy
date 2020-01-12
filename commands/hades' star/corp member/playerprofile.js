@@ -1,4 +1,4 @@
-let TechData = require("../../../Database/Hades' Star/techs.json")
+const TechData = require("../../../techs.json")
 let { RichEmbed } = require("discord.js")
 const CorpModel = require("../../../Models/Guild")
 const MemberModel = require("../../../Models/Member")

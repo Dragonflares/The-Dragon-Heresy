@@ -1,4 +1,4 @@
-let TechData = require("../../../Database/Hades' Star/techs.json")
+const TechData = require("../../../techs.json")
 let Player = require("../../../player.js")
 
 module.exports = {

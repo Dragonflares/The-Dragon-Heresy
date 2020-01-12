@@ -6,7 +6,7 @@ const MemberModel = require('../../../Models/Member')
 const MinerModel = require('../../../Models/Miner')
 const TechModel = require('../../../Models/Techs')
 const TransportModel = require('../../../Models/Transport')
-const TechData = require("../../../Database/Hades' Star/techs.json")
+const TechData = require("../../../techs.json")
 const Cormyr = require("../../../player.js")
 
 

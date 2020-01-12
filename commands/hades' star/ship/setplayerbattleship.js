@@ -1,4 +1,4 @@
-let TechData = require("../../../Database/Hades' Star/techs.json")
+const TechData = require("../../../techs.json")
 const Mongoose = require('mongoose')
 const GuildModel = require('../../../Models/Guild')
 const BattlegroupModel = require('../../../Models/Battlegroup')

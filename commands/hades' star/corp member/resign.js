@@ -72,7 +72,7 @@ async function LeaveBattlegroup(ObtainedCorp, MemberDataResult) {
 
 async function LeaveCorporation(targetb, message, MemberDataResult) {
     let OldCorporation
-    GuildModel.findOne({corpId: message.guild.id.toString()}, (err, ObtainedOne) => {
+    GuildModel.findOne({corpId: MemberDataResult.Corp.corpId}, (err, ObtainedOne) => {
         if(err) return console.log(err)
         else {
             LeaveBattlegroup(ObtainedOne, MemberDataResult)   
@@ -86,7 +86,7 @@ async function LeaveCorporation(targetb, message, MemberDataResult) {
     await (GuildModel.findOne({corpId: "-1"}, (err, ObtainedOne) => {
         if(err) return console.log(err)
         if(!ObtainedOne) {
-            Corporation = new CorpModel({
+            Corporation = new GuildModel({
                 _id: new Mongoose.Types.ObjectId(),
                 name: "No Corporation worth mentioning",
                 corpId: "-1"

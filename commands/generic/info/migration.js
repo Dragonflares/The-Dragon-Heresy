@@ -43,7 +43,6 @@ module.exports = {
                         name: message.guild.name,
                         members: []
                     })
-                    corpBeta.save().catch(err => console.log(err))
                 }
                 corpmembers.forEach(member => {
                     MemberModel.findOne({discordId: member.id.toString()}, (err, corpMember) => {

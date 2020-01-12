@@ -9,4 +9,4 @@ const Tech = Schema ({
     playerId: String
 })
 
-module.exports = model("Tech", Tech)
+module.exports = model("Tech", Tech, "Tech")

@@ -12,4 +12,4 @@ const Battleship = Schema ({
     ]
 })
 
-module.exports = model("Battleship", Battleship)
+module.exports = model("Battleship", Battleship, "Battleship")

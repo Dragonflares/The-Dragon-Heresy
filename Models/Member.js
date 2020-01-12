@@ -27,4 +27,4 @@ const Member = Schema ({
     miner: { type: Mongoose.Types.ObjectId, ref: 'Miner' }
 })
 
-module.exports = model("Member", Member)
+module.exports = model("Member", Member, "Member")

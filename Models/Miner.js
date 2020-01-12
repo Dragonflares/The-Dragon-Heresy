@@ -11,4 +11,4 @@ const Miner = Schema ({
     ]
 })
 
-module.exports = model("Miner", Miner)
+module.exports = model("Miner", Miner, "Miner")

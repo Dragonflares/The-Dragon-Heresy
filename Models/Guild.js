@@ -17,4 +17,4 @@ const Corp = Schema ({
     members: [{type: Mongoose.Types.ObjectId, ref: "Member"}]
 })
 
-module.exports = model("Corp", Corp)
+module.exports = model("Corp", Corp, "Corp")

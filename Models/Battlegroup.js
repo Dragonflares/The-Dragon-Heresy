@@ -14,4 +14,4 @@ const Battlegroup = Schema ({
     ],
 })
 
-module.exports = model("Battlegroup", Battlegroup)
+module.exports = model("Battlegroup", Battlegroup, "Battlegroup")

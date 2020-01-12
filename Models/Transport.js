@@ -11,4 +11,4 @@ const Transport = Schema ({
     ]
 })
 
-module.exports = model("Transport", Transport)
+module.exports = model("Transport", Transport, "Transport")

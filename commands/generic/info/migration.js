@@ -25,7 +25,13 @@ module.exports = {
     run: async (client, message, args) => {
         if(message.mentions.users > 0) return message.channel.send("You can't tag members for this command.")
         let corpmembers = message.guild.members
-    
+        client.db.createCollection("Corp")
+        client.db.createCollection("Member")
+        client.db.createCollection("Tech")
+        client.db.createCollection("Battleship")
+        client.db.createCollection("Battlegroup")
+        client.db.createCollection("Miner")
+        client.db.createCollection("Transport")
         GuildModel.findOne({corpId: message.guild.id.toString()},(err, corp) => {
             if(err) console.log(err)
             else {

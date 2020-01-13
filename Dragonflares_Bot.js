@@ -40,35 +40,6 @@ client.db.createCollection("Miner")
 client.db.createCollection("Transport")
 
 
-
-client.playersRolePrimeDB = new Enmap({
-    name: 'playersRole',
-    autoFetch: true,
-    fetchAll: false,
-    dataDir: "./Database/Hades' Star/",
-    polling: true
-})
-client.playersPrimeDB = new Enmap({
-    name: 'playersPrime',
-    autoFetch: true,
-    fetchAll: false,
-    dataDir: "./Database/Hades' Star/",
-    polling: true
-})
-client.playerDB = new Enmap({
-    name: 'player',
-    autoFetch: true,
-    fetchAll: false,
-    dataDir: "./Database/Hades' Star/",
-    polling: true
-})
-client.battlegroups = new Enmap({
-    name: 'battlegroups',
-    autoFetch: true,
-    fetchAll: false,
-    dataDir: "./Database/Hades' Star/",
-    polling: true
-})
 client.commands = new Collection();
 client.aliases = new Collection();
 client.categories = fs.readdirSync("./commands/");

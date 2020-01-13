@@ -33,7 +33,6 @@ module.exports = {
                 if(MemberDataResult.Corp.corpId === "-1")
                     return message.channel.send("You aren't part of any Corporation. Join a Corporation first.")
                 else {
-                    ModifyRank(MemberDataResult, "Member")  
                     LeaveCorporation("Member", message, MemberDataResult)
                 }
             })

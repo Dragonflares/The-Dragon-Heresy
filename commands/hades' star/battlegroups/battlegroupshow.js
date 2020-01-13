@@ -75,6 +75,8 @@ async function ListAllBattlegroups(message, battlegroupEmbed) {
                     battlegroupEmbed.setFooter("You can specify a battlegroup name and get a detailed composition of the team")
                     let counterA = 0
                     let counterB = 0
+                    let Ready = false
+                    let battlegroup = 0
                     for(let element of Corp.battlegroups) {
                         let captain
                         let members = ""
@@ -95,17 +97,22 @@ async function ListAllBattlegroups(message, battlegroupEmbed) {
                                         }
                                         else {
                                             if(captain.discordId === result.discordId) {}
-                                            else if(counter < element.members.length - 1) {
+                                            else if(counter < (element.members.length - 1)) {
                                                 members += `${result.name}, `
                                                 counter ++
                                             }
                                             else {
                                                 members += `${result.name}.`
+                                                battlegroup++
+                                                if(battlegroup === Corp.battlegroups.length) {
+                                                    Ready = true
+                                                }
                                             }
                                             counterB++;
                                             if(counterB === element.members.length) {
                                                 battlegroupEmbed.addField(element.name, `*Captain:* ${captain.name}.\n Members: ${members}`)
-                                                if(counterA === Corp.battlegroups.length) {
+                                                counterB = 0
+                                                if(counterA === Corp.battlegroups.length && Ready) {
                                                     return message.channel.send(battlegroupEmbed)
                                                 }
                                             }
@@ -146,13 +153,17 @@ async function ListOneBattlegroup(message, messagesplit) {
                 console.log(pages)
             }
             let a = 1
-            while(a < pages) {
-                console.log(a)
-                generateImage(message, ObtainedBG, a, messagesplit)
-                a++
-            }
+            ImageLoop(a, pages, message, ObtainedBG, messagesplit)
         }
     })
+}
+
+async function ImageLoop(a, pages, message, ObtainedBG, messagesplit) {
+    while(a < pages) {
+        console.log(a)
+        await generateImage(message, ObtainedBG, a, messagesplit)
+        a++
+    }
 }
 
 async function generateImage(message, ObtainedBG, a, messagesplit) {

@@ -34,7 +34,7 @@ module.exports = {
                     return message.channel.send("You aren't part of any Corporation. Join a Corporation first.")
                 else {
                     ModifyRank(MemberDataResult, "Member")  
-                    LeaveCorporation(targetb, message, MemberDataResult)
+                    LeaveCorporation("Member", message, MemberDataResult)
                 }
             })
         }
@@ -42,11 +42,6 @@ module.exports = {
     }
 }
 
-async function ModifyRank(MemberDataResult, NewRank) {
-    MemberDataResult.rank = NewRank
-    MemberDataResult.battlegroupRank = ""
-    MemberDataResult.save()
-}
 
 async function LeaveBattlegroup(ObtainedCorp, MemberDataResult) {
     ObtainedCorp.battlegroups.forEach(battlegroup => {
@@ -70,7 +65,7 @@ async function LeaveBattlegroup(ObtainedCorp, MemberDataResult) {
     })
 }
 
-async function LeaveCorporation(targetb, message, MemberDataResult) {
+async function LeaveCorporation(newRank, message, MemberDataResult) {
     let OldCorporation
     GuildModel.findOne({corpId: MemberDataResult.Corp.corpId}, (err, ObtainedOne) => {
         if(err) return console.log(err)
@@ -93,20 +88,22 @@ async function LeaveCorporation(targetb, message, MemberDataResult) {
             })
             Corporation.save()
             NewCorporation = Corporation
-            setTimeout(assignNewCorp, 6000, targetb, message, NewCorporation, MemberDataResult)
+            setTimeout(assignNewCorp, 6000, newRank, message, NewCorporation, MemberDataResult)
         }
         else {
             NewCorporation = ObtainedOne
-            setTimeout(assignNewCorp, 6000, targetb, message, NewCorporation, MemberDataResult)
+            setTimeout(assignNewCorp, 6000, newRank, message, NewCorporation, MemberDataResult)
         }
         
     }))
     
 }
 
-async function assignNewCorp(target, message, corp, MemberDataResult) {
+async function assignNewCorp(newRank, message, corp, MemberDataResult) {
+    MemberDataResult.rank = newRank
+    MemberDataResult.battlegroupRank = ""
     MemberDataResult.Corp = corp._id
-    setTimeout(saveNewArrival, 5000, MemberDataResult)
+    MemberDataResult.save().catch(err => console.log(err))
 }
 
 async function saveNewArrival(Arrival){

@@ -69,7 +69,7 @@ async function removeBattlegroup(message) {
                 }
                 else {
                     let remainingBattlegroups = result.battlegroups.filter(battlegroup => battlegroup != ObtainedBG._id)
-                    if(remainingBattlegroups.length() === 0) {
+                    if(remainingBattlegroups.length === 0) {
                         result.battlegroups = []
                     }
                     else {

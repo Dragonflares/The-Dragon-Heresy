@@ -487,8 +487,8 @@ async function roster(message, battlegroup, page) {
                                 roster.lineTo(150 + 325 * startingPoint, 910)
                                 roster.strokeStyle = 'black'
                                 roster.lineWidth = 5
-                                roster.strokeText(`${membersupportship.support}`, `${155 + 325 * startingPoint}`, `915`)
-                                roster.fillText(`${membersupportship.support}`, `${155 + 325 * startingPoint}`, `915`)
+                                roster.strokeText(`${membersupportship.support.name} ${membersupportship.support.level}`, `${155 + 325 * startingPoint}`, `915`)
+                                roster.fillText(`${membersupportship.support.name} ${membersupportship.support.level}`, `${155 + 325 * startingPoint}`, `915`)
                             }
                             roster.strokeStyle = `#ffe803`
                             roster.lineWidth = 4
@@ -520,8 +520,8 @@ async function roster(message, battlegroup, page) {
                                 let position = 600 + 25 * miningnumber
                                 roster.strokeStyle = 'black'
                                 roster.lineWidth = 5
-                                roster.strokeText(`${mining}`, `${165 + 325 * startingPoint}`, `${position}`)
-                                roster.fillText(`${mining}`, `${165 + 325 * startingPoint}`, `${position}`)
+                                roster.strokeText(`${mining.name} ${mining.level}`, `${165 + 325 * startingPoint}`, `${position}`)
+                                roster.fillText(`${mining.name} ${mining.level}`, `${165 + 325 * startingPoint}`, `${position}`)
                                 miningnumber++
                             }
                             if(membersupportship.level > 2 ) {
@@ -530,8 +530,8 @@ async function roster(message, battlegroup, page) {
                                 roster.lineTo(150 + 325 * startingPoint, 910)
                                 roster.strokeStyle = 'black'
                                 roster.lineWidth = 5
-                                roster.strokeText(`${membersupportship.support}`, `${155 + 325 * startingPoint}`, `915`)
-                                roster.fillText(`${membersupportship.support}`, `${155 + 325 * startingPoint}`, `915`)
+                                roster.strokeText(`${membersupportship.support.name} ${membersupportship.support.level}`, `${155 + 325 * startingPoint}`, `915`)
+                                roster.fillText(`${membersupportship.support.name} ${membersupportship.support.level}`, `${155 + 325 * startingPoint}`, `915`)
                             }
                             roster.strokeStyle = `#ffe803`
                             roster.lineWidth = 4

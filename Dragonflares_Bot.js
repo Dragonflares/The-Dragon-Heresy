@@ -131,13 +131,15 @@ async function triggerXp(message)
     if(xp.experience > nxtlevel) {
         xp.level++;
         xp.experience -= nxtlevel
-        let leveleupEmbed = new Discord.RichEmbed()
-        .setTitle("Level UP!")
-        .setColor("a500ff")
-        .addField(`Congratulations ${message.author.tag}! You are now level ${xp.level}!`,
-            `Thanks for so many contributions`)
-
-        message.channel.send(leveleupEmbed)
+        if(xp.level%5 === 0) {
+            let leveleupEmbed = new Discord.RichEmbed()
+            .setTitle("Level UP!")
+            .setColor("a500ff")
+            .addField(`Congratulations ${message.author.tag}! You are now level ${xp.level}!`,
+                `Thanks for so many contributions`)
+    
+            message.channel.send(leveleupEmbed)
+        }
     }
     client.setExp.run(xp);
 }

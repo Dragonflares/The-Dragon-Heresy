@@ -68,7 +68,7 @@ async function removeBattlegroup(message) {
                     return message.channel.send("Well this is awkward. Seems like someone fucked up the database and erased your Corporation midway... (Blame it on the devs)")
                 }
                 else {
-                    let remainingBattlegroups = result.battlegroups.filter(battlegroup => battlegroup != ObtainedBG._id)
+                    let remainingBattlegroups = result.battlegroups.filter(battlegroup => battlegroup.toString() != ObtainedBG._id)
                     if(remainingBattlegroups.length === 0) {
                         result.battlegroups = []
                     }

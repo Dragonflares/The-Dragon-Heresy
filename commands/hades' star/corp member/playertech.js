@@ -58,8 +58,8 @@ module.exports = {
                             return message.channel.send("You aren't in the home server of this Member")
                     }
                     else {
-                        CorpMember = result
-                        return setTimeout(techInformation, 500, message, CorpMember)
+                         
+                        return setTimeout(techInformation, 500, message, result)
                     }
                 }
             })
@@ -73,7 +73,7 @@ async function techInformation(message, CorpMember) {
 
         let ProfileEmbed = new RichEmbed().setColor("RANDOM")
         ProfileEmbed.setTitle(`**Player: ${CorpMember.name} **`)
-        if(!messagesplit[1]){
+        if(!message.mentions.users.first() && !messagesplit[1]){
             let economytechs = ""
             let weapontechs = ""
             let miningtechs = ""

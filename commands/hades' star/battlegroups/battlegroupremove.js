@@ -58,7 +58,7 @@ async function removeBattlegroup(message) {
             return message.channel.send("There's no battlegroup with said name in this Corporation!")
         }
         else {
-            ObtainedBG.members.forEach(member => MemberModel.findOneAndUpdate({_id: member}, {battlegroupRank: ""}))
+            HandleMembers(ObtainedBG)
             GuildModel.findOne({corpId: message.guild.id.toString()}, (err, result) => {
                 if(err) {
                     message.channel.send("An unexpected error ocurred, please contact my creator.")
@@ -82,4 +82,19 @@ async function removeBattlegroup(message) {
             return message.channel.send("Battlegroup removed succesfully")
         }
     }).catch(err => console.log(err))
+}
+
+async function HandleMembers(ObtainedBG) {
+    await ObtainedBG.members.forEach(member => {
+        MemberModel.findOne({_id: member}, (err, result) => {
+            if(err) {
+                message.channel.send("An unexpected error ocurred, please contact my creator.")
+                return console.log(err)
+            }
+            else {
+                result.battlegroupRank = ""
+                result.save()
+            }
+        })
+    })
 }

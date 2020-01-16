@@ -34,7 +34,7 @@ module.exports = {
                 }
                 else {
                     let messagesplit = message.content.split(" ")
-                    if(messagesplit.length > 2)
+                    if(!messagesplit[1])
                         return message.channel.send("Please specify a Support Ship Type, either Miner or Transport, and nothing else.")
                     else if(messagesplit[1].toLowerCase() === "miner") {
                         result.SupportShip = "Miner"

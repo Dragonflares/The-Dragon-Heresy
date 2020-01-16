@@ -132,12 +132,31 @@ async function techInformation(message, CorpMember) {
                 ProfileEmbed.setDescription("No techs were found!")
             }
         }
-        else {
+        else if(!messagesplit[1] === false) {
             let foundtech = 0
             let techs = ""
             let category
             for(let techname in TechData){ 
                 if(TechData[techname].Category.toLowerCase() === messagesplit[1].toLowerCase()) {
+                    let tech = await TechModel.findOne({name: techname, playerId: CorpMember.discordId})
+                    if(tech.level > 0) {
+                        techs += `${tech.name} ${tech.level}.\n`
+                        foundtech = 1
+                        category = tech.category
+                    }
+                }
+            }
+            if(!foundtech) ProfileEmbed.setDescription("No techs were found!")
+            else {
+                ProfileEmbed.addField(`*${category}*`, `${techs}`)
+            }
+        }
+        else {
+            let foundtech = 0
+            let techs = ""
+            let category
+            for(let techname in TechData){ 
+                if(TechData[techname].Category.toLowerCase() === messagesplit[2].toLowerCase()) {
                     let tech = await TechModel.findOne({name: techname, playerId: CorpMember.discordId})
                     if(tech.level > 0) {
                         techs += `${tech.name} ${tech.level}.\n`

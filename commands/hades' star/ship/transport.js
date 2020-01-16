@@ -54,7 +54,7 @@ module.exports = {
                     return console.log(err)
                 }
                 else {
-                    if(Obtained.Corp.corpId != message.channel.id.toString())
+                    if(Obtained.Corp.corpId.toString() != message.guild.id)
                         if(!userb)
                             return message.channel.send("You aren't on your Corp's main server.")
                         else

@@ -96,7 +96,7 @@ async function createModifyMiner(message, targetb, client, Obtained, Miner){
         return message.channel.send("Invalid miner level.");
     }
     
-    if(parseInt(minerlevel.first().content) > 1) {
+    if(parseInt(minerlevel.first().content) > 2) {
         message.channel.send("Please state your miner's support module")
         try {
             minersupport = await message.channel.awaitMessages(message2 => TechData[message2] && TechData[message2].Category === "Support", {

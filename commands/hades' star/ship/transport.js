@@ -35,7 +35,7 @@ module.exports = {
                     console.log(err)
                     return message.channel.send("There was an issue requesting your profile.")
                 }
-                else if(authored.Corp.corpId != message.guild.id){
+                else if(authored.Corp.corpId.toString() != message.guild.id){
                     return message.channel.send("You aren't a Member of this Corporation!")
                 }
             })

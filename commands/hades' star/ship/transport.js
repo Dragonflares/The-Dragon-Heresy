@@ -77,7 +77,7 @@ module.exports = {
 }
 
 async function createTransportProfile(Transport, message) {
-    TransportModel.findById(Transport._id).populate("mining")
+    TransportModel.findById(Transport._id).populate("economy")
         .populate("support")
         .exec((err, obtainedTransport) => {
             if(err) {

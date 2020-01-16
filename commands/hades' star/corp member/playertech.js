@@ -132,7 +132,7 @@ async function techInformation(message, CorpMember) {
                 ProfileEmbed.setDescription("No techs were found!")
             }
         }
-        else if(!messagesplit[1] === false) {
+        else if(!message.mengtions.user.first()) {
             let foundtech = 0
             let techs = ""
             let category

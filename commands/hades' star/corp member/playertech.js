@@ -73,7 +73,7 @@ async function techInformation(message, CorpMember) {
 
         let ProfileEmbed = new RichEmbed().setColor("RANDOM")
         ProfileEmbed.setTitle(`**Player: ${CorpMember.name} **`)
-        if(!message.mentions.users.first() && !messagesplit[1]){
+        if((!message.mentions.users.first() && !messagesplit[1]) || (message.mentions.users.first() && !messagesplit[2])){
             let economytechs = ""
             let weapontechs = ""
             let miningtechs = ""
@@ -129,7 +129,7 @@ async function techInformation(message, CorpMember) {
             if(foundsupporttech) ProfileEmbed.addField("*Support*", `${supporttechs}`)
 
             if(foundeconomytech == 0 && foundminingtech == 0 && foundweapontech == 0 && foundshieldtech == 0 && foundsupporttech == 0){
-                ProfileEmbed.setDescription("No techs found!")
+                ProfileEmbed.setDescription("No techs were found!")
             }
         }
         else {

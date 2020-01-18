@@ -19,7 +19,6 @@ module.exports = {
             target = user
         else return message.channel.send("You cannot set another Member's Red Star Level!")
 
-        client.playerDB.ensure(`${targetb.id}`, Player.player(targetb, message))
 
         const messagesplit = message.content.split(" ")
         let level = messagesplit[1]

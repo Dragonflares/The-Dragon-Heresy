@@ -31,7 +31,7 @@ module.exports = {
         } 
         else return message.channel.send("Invalid declaration.")
 
-        let MemberResult = (await MemberModel.findOne({discordId: author.id.toString()}))
+        let MemberResult = (await MemberModel.findOne({discordId: message.author.id.toString()}))
         if(!MemberResult)
             return message.channel.send("You aren't part of any Corporation. Join a Corporation first.")
         else {

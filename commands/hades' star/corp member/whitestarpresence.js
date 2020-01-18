@@ -35,7 +35,7 @@ module.exports = {
         if(!MemberResult)
             return message.channel.send("You aren't part of any Corporation. Join a Corporation first.")
         else {
-            MemberModel.findOne({discordId: author.id.toString()}).populate('Corp').exec((err, MemberDataResult) => {
+            MemberModel.findOne({discordId: message.author.id.toString()}).populate('Corp').exec((err, MemberDataResult) => {
                 if(err)
                     return console.log(err)
                 if(MemberDataResult.Corp.corpId === message.guild.id.toString()) {

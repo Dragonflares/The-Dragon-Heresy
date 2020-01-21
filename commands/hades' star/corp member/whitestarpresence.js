@@ -23,7 +23,8 @@ module.exports = {
         
         let WSAviable
         const messagesplit = message.content.split(" ")
-        if(messagesplit[1].toLowerCase() === "yes"){
+        if(!messagesplit[1]) return message.channel.send("Invalid declaration.")
+        else if(messagesplit[1].toLowerCase() === "yes"){
             WSAviable = "Yes"
         }
         else if(messagesplit[1].toLowerCase() === "no"){

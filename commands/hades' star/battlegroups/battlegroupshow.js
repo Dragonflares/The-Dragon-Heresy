@@ -22,7 +22,7 @@ module.exports = {
     run: async (client, message, args) => {
         if(message.mentions.users > 0) return message.channel.send("You can't tag members for this command.")
         let battlegroupEmbed = new RichEmbed().setColor("RANDOM")
-        
+        let error = false
         let author = (await MemberModel.findOne({discordId: message.author.id.toString()}).catch(err => console.log(err)))
         if(!author) {
             return message.channel.send("You haven't joined any Corporations yet! You'll have to join one to be able to interact with Battlegroups.")

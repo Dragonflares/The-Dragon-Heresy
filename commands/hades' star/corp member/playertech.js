@@ -21,7 +21,7 @@ module.exports = {
         }
         else targetb = message.guild.member(userb)
         let requester = message.guild.member(message.author)
-
+        let error = false
 
         let author = (await MemberModel.findOne({discordId: requester.id.toString()}).catch(err => console.log(err)))
         if(!author) 
@@ -30,12 +30,15 @@ module.exports = {
             await MemberModel.findOne({discordId: requester.id.toString()}).populate("Corp").exec((err, authored) => {
                 if(err) {
                     console.log(err)
+                    error = true
                     return message.channel.send("There was an issue requesting your profile.")
                 }
                 else if(authored.Corp.corpId != message.guild.id.toString()){
+                    error = true
                     return message.channel.send("You aren't a Member of this Corporation!")
                 }
             })
+            if(error) return
         }
         let CorpMember
         let CorpMember2 = (await MemberModel.findOne({discordId: targetb.id.toString()}).catch(err => console.logg(err)))
@@ -59,7 +62,7 @@ module.exports = {
                     }
                     else {
                          
-                        return setTimeout(techInformation, 500, message, result)
+                        return techInformation(message, result)
                     }
                 }
             })

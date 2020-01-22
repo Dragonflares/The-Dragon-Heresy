@@ -4,6 +4,9 @@ const CorpModel = require("../../../Models/Guild")
 const MemberModel = require("../../../Models/Member")
 const Mongoose = require('mongoose')
 const TechModel = require("../../../Models/Techs")
+const { registerFont, Canvas} = require(`canvas`);
+const TheCanvas = require(`canvas`)
+const { Attachment } = require(`discord.js`);
 
 module.exports = {
     name: "playerprofile",

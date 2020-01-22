@@ -22,7 +22,8 @@ module.exports = {
 
         const messagesplit = message.content.split(" ")
         let level = messagesplit[1]
-        if(isNaN(parseInt(level))) return message.channel.send("Invalid Red Star level.")
+        if(!level) return message.channel.send("You must specifiy a valid Red Star level.")
+        else if(isNaN(parseInt(level))) return message.channel.send("Invalid Red Star level.")
         let MemberResult = (await MemberModel.findOne({discordId: target.id.toString()}))
         if(!MemberResult)
             return message.channel.send("You aren't part of any Corporation. Join a Corporation first.")

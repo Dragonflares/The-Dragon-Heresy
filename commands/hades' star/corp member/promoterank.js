@@ -69,28 +69,36 @@ module.exports = {
         else {
             if(member.id === author.id) return message.channel.send("You can't promote yourself like this! Don't mention anyone instead")
             let memberrank
+            let error = false
             let checkedMemberResult = (await MemberModel.findOne({discordId: member.id.toString()}))
             if(!checkedMemberResult)
                 return message.channel.send("You aren't part of any Corporation. Join a Corporation first.")
             else{
                 MemberModel.findOne({discordId: member.id.toString()}).populate('Corp').exec((err, CheckedMemberDataResult) => {
-                    if(err)
-                        return console.log(err)
-                    if(CheckedMemberDataResult.Corp.corpId != message.guild.id.toString()) 
+                    if(err) {
+                        error = true
+                        console.log(err)
+                        return message.channel.send("An unexpected error ocurred, please contact my creator.")
+                    }
+                    if(CheckedMemberDataResult.Corp.corpId != message.guild.id.toString()) {
+                        error = true
                         return message.channel.send("You can not promote a Member of another Corporation.")
+                    }
                     else
                         memberrank = CheckedMemberDataResult.rank
                 })
             }
-            
+            if(error) return
             let MemberResult = (await MemberModel.findOne({discordId: author.id.toString()}))
             if(!MemberResult)
                 return message.channel.send("You aren't part of any Corporation. Join a Corporation first.")
             else {
                 MemberModel.findOne({discordId: author.id.toString()}).populate('Corp').exec((err, MemberDataResult) => {
-                    if(err)
-                        return console.log(err)
-                    if(MemberDataResult.Corp.corpId === message.guild.id.toString()) {
+                    if(err) {
+                        console.log(err)
+                        return message.channel.send("An unexpected error ocurred, please contact my creator.")
+                    }
+                    else if(MemberDataResult.Corp.corpId === message.guild.id.toString()) {
                         let authorrank = MemberDataResult.rank         
                         if(author.hasPermission("ADMINISTRATOR")) {
                             switch(authorrank){

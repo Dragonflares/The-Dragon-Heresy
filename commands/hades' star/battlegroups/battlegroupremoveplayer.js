@@ -27,7 +27,7 @@ module.exports = {
         if(!messagesplit[1] || (messagesplit[1].indexOf("<@") > -1)) return message.channel.send("You must specify a battlegroup name!")
 
         let officer
-
+        let error = false
         let author = (await MemberModel.findOne({discordId: message.author.id.toString()}).catch(err => console.log(err)))
         if(!author) {
             return message.channel.send("You haven't joined any Corporations yet! You'll have to join one to be able to interact with Battlegroups.")
@@ -35,10 +35,12 @@ module.exports = {
         else {
             await MemberModel.findOne({discordId: message.author.id.toString()}).populate("Corp").exec((err, authored) => {
                 if(err) {
+                    error = true
                     message.channel.send("An unexpected error ocurred, please contact my creator.")
                     return console.log(err)
                 }
                 else if(authored.Corp.corpId != message.guild.id.toString()) {
+                    error = true
                     return message.channel.send("You cannot remove a Member of a White Star Battlegroup of a Corporation you don't belong to!")
                 }
                 else {
@@ -46,12 +48,13 @@ module.exports = {
                         officer = authored
                     }
                     else {
+                        error = true
                         return message.channel.send("You must be at least an Officer to remove a Member of a Battlegroup!")
                     }
                 }
             })
         }
-
+        if(error) return
         let BattlegroupMember
 
         let member = (await MemberModel.findOne({discordId: targetb.id.toString()}).catch(err => console.log(err)))

@@ -22,7 +22,7 @@ module.exports = {
         if(!messagesplit[1] || (messagesplit[1].indexOf("<@") > -1)) return message.channel.send("You must specify a battlegroup name!")
 
         let officer
-
+        
         let author = (await MemberModel.findOne({discordId: message.author.id.toString()}).catch(err => console.log(err)))
         if(!author) {
             return message.channel.send("You haven't joined any Corporations yet! You'll have ot join one to be able to interact with Battlegroups.")

@@ -24,7 +24,7 @@ module.exports = {
         }
         else targetb = message.guild.member(userb)
         let requester = message.guild.member(message.author)
-
+        let error = false
 
         let author = MemberModel.findOne({discordId: requester.id.toString()}).catch(err => console.log(err))
         if(!author) 
@@ -32,14 +32,17 @@ module.exports = {
         else {
             MemberModel.findOne({discordId: requester.id.toString()}).populate("Corp").exec((err, authored) => {
                 if(err) {
+                    error = true
                     console.log(err)
                     return message.channel.send("There was an issue requesting your profile.")
                 }
                 else if(authored.Corp.corpId != message.guild.id){
+                    error = true
                     return message.channel.send("You aren't a Member of this Corporation!")
                 }
             })
         }
+        if(error) return
         let member = MemberModel.findOne({discordId: targetb.id.toString()}).catch(err => console.log(err))
         if(!member) {
             if(!userb)

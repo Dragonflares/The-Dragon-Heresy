@@ -20,20 +20,25 @@ module.exports = {
         
         let memberrank
         let authorrank
-
+        let error = false
         let checkedMemberResult = (await MemberModel.findOne({discordId: member.id.toString()}))
         if(!checkedMemberResult)
             return message.channel.send("The Member you selected isnt't part of any Corporation. You should add him to one first.")
         else{
             MemberModel.findOne({discordId: member.id.toString()}).populate('Corp').exec((err, CheckedMemberDataResult) => {
-                if(err)
+                if(err) {
+                    error = true
                     return console.log(err)
-                if(CheckedMemberDataResult.Corp.corpId != message.guild.id.toString()) 
+                }
+                if(CheckedMemberDataResult.Corp.corpId != message.guild.id.toString()) {
+                    error = true
                     return message.channel.send("You can not demote a Member of another Corporation.")
+                }
                 else
                     memberrank = CheckedMemberDataResult.rank
             })
         }
+        if(error) return
         
         let MemberResult = (await MemberModel.findOne({discordId: author.id.toString()}))
         if(!MemberResult)

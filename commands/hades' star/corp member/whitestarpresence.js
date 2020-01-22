@@ -39,7 +39,7 @@ module.exports = {
             MemberModel.findOne({discordId: message.author.id.toString()}).populate('Corp').exec((err, MemberDataResult) => {
                 if(err)
                     return console.log(err)
-                if(MemberDataResult.Corp.corpId === message.guild.id.toString()) {
+                else if(MemberDataResult.Corp.corpId === message.guild.id.toString()) {
                     ModifyRedStarLevel(targetb, WSAviable, message)      
                 }
                 else {

@@ -74,7 +74,7 @@ module.exports = {
                         else
                             return message.channel.send("This Member isn't part of your Corporation.")
                     }
-                    else if(!Obtained.battlegroupRank) {
+                    else if(Obtained.battlegroupRank === "") {
                         BattlegroupMember = Obtained
                         return createBattlegroup(BattlegroupMember, message, client) 
                     }
@@ -89,6 +89,8 @@ module.exports = {
 
 async function createBattlegroup(BattlegroupMember, message, client) {
     let messagesplit = message.content.split(" ")
+    BattlegroupMember.battlegroupRank = "Captain"
+    BattlegroupMember.save()
     BattlegroupModel.findOne({Corp: message.guild.id.toString(), name: messagesplit[1]}, (err, result) => {
         if(err) {
             message.channel.send("An unexpected error ocurred, please contact my creator.")

@@ -30,10 +30,12 @@ module.exports = {
         else {
             await MemberModel.findOne({discordId: message.author.id.toString()}).populate("Corp").exec((err, authored) => {
                 if(err) {
+                    error = true
                     message.channel.send("An unexpected error ocurred, please contact my creator.")
                     return console.log(err)
                 }
                 else if(authored.Corp.corpId != message.guild.id.toString()) {
+                    error = true
                     return message.channel.send("You cannot request information about the White Star Battlegroups of a Corporation you don't belong to!")
                 }
                 else {
@@ -41,7 +43,7 @@ module.exports = {
                 }
             })
         }
-        
+        if(error) return
         let messagesplit = message.content.split(" ")
         if(!messagesplit[1]) {
             ListAllBattlegroups(message, battlegroupEmbed)
@@ -56,7 +58,7 @@ async function ListAllBattlegroups(message, battlegroupEmbed) {
 
     if(message.mentions.users > 0) return message.channel.send("You can`t mention a user for this command.")
     else {
-        GuildModel.findOne({corpId: message.guild.id.toString()}).populate("battlegroups").exec((err, Corp) => {
+        return await GuildModel.findOne({corpId: message.guild.id.toString()}).populate("battlegroups").exec((err, Corp) => {
             if(err) {
                 message.channel.send("An unexpected error ocurred, please contact my creator.")
                 return console.log(err)
@@ -73,58 +75,57 @@ async function ListAllBattlegroups(message, battlegroupEmbed) {
                 else {
                     battlegroupEmbed.setTitle("**Battlegroups**")
                     battlegroupEmbed.setFooter("You can specify a battlegroup name and get a detailed composition of the team")
-                    let counterA = 0
-                    let counterB = 0
-                    let Ready = false
-                    let battlegroup = 0
-                    for(let element of Corp.battlegroups) {
-                        let captain
-                        let members = ""
-                        MemberModel.findOne({_id: element.captain}, (err, result) => {
-                            if(err) {
-                                message.channel.send("An unexpected error ocurred, please contact my creator.")
-                                return console.log(err)
-                            }
-                            else {
-                                captain = result
-                                let counter = 1
-                                counterA++
-                                for(let member of element.members) {
-                                    MemberModel.findOne({_id: member}, (err, result) => {
-                                        if(err) {
-                                            message.channel.send("An unexpected error ocurred, please contact my creator.")
-                                            return console.log(err)
-                                        }
-                                        else {
-                                            if(captain.discordId === result.discordId) {}
-                                            else if(counter < (element.members.length - 1)) {
-                                                members += `${result.name}, `
-                                                counter ++
-                                            }
-                                            else {
-                                                members += `${result.name}.`
-                                                battlegroup++
-                                                if(battlegroup === Corp.battlegroups.length) {
-                                                    Ready = true
-                                                }
-                                            }
-                                            counterB++;
-                                            if(counterB === element.members.length) {
-                                                battlegroupEmbed.addField(element.name, `*Captain:* ${captain.name}.\n Members: ${members}`)
-                                                counterB = 0
-                                                if(counterA === Corp.battlegroups.length && Ready) {
-                                                    return message.channel.send(battlegroupEmbed)
-                                                }
-                                            }
-                                        }
-                                    })
-                                }
-                            }
-                        }) 
-                    }
+                    return ForgeBattlegroupEmbed(battlegroupEmbed, Corp.battlegroups, message)
                 }
             }
         })
+    }
+}
+
+async function ForgeBattlegroupEmbed(battlegroupEmbed, Battlegroups, message) {
+    let battlegroupNumber = 0
+    for(let battlegroup of Battlegroups) { 
+        let trigger = false
+        let captain
+        let members = ""
+        let memberNumber = 0
+        for(let member of battlegroup.members) {
+            MemberModel.findOne({_id: member}, (err, result) => {
+                if(err) {
+                    message.channel.send("An unexpected error ocurred, please contact my creator.")
+                    return console.log(err)
+                }
+                else {
+                    if(memberNumber === (battlegroup.members.length - 1)) {
+                        trigger = true
+                    }
+                    if(result.battlegroupRank === "Captain") {
+                        captain = result
+                    }
+                    else {
+                        if((memberNumber === (battlegroup.members.length - 2)) && !captain) {
+                            members += `${result.name}.`
+                        }
+                        else if (memberNumber === (battlegroup.members.length - 1)) {
+                            members += `${result.name}.`
+                        }
+                        else {
+                            members += `${result.name}, `
+                        }
+                    }
+                    memberNumber++
+                    if(trigger) {
+                        battlegroupEmbed.addField(battlegroup.name, `Captain: ${captain.name}. \n Members: ${members}`)
+                        battlegroupNumber++
+                        if(battlegroupNumber === Battlegroups.length) {
+                            return message.channel.send(battlegroupEmbed)
+                        }
+                        memberNumber = 0
+
+                    }
+                }
+            })
+        }
     }
 }
 

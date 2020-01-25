@@ -121,7 +121,7 @@ client.on("guildMemberUpdate", (oldMember, newMember) => {
 })
 
 async function updateRun(newMember){
-    let member = MemberModel.findOne({discordId: newMember.id.toString()})
+    let member = await MemberModel.findOne({discordId: newMember.id.toString()})
     if(!member) return
     MemberModel.findOne({discordId: newMember.id.toString()}).populate("Corp").exec((err, CorpMember) => {
         if(err) console.log(err)

@@ -14,7 +14,7 @@ const SQLite = require("better-sqlite3");
 const sql = new SQLite('./Database/experience.sqlite')
 const techsql = new SQLite("./Database/Hades' Star/techs.sqlite")
 const mongoose = require('mongoose')
-
+const MemberModel = require('./Models/Member')
 
 mongoose.set('useCreateIndex', true)
 mongoose.set('useFindAndModify', false);
@@ -109,6 +109,24 @@ client.on("message", async message => {
     }
 });
 
+client.on("guildMemberUpdate", (oldMember, newMember) => {
+    console.log("new member name" + newMember.nickname)
+    MemberModel.findOne({discordId: newMember.id.toString()}).populate("Corp").exec((err, CorpMember) => {
+        if(err) console.log(err)
+        if(!CorpMember){}
+        if(CorpMember.Corp.corpId != newMember.guild.id.toString()) {}
+        else {
+            if(!newMember.nickname) {
+                CorpMember.name = newMember.user.name
+                CorpMember.save()
+            }
+            else {
+                CorpMember.name = newMember.nickname
+                CorpMember.save()
+            }
+        }
+    })
+})
 
 async function triggerXp(message)
 {
@@ -142,5 +160,72 @@ async function triggerXp(message)
         }
     }
     client.setExp.run(xp);
+}
+
+async function LeaveBattlegroup(ObtainedCorp, MemberDataResult) {
+    ObtainedCorp.battlegroups.forEach(battlegroup => {
+        BattlegroupModel.findOne({_id: battlegroup}, (err, result) => {
+            if(err) {
+                message.channel.send("An unexpected error ocurred, please contact my creator.")
+                return console.log(err)
+            }
+            else if(!result) {
+                return message.channel.send("Well this is awkward. Seems like someone fucked up the database and erased your Corporation midway... (Blame it on the devs)")
+            }
+            else {
+                let newMemberList = result.members.filter(member => member.toString() != MemberDataResult._id)
+                if(newMemberList.length === result.members.length){}
+                else {
+                    result.members = newMemberList
+                    result.save()
+                }
+            }
+        })
+    })
+}
+
+async function LeaveCorporation(newRank, message, MemberDataResult) {
+    let OldCorporation
+    GuildModel.findOne({corpId: MemberDataResult.Corp.corpId}, (err, ObtainedOne) => {
+        if(err) return console.log(err)
+        else {
+            LeaveBattlegroup(ObtainedOne, MemberDataResult)   
+            let remainingMembers = ObtainedOne.members.filter(member => member.toString() != MemberDataResult._id.toString())
+            ObtainedOne.members = remainingMembers
+            ObtainedOne.save()
+        }
+    })
+
+    let NewCorporation
+    await (GuildModel.findOne({corpId: "-1"}, (err, ObtainedOne) => {
+        if(err) return console.log(err)
+        if(!ObtainedOne) {
+            Corporation = new GuildModel({
+                _id: new Mongoose.Types.ObjectId(),
+                name: "No Corporation worth mentioning",
+                corpId: "-1"
+            })
+            Corporation.save()
+            NewCorporation = Corporation
+            setTimeout(assignNewCorp, 6000, newRank, message, NewCorporation, MemberDataResult)
+        }
+        else {
+            NewCorporation = ObtainedOne
+            setTimeout(assignNewCorp, 6000, newRank, message, NewCorporation, MemberDataResult)
+        }
+        
+    }))
+    
+}
+
+async function assignNewCorp(newRank, message, corp, MemberDataResult) {
+    MemberDataResult.rank = newRank
+    MemberDataResult.battlegroupRank = ""
+    MemberDataResult.Corp = corp._id
+    MemberDataResult.save().catch(err => console.log(err))
+}
+
+async function saveNewArrival(Arrival){
+    Arrival.save().catch(err => console.log(err))
 }
 client.login(token);

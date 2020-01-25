@@ -54,6 +54,16 @@ async function LeaveBattlegroup(ObtainedCorp, MemberDataResult) {
             }
             else {
                 let newMemberList = result.members.filter(member => member.toString() != MemberDataResult._id)
+                if(MemberDataResult.battlegroupRank === "Captain") {
+                    result.captain = newMemberList[1]
+                    MemberModel.findOne({_id: result.captain}, (err, result) => {
+                        if(err) return console.log(err)
+                        else {
+                            result.battlegroupRank = "Captain"
+                            result.save()
+                        }
+                    }) 
+                }
                 if(newMemberList.length === result.members.length){}
                 else {
                     result.members = newMemberList

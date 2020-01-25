@@ -14,7 +14,13 @@ const SQLite = require("better-sqlite3");
 const sql = new SQLite('./Database/experience.sqlite')
 const techsql = new SQLite("./Database/Hades' Star/techs.sqlite")
 const mongoose = require('mongoose')
+const GuildModel = require('./Models/Guild')
+const BattlegroupModel = require('./Models/Battlegroup')
+const BattleshipModel = require('./Models/Battleship')
 const MemberModel = require('./Models/Member')
+const MinerModel = require('./Models/Miner')
+const TechModel = require('./Models/Techs')
+const TransportModel = require('./Models/Transport')
 
 mongoose.set('useCreateIndex', true)
 mongoose.set('useFindAndModify', false);
@@ -110,7 +116,13 @@ client.on("message", async message => {
 });
 
 client.on("guildMemberUpdate", (oldMember, newMember) => {
-    console.log("new member name" + newMember.nickname)
+    console.log("New member name " + newMember.nickname)
+    updateRun(newMember)
+})
+
+async function updateRun(newMember){
+    let member = MemberModel.findOne({discordId: newMember.id.toString()})
+    if(!member) return
     MemberModel.findOne({discordId: newMember.id.toString()}).populate("Corp").exec((err, CorpMember) => {
         if(err) console.log(err)
         if(!CorpMember){}
@@ -124,6 +136,18 @@ client.on("guildMemberUpdate", (oldMember, newMember) => {
                 CorpMember.name = newMember.nickname
                 CorpMember.save()
             }
+        }
+    })
+}
+
+client.on("guildMemberRemove", async member => {
+    console.log(member.user.username + " has left the server")
+    MemberModel.findOne({discordId: member.id.toString()}).populate("Corp").exec((err, CorpMember) => {
+        if(err) console.log(err)
+        if(!CorpMember){}
+        if(CorpMember.Corp.corpId != member.guild.id.toString()) {}
+        else {
+            LeaveCorporation("Member", CorpMember)
         }
     })
 })
@@ -166,14 +190,20 @@ async function LeaveBattlegroup(ObtainedCorp, MemberDataResult) {
     ObtainedCorp.battlegroups.forEach(battlegroup => {
         BattlegroupModel.findOne({_id: battlegroup}, (err, result) => {
             if(err) {
-                message.channel.send("An unexpected error ocurred, please contact my creator.")
                 return console.log(err)
-            }
-            else if(!result) {
-                return message.channel.send("Well this is awkward. Seems like someone fucked up the database and erased your Corporation midway... (Blame it on the devs)")
             }
             else {
                 let newMemberList = result.members.filter(member => member.toString() != MemberDataResult._id)
+                if(MemberDataResult.battlegroupRank === "Captain") {
+                    result.captain = newMemberList[1]
+                    MemberModel.findOne({_id: result.captain}, (err, result) => {
+                        if(err) return console.log(err)
+                        else {
+                            result.battlegroupRank = "Captain"
+                            result.save()
+                        }
+                    }) 
+                }
                 if(newMemberList.length === result.members.length){}
                 else {
                     result.members = newMemberList
@@ -184,7 +214,7 @@ async function LeaveBattlegroup(ObtainedCorp, MemberDataResult) {
     })
 }
 
-async function LeaveCorporation(newRank, message, MemberDataResult) {
+async function LeaveCorporation(newRank, MemberDataResult) {
     let OldCorporation
     GuildModel.findOne({corpId: MemberDataResult.Corp.corpId}, (err, ObtainedOne) => {
         if(err) return console.log(err)
@@ -207,25 +237,22 @@ async function LeaveCorporation(newRank, message, MemberDataResult) {
             })
             Corporation.save()
             NewCorporation = Corporation
-            setTimeout(assignNewCorp, 6000, newRank, message, NewCorporation, MemberDataResult)
+            setTimeout(assignNewCorp, 6000, newRank, NewCorporation, MemberDataResult)
         }
         else {
             NewCorporation = ObtainedOne
-            setTimeout(assignNewCorp, 6000, newRank, message, NewCorporation, MemberDataResult)
+            setTimeout(assignNewCorp, 6000, newRank, NewCorporation, MemberDataResult)
         }
         
     }))
     
 }
 
-async function assignNewCorp(newRank, message, corp, MemberDataResult) {
+async function assignNewCorp(newRank, corp, MemberDataResult) {
     MemberDataResult.rank = newRank
     MemberDataResult.battlegroupRank = ""
     MemberDataResult.Corp = corp._id
     MemberDataResult.save().catch(err => console.log(err))
 }
 
-async function saveNewArrival(Arrival){
-    Arrival.save().catch(err => console.log(err))
-}
 client.login(token);

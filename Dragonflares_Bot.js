@@ -142,6 +142,8 @@ async function updateRun(newMember){
 
 client.on("guildMemberRemove", async member => {
     console.log(member.user.username + " has left the server")
+    let member2 = await MemberModel.findOne({discordId: member.id.toString()})
+    if(!member2) return
     MemberModel.findOne({discordId: member.id.toString()}).populate("Corp").exec((err, CorpMember) => {
         if(err) console.log(err)
         if(!CorpMember){}

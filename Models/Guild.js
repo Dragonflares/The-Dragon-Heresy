@@ -9,6 +9,10 @@ const Corp = Schema ({
         type: Number,
         default: 0
     },
+    premium: {
+        type: Boolean,
+        default: false
+    },
     level:{ 
         type: Number,
         default: 1

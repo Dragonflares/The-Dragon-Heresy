@@ -79,6 +79,9 @@ module.exports = {
                     if(techkeys[a] === "Description" || techkeys[a] === "Category") {
                         embed.addField(`*${techkeys[a]}*`, `${techinfo[a]}`)
                     }
+                    if(techkeys[a] === "Image") {
+                        embed.setThumbnail(`${techkeys[a]}`)
+                    }
                     else {
                         embed.addField(`*${techkeys[a]}*`, `${techinfo[a][tech[2] - 1]}`)
                     }

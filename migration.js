@@ -3,15 +3,15 @@ const { stripIndents } = require("common-tags");
 const fs = require("fs")
 const {Schema, model} = require('mongoose')
 const Mongoose = require('mongoose')
-const GuildModel = require('../../../Models/Guild')
-const BattlegroupModel = require('../../../Models/Battlegroup')
-const BattleshipModel = require('../../../Models/Battleship')
-const MemberModel = require('../../../Models/Member')
-const MinerModel = require('../../../Models/Miner')
-const TechModel = require('../../../Models/Techs')
-const TransportModel = require('../../../Models/Transport')
+const GuildModel = require('./Models/Guild')
+const BattlegroupModel = require('./Models/Battlegroup')
+const BattleshipModel = require('./Models/Battleship')
+const MemberModel = require('./Models/Member')
+const MinerModel = require('./Models/Miner')
+const TechModel = require('./Models/Techs')
+const TransportModel = require('./Models/Transport')
 const TechData = require("../../../techs.json")
-const Cormyr = require("../../../player.js")
+const Cormyr = require("./player.js")
 
 
 

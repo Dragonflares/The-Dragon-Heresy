@@ -99,6 +99,7 @@
             "200,000"
         ],
         "Description": "Increases the total storage of the Transport ship, allowing more Shipments or Artifacts to be carried at once.\nBlueprints are obtained by researching level 1+ Blue Crystals.\n",
+        "Image": "https://i.imgur.com/wanekIY.png",
         "Category": "Economy"
 },
     "ShipmentComputer": {
@@ -201,6 +202,7 @@
             "25,000"
         ],
         "Description": "Automatically picks up shipments from intermediate waypoints, if those shipments' destination matches any of the ship's subsequent waypoints. Automatically picked up shipments add a bonus to their reward (the bonus is added to the base value of the shipment).\nShipment computer is one of two modules that affect crystal shipment rewards.\nBlueprints are obtained by researching level 2+ Blue Crystals.\n",
+        "Image": "https://i.imgur.com/XSoIdlz.png",
         "Category": "Economy"
 },
     "TradeBoost": {
@@ -317,6 +319,7 @@
             "30,000"
         ],
         "Description": "While active, increases payout on shipment delivery.\nBlueprints are obtained by researching level 3+ Blue Crystals.\nCooldown: 23h\n",
+        "Image": "https://i.imgur.com/v13skEx.png",
         "Category": "Economy"
 },
     "Rush": {
@@ -419,6 +422,7 @@
             "24,000"
         ],
         "Description": "Increases the speed of the owner Transport ship when it carries any shipments destined to the ship's next waypoint. The speed increase is proportional to the number of shipments destined to the next waypoint.\nBlueprints are obtained by researching level 3+ Blue Crystals.\n",
+        "Image": "https://i.imgur.com/geD2hDJ.png",
         "Category": "Economy"
     },
     "TradeBurst": {
@@ -550,6 +554,7 @@
         ],
         "Description": "Counts shipments delivered during the activation period. After a minimum threshold is met, every new credits shipment delivered by the owner ship while the module is active will yield a bonus reward.\nTrade Burst is similar to Trade Boost, but it requires the delivering of a set amount of shipments before it activates. It lasts for twice as long and has the same cool-down, while providing larger rewards after the threshold, which makes this module a good competitor to Trade Boost.\nBlueprints are obtained by researching level 4+ Blue Crystals.\nCooldown: 23h\n"
 ,
+        "Image": "https://i.imgur.com/mE7337W.png",
         "Category": "Economy"
 },
     "ShipmentDrone": {
@@ -681,6 +686,7 @@
         ],
         "Description": "Shipment Autopilot has been replaced by Shipment Drone.\nLaunches a drone that will automatically pick up and deliver shipments when possible. The drone can only cross sectors if they are connected with an active Warp Lane.\nThe drone loads shipments to a single destination at a time. When it drops off more than one shipment, the entire delivery will yield a credit reward bonus proportional to the number of additional shipments delivered.\nBlueprints are obtained by researching level 5+ Blue Crystals.\nSpeed: 1,320AU/m\nLifetime: 1h\nCooldown: 1h\n"
 ,
+        "Image": "https://i.imgur.com/Gpkm522.png",
         "Category": "Economy"
 },
     "Offload": {
@@ -782,6 +788,7 @@
         ],
         "Description": "When active, the Transport ship will deliver all of its shipments upon arrival on a Trade Station, regardless of the shipments' actual destination. Shipments not originally destined to the Trade Station will yield a reduced payoff.\nBlueprints are obtained by researching level 5+ Blue Crystals.\nCooldown: 20m\n"
 ,
+        "Image": "https://i.imgur.com/SjOrLbq.png",
         "Category": "Economy"
 },
     "ShipmentBeam": {
@@ -885,6 +892,7 @@
         ],
         "Description": "Instantly loads the lowest value shipments from any target outpost in the star system. Does not work with Artifacts.\nBlueprints are obtained by researching level 6+ Blue Crystals.\nCooldown: 5m\n"
 ,
+        "Image": "https://i.imgur.com/cpVjXKc.png",
         "Category": "Economy"
 },
     "Entrust": {
@@ -988,6 +996,7 @@
         ],
         "Description": "Allows the owner transport ship to instantly teleport its cargo to another transport ship in range. Works with shipments and fully loaded artifacts and relics.\nBlueprints are obtained by researching level 6+ Blue Crystals.\nCooldown: 10m in Red Star. 4d 4h in White Star.\n"
 ,
+        "Image": "https://i.imgur.com/xalJUsx.png",
         "Category": "Economy"
 },
     "Dispatch": {
@@ -1089,6 +1098,7 @@
         ],
         "Description": "The Transport ship initiates teleport to the planet with the most items (Shipments, Artifacts or Relics) in the star system. If more than one planets have the same amount of items, the farthest planet is picked.\nThe Teleport completes after the preparation time elapses. The preparation time is proportional to the amount of items on the target planet at the time of activation.\nBlueprints are obtained by researching level 6+ Blue Crystals.\nCooldown: 12m in Red Star. 5d in White Star.\n"
 ,
+        "Image": "https://i.imgur.com/24e85l3.png",
         "Category": "Economy"
 },
     "Recall": {
@@ -1112,6 +1122,7 @@
         ],
         "Description": "Allows your Transport ship to instantly teleport to any Trade Station in your star system.\nBlueprints are obtained by researching level 7+ Blue Crystals.\nCooldown: 1m\n"
 ,
+        "Image": "https://i.imgur.com/XqmJ64y.png",
         "Category": "Economy"
 },
     
@@ -1244,6 +1255,7 @@
         ],
         "Description": "Provides a temporary boost to Hydrogen collection speed.\nMining Boost provides an increase in mining speed for a period of 10 minutes. It is a useful module to have if you micromanage effectively and would like your Miners to work faster.\nBlueprints are obtained by researching level 1+ Blue Crystals.\nCooldown: 20m in Red Star. 8d 8h in White Star.\n"
 ,
+        "Image": "https://i.imgur.com/ZXizk2e.png",
         "Category": "Mining"
 },
     "HydrogenBayExtension": {
@@ -1321,6 +1333,7 @@
         ],
         "Description": "Increases the maximum amount of Hydrogen that a Miner ship can carry.\nSimilar in use Cargo Bay Extension; this module allows for more hydrogen to be stored in a Miner before being required to drop off the gas. It allows for longer mining trips.\nBlueprints are obtained by researching level 2+ Blue Crystals.\n"
 ,
+        "Image": "https://i.imgur.com/8K5njUG.png",
         "Category": "Mining"
 },
     "Enrich": {
@@ -1424,6 +1437,7 @@
         ],
         "Description": "Instantly increases the amount of Hydrogen stored on all asteroids in the sector.\nDetails: Asteroids have a cap of 1500 hydrogen, when using the Enrich module. Each sector can be enriched only once a day.\nBlueprints are obtained by researching level 2+ Blue Crystals.\nCooldown: 12h in Red Star. 300d in White Star.\nSector Cooldown: 1d\n"
 ,
+        "Image": "https://i.imgur.com/89SqxOF.png",
         "Category": "Mining"
 },
     "RemoteMining": {
@@ -1500,7 +1514,8 @@
             "35,000"
         ],
         "Description": "Simultaneously mines Hydrogen from all asteroid fields in the same sector, at reduced speed.\nRemote Mining is an extremely useful module that allows your Miners to extract Hydrogen from more than one asteroid at a time. However, a caveat is that, at least in the beginning, the mining speed is reduced, so a Miner equipped with a Level 1 Remote Mining module requires 3 different asteroids in the same system to mine at the same rate as a regular miner of the same level.\nBlueprints are obtained by researching level 3+ Blue Crystals.\n"
-,
+        ,
+        "Image": "https://i.imgur.com/Os7yYvL.png",
         "Category": "Mining"
 },
     "HydrogenUpload": {
@@ -1590,6 +1605,7 @@
         ],
         "Description": "Instantly uploads a percentage of collected Hydrogen to your Empire's reserves, without needing to return to a planet. N/A for the White Star.\nBlueprints are obtained by researching level 4+ Blue Crystals.\nCooldown: 4m\n"
 ,
+        "Image": "https://i.imgur.com/gUL45Xr.png",
         "Category": "Mining"
 },
     "MiningUnity": {
@@ -1703,6 +1719,7 @@
         ],
         "Description": "Increases mining collection speed for every other player that is mining in the same sector.\nBlueprints are obtained by researching level 4+ Blue Crystals.\nCooldown: 10m in Red Star. 4d 4h in White Star.\n"
 ,
+        "Image": "https://i.imgur.com/A1oUeGu.png",
         "Category": "Mining"
 },
     "Crunch": {
@@ -1792,6 +1809,7 @@
         ],
         "Description": "Instantly collects Hydrogen from asteroid fields in the current sector (limited by the Max Amount and the Miner ship's total capacity). The amount is not collected evenly from all asteroids, but one after another!\nBlueprints are obtained by researching level 5+ Blue Crystals.\nCooldown: 12h in Red Star. 300d in White Star.\n"
 ,
+        "Image": "https://i.imgur.com/yWJtniV.png",
         "Category": "Mining"
 },
     "Genesis": {
@@ -1895,6 +1913,7 @@
         ],
         "Description": "Instantly creates new asteroid fields on the Miner's current sector.\nBlueprints are obtained by researching level 5+ Blue Crystals.\nCooldown: 1d in Red Star. 600d in White Star.\nSector Cooldown: 12m in Red Star. 5d in White Star.\n"
 ,
+        "Image": "https://i.imgur.com/gL3qIpD.png",
         "Category": "Mining"
 },
     "HydrogenRocket": {
@@ -2026,6 +2045,7 @@
         ],
         "Description": "Allows the Miner ship to launch a powerful Rocket, anywhere in the star system.\nTo activate, the Miner ship must have collected at least the Required Hydrogen amount. The Hydrogen is consumed on activation.\nSpeed: 1,380AU/m in Red Star. 138AU/h in White Star.\nCooldown: 1m in Red Star. 10h in White Star.\n"
 ,
+        "Image": "https://i.imgur.com/Puphwxe.png",
         "Category": "Mining"
 },
     "MiningDrone": {
@@ -2127,6 +2147,7 @@
         ],
         "Description": "Launches an independent ship towards the targeted asteroid, which must be in range of miner ship (600AU). The drone will keep mining from the asteroid until it is depleted or its capacity fills up. After the mining drone is done, the drone will\ndeposit the hydrogen to the nearest planet.\nBlueprints are obtained by researching level 9 Blue Crystals.\nSpeed: 1,200AU/m in Red Star. 120AU/h in White Star.\nLifetime: 1h in Red Star. 25d in White Star.\nCooldown: 1h in Red Star. 25d in White Star.\n"
 ,
+        "Image": "https://i.imgur.com/5BgaFyS.png",
         "Category": "Mining"
 },
     "WeakBattery": {
@@ -2142,8 +2163,8 @@
         "Install Price": [
             "0"
         ],
-        "Description": "A weak weapon that does damage to a single target at a time.\nThe Weak Battery is the first weapon-type module you 'research', and cannot be leveled beyond Level 1. As one can infer from its one level capability, it becomes relatively useless as one progresses in the game and is largely meant solely as a tutorial item. Every Battleship created at the Shipyard is equipped with a Weak Battery by default.\nAttack Range: 120AU\n"
-,
+        "Description": "A weak weapon that does damage to a single target at a time.\nThe Weak Battery is the first weapon-type module you 'research', and cannot be leveled beyond Level 1. As one can infer from its one level capability, it becomes relatively useless as one progresses in the game and is largely meant solely as a tutorial item. Every Battleship created at the Shipyard is equipped with a Weak Battery by default.\nAttack Range: 120AU\n",
+        "Image": "https://i.imgur.com/EWHelyf.png",
         "Category": "Weapons"
 },
     "Battery": {
@@ -2261,6 +2282,7 @@
         ],
         "Description": "Does damage to a single target at a time.\nThe Battery is a reliable module and likely the first 'real' weapon to be researched. It can only fire on one target a time. Battery can be used reliably far throughout one's journey, but may requires support in higher-level Red Star missions to keep up with greater numbers of Cerberus opponents.\nBlueprints are obtained by researching level 1+ Orbs.\nAttack Range: 120AU\n"
 ,
+        "Image": "https://i.imgur.com/aosjVT5.png",
         "Category": "Weapons"
 },
     "Laser": {
@@ -2448,6 +2470,7 @@
         ],
         "Description": "A powerful weapon that does increasingly higher damage the longer it stays focused on a single target.\nThe Laser takes 45 seconds of continuous firing on a single target to reach its maximum DPS. If it must retarget for any reason, it must start over at minimum DPS again. It is commonly used against ships with high hull durability such as the Cerberus Base or Colossus.\nBlueprints are obtained by researching level 2+ Orbs.\nAttack Range: 120AU\n"
 ,
+        "Image": "https://i.imgur.com/PISox9U.png",
         "Category": "Weapons"
 },
     "MassBattery": {
@@ -2579,7 +2602,8 @@
         ],
         "Description": "Simultaneously fires on multiple enemies within firing range.\nMass Battery deals the same DPS to every target regardless of the number of targets. This makes Mass Battery useful for crowd control against low-health enemies (i.e. Sentinels).\nMass Battery is also used in White Stars to destroy multiple enemy transports and miners. Because it targets multiple at the same time, a defender would need to position multiple battleships to absorb damage or risk Mass Battery targeting utility ships and destroying them immediately.\nMass Battery is usually fitted on \"assassins,\" WS battleships that are designed for their speed and the ability to charge through an enemy's defenses and attack loaded transports and other ships. They are usually equipped with Delta Shield, Impulse, and Barrier to run right through gaps in enemy battleship formations.\nBlueprints are obtained by researching level 3+ Orbs.\nAttack Range: 120AU\n"
 ,
-        "Category": "Weapons"
+        "Image": "https://i.imgur.com/Yb7ZNJ9.png",
+    "Category": "Weapons"
 },
     "DualLaser": {
         "Level": [
@@ -2780,6 +2804,7 @@
         ],
         "Description": "Fires a laser beam against up to two enemies within range. Damage ramps up over time if both beams are active. If there are multiple targets in range, the laser will not reset after destroying a target and switching to another one.\nThe Dual Laser is, as its name implies, similar to the Laser. It differs from the latter in that it is capable of firing continuously upon two ships simultaneously. The two lasers' counts towards maximum DPS are independent of one another, but like Mass Battery, do not stack if only one enemy can be targeted.\nBlueprints are obtained by researching level 4+ Orbs.\nAttack Range: 120AU\n"
 ,
+        "Image": "https://i.imgur.com/QZorELz.png",
         "Category": "Weapons"
 },
     "Barrage": {
@@ -2953,6 +2978,7 @@
         ],
         "Description": "A battery that does additional damage to its single target when there are more enemy ships in the sector.\nMax damage calculated as cap at 16 additional enemies (17 total).\nBlueprints are obtained by researching level 5+ Orbs.\nAttack Range: 120AU\n"
 ,
+        "Image": "https://i.imgur.com/XeshCl4.png",
         "Category": "Weapons"
 },
     "DartLauncher": {
@@ -3098,6 +3124,7 @@
         ],
         "Description": "Launches a DART missile against the targeted enemy ship at regular intervals.\nThe missile can be neutralized by any enemy ship using normal targeting rules.\nWhen the missile reaches its destination it will apply direct weapon damage to the target ship only, and only if the target ship is still within the impact area.\nThis weapon will only fire on enemy ships. Rockets and Cerberus stations are ignored.\nSpeed: 840AU/m in Red Star. 84AU/h in White Star.\nCooldown: 10s in Red Star. 1h 40m in White Star.\n"
 ,
+        "Image": "https://i.imgur.com/28xyGg4.png",
         "Category": "Weapons"
 },
     "AlphaShield": {
@@ -3152,6 +3179,7 @@
         ],
         "Description": "Absorbs incoming damage until it is depleted or the activation time runs out.\nThe trusty Alpha Shield is the first shield that players will normally unlock. Veterans will remember with fondness how the Alpha Shield protected their ships at low levels and allowing repair times to be diminished or all together prevented. Its also used by some to farm lower level Red Stars due to its cheap activation cost.\nBlueprints are obtained by researching level 1+ Orbs.\nEffect Duration: 5m in Red Star. 2d 2h in White Star.\nCooldown: 5m in Red Star. 2d 2h in White Star.\n"
 ,
+        "Image": "https://i.imgur.com/J7ZcF6Q.png",
         "Category": "Shields"
 },
     "DeltaShield": {
@@ -3269,6 +3297,7 @@
         ],
         "Description": "Absorbs incoming damage and increases ship travel speed until it is deleted or the activation time runs out.\nMany players choose not to research or unlock the Delta Shield, preferring to wait for the Passive Shield due to the Hydrogen inefficiency of the former. The Delta Shield may be reused at higher levels in specific White S\nBlueprints are obtained by researching level 2+ Orbs.\nEffect Duration: 5m in Red Star. 2d 2h in White Star.\nCooldown: 5m in Red Star. 2d 2h in White Star.\n"
 ,
+        "Image": "https://i.imgur.com/7yQzsuS.png",
         "Category": "Shields"
 },
     "PassiveShield": {
@@ -3372,6 +3401,7 @@
         ],
         "Description": "A shield that is always active and slowly recharges over time.\nThe Passive Shield is an extremely useful shield. It has the same health at level 1 as a Delta Shield, at level 6. The high shield capacity, along with automatic shield regeneration, ensures that the shield is competitive at all levels. However, a manually activated shield may provide other advantages.\nBlueprints are obtained by researching level 3+ Orbs.\nRegeneration Delay: 1m 12s in Red Star. 12h in White Star.\nFull Regeneration Time: 2m 24s in Red Star. 1d in White Star.\n"
 ,
+        "Image": "https://i.imgur.com/vOx6weG.png",
         "Category": "Shields"
 },
     "OmegaShield": {
@@ -3475,6 +3505,7 @@
         ],
         "Description": "Absorbs incoming damage until it is depleted or the activation timer runs out.\nThe Omega Shield is quite similar Alpha Shield, albeit significantly superior. It can be seen as the Alpha Shield's successor.\nBlueprints are obtained by researching level 4+ Orbs.\nEffect Duration: 5m in Red Star. 2d 2h in White Star.\nCooldown: 5m in Red Star. 2d 2h in White Star.\n"
 ,
+        "Image": "https://i.imgur.com/yL9dOzV.png",
         "Category": "Shields"
 },
     "MirrorShield": {
@@ -3592,6 +3623,7 @@
         ],
         "Description": "Applies a percentage of the damage taken back to the attacker.\nBlueprints are obtained by researching level 5+ Orbs.\nEffect Duration: 5m in Red Star. 2d 2h in White Star.\nCooldown: 5m in Red Star. 2d 2h in White Star.\n"
 ,
+        "Image": "https://i.imgur.com/eTORhqJ.png",
         "Category": "Shields"
 },
     "BlastShield": {
@@ -3709,6 +3741,7 @@
         ],
         "Description": "Protects the owner ship and all friendly ships within range against area damage only. Direct weapon damage is not\nabsorbed and is applied directly to the hull of the ship. The game prioritizes any AoE damage to be first absorbed by this shield, and if depleted, proceed to damage other friendly ships hull or shield.\nBlueprints are obtained by researching level 6+ Orbs.\nEffect Duration: 5m in Red Star. 2d 2h in White Star.\nCooldown: 5m in Red Star. 2d 2h in White Star.\n"
 ,
+        "Image": "https://i.imgur.com/YABFdd8.png",
         "Category": "Shields"
 },
     "AreaShield": {
@@ -3826,6 +3859,7 @@
         ],
         "Description": "Absorbs hull damage taken by any allied ship in the effect area, including Transports and Miners.Blueprints are obtained by researching level 8+ Orbs.\nEffect Duration: 5m in Red Star. 2d 2h in White Star.\nCooldown: 5m in Red Star. 2d 2h in White Star.News Update02"
 ,
+        "Image": "https://i.imgur.com/LZLSJjr.png",
         "Category": "Shields"
 },
     "EMP": {
@@ -3969,8 +4003,8 @@
             "17,500",
             "20,000"
         ],
-        "Description": "Disables all ships, rockets and Cerberus Stations within the affected area for a short period of time, including the ship that triggered the EMP. Disabled ships do not move or fire, but can still activate Modules.\nIn public Red Stars, EMP cannot be activated without a Cerberus in the same sector as the owner ship.\nBlueprints are obtained by researching level 2+ Tetrahedrons.\nCooldown: 4m 48s in Red Star. 2d in White Star.\n"
-,
+        "Description": "Disables all ships, rockets and Cerberus Stations within the affected area for a short period of time, including the ship that triggered the EMP. Disabled ships do not move or fire, but can still activate Modules.\nIn public Red Stars, EMP cannot be activated without a Cerberus in the same sector as the owner ship.\nBlueprints are obtained by researching level 2+ Tetrahedrons.\nCooldown: 4m 48s in Red Star. 2d in White Star.\n",
+        "Image": "https://i.imgur.com/CCqzESx.png",
         "Category": "Support"
 },
     "Teleport": {
@@ -4114,8 +4148,8 @@
             "22,500",
             "25,000"
         ],
-        "Description": "After the Activation Delay, the ship teleports to the designated target, which must be within teleportation radius. Cannot teleport into Barrier areas created by enemy ships.\nBlueprints are obtained by researching level 2+ Tetrahedrons.\nActivation Delay: 5s in Red Star. 4h in White Star.\nCooldown: 6m in Red Star. 2d 12h in White Star.\n"
-,
+        "Description": "After the Activation Delay, the ship teleports to the designated target, which must be within teleportation radius. Cannot teleport into Barrier areas created by enemy ships.\nBlueprints are obtained by researching level 2+ Tetrahedrons.\nActivation Delay: 5s in Red Star. 4h in White Star.\nCooldown: 6m in Red Star. 2d 12h in White Star.\n",
+        "Image": "https://i.imgur.com/m2ENmkD.png",
         "Category": "Support"
 },
     "RedStarLifeExtender": {
@@ -4203,8 +4237,8 @@
             "25,000",
             "30,000"
         ],
-        "Description": "Adds a small amount of time to a Red Star's life when activated near the star.\nBlueprints are obtained by researching level 2+ Tetrahedrons.\nCooldown: 1h\n"
-,
+        "Description": "Adds a small amount of time to a Red Star's life when activated near the star.\nBlueprints are obtained by researching level 2+ Tetrahedrons.\nCooldown: 1h\n",
+        "Image": "https://i.imgur.com/sh74Emj.png",
         "Category": "Support"
 },
     "RemoteRepair": {
@@ -4404,8 +4438,8 @@
             "17,500",
             "20,000"
         ],
-        "Description": "Repairs a constant amount of hitpoints per second, shared among all damaged non-enemy ships within range.\nBlueprints are obtained by researching level 3+ Tetrahedrons.\nCooldown: 20m in Red Star. 8d 8h in White Star.\n"
-,
+        "Description": "Repairs a constant amount of hitpoints per second, shared among all damaged non-enemy ships within range.\nBlueprints are obtained by researching level 3+ Tetrahedrons.\nCooldown: 20m in Red Star. 8d 8h in White Star.\n",
+        "Image": "https://i.imgur.com/3qCogET.png",
         "Category": "Support"
 },
     "TimeWarp": {
@@ -4577,8 +4611,8 @@
             "27,500",
             "30,000"
         ],
-        "Description": "Speeds up time in a radius around the ship. Affects travel times, combat, artifact pickup speed, artifact research, construction of buildings, modules cooldowns and ship repair in your home system. It affects its own active time.\nOverrided by Suspend module.\nBlueprints are obtained by researching level 3+ Tetrahedrons.\nCooldown: 5m in Red Star. 2d 2h in White Star.\n"
-,
+        "Description": "Speeds up time in a radius around the ship. Affects travel times, combat, artifact pickup speed, artifact research, construction of buildings, modules cooldowns and ship repair in your home system. It affects its own active time.\nOverrided by Suspend module.\nBlueprints are obtained by researching level 3+ Tetrahedrons.\nCooldown: 5m in Red Star. 2d 2h in White Star.\n",
+        "Image": "https://i.imgur.com/COsOhNm.png",
         "Category": "Support"
 },
     "Unity": {
@@ -4708,8 +4742,8 @@
             "45,000",
             "50,000"
         ],
-        "Description": "Increases Damage Per Second for the owner ship when other players have ships in the same sector.The increase is proportional to the number of other players with ships in the sector, up to a maximum of 200% (triple damage).\nExample: If your Unity module is level 2, 1 allied player with ships in your sector gives user a 20% bonus. If 2 allied players: 40%, 3 allied players: 60%, 5 allied players: 100%, 6 allied players: 120%, (...), up to 10 allied players: 200%\nBlueprints are obtained by researching level 3+ Tetrahedrons.\nCooldown: 20m in Red Star. 8d 8h in White Star.\n"
-,
+        "Description": "Increases Damage Per Second for the owner ship when other players have ships in the same sector.The increase is proportional to the number of other players with ships in the sector, up to a maximum of 200% (triple damage).\nExample: If your Unity module is level 2, 1 allied player with ships in your sector gives user a 20% bonus. If 2 allied players: 40%, 3 allied players: 60%, 5 allied players: 100%, 6 allied players: 120%, (...), up to 10 allied players: 200%\nBlueprints are obtained by researching level 3+ Tetrahedrons.\nCooldown: 20m in Red Star. 8d 8h in White Star.\n",
+        "Image": "https://i.imgur.com/2y6BEwD.png",
         "Category": "Support"
 },
     "Sanctuary": {
@@ -4731,8 +4765,8 @@
         "Install Price": [
             "5,000"
         ],
-        "Description": "When the owner ship is about to be destroyed during combat or a Supernova, it jumps back to its home system instead. In a Red Star the corresponding ship slot will be locked for every battleship saved by sanctuary (For example: A star allowing 3 maximum battleships to be warped in, a battleship gets destroyed with sanctuary, you will not be allowed to have more than 2 battleships from that point on in that specific Red Star). Also works in the home star system when clearing newly discovered sectors from Cerberus ships. In this case ships will jump to the closest planet from your shipyard to get repaired.\nBlueprints are obtained by researching level 3+ Tetrahedrons.\n"
-,
+        "Description": "When the owner ship is about to be destroyed during combat or a Supernova, it jumps back to its home system instead. In a Red Star the corresponding ship slot will be locked for every battleship saved by sanctuary (For example: A star allowing 3 maximum battleships to be warped in, a battleship gets destroyed with sanctuary, you will not be allowed to have more than 2 battleships from that point on in that specific Red Star). Also works in the home star system when clearing newly discovered sectors from Cerberus ships. In this case ships will jump to the closest planet from your shipyard to get repaired.\nBlueprints are obtained by researching level 3+ Tetrahedrons.\n",
+        "Image": "https://i.imgur.com/kR6L7jt.png",
         "Category": "Support"
 },
     "Stealth": {
@@ -4862,8 +4896,8 @@
             "25,000",
             "27,500"
         ],
-        "Description": "Allows the ship to move completely undetected for a small amount of time, evading combat completely. Note that you still take damage from the blue star core, and any rocket, destiny or vengeance damage is applied to the ship. You cannot travel through barriers, and like all other modules, it cannot be deactivated.\nBlueprints are obtained by researching level 4+ Tetrahedrons.\nCooldown: 5m in Red Star. 2d 2h in White Star.\n"
-,
+        "Description": "Allows the ship to move completely undetected for a small amount of time, evading combat completely. Note that you still take damage from the blue star core, and any rocket, destiny or vengeance damage is applied to the ship. You cannot travel through barriers, and like all other modules, it cannot be deactivated.\nBlueprints are obtained by researching level 4+ Tetrahedrons.\nCooldown: 5m in Red Star. 2d 2h in White Star.\n",
+        "Image": "https://i.imgur.com/4kVO0bo.png",
         "Category": "Support"
 },
     "Fortify": {
@@ -5007,8 +5041,8 @@
             "32,500",
             "35,000"
         ],
-        "Description": "Reduces damage received. All Cerberus ships in the sector move toward the owner. Enemy ships and bases prefer firing on the owner over all other potential targets.\nBlueprints are obtained by researching level 4+ Tetrahedrons.\nCooldown: 6m in Red Star. 2d 12h in White Star.\n"
-,
+        "Description": "Reduces damage received. All Cerberus ships in the sector move toward the owner. Enemy ships and bases prefer firing on the owner over all other potential targets.\nBlueprints are obtained by researching level 4+ Tetrahedrons.\nCooldown: 6m in Red Star. 2d 12h in White Star.\n",
+        "Image": "https://i.imgur.com/aTkVBre.png",
         "Category": "Support"
 },
     "Impulse": {
@@ -5138,8 +5172,8 @@
             "37,500",
             "40,000"
         ],
-        "Description": "Provides the owner a quick boost that helps it travel faster along its current route. Ship speed is increased 4x for the duration of the effect.\nBlueprints are obtained by researching level 4+ Tetrahedrons.\nCooldown: 4m in Red Star. 1d 16h in White Star.\n"
-,
+        "Description": "Provides the owner a quick boost that helps it travel faster along its current route. Ship speed is increased 4x for the duration of the effect.\nBlueprints are obtained by researching level 4+ Tetrahedrons.\nCooldown: 4m in Red Star. 1d 16h in White Star.\n",
+        "Image": "https://i.imgur.com/OzUuVdI.png",
         "Category": "Support"
 },
     "AlphaRocket": {
@@ -5269,8 +5303,8 @@
             "27,500",
             "30,000"
         ],
-        "Description": "A fast but weak Rocket that can be launched towards a single fixed target. The Rocket explodes and does area damage to all enemy ships when it reaches its destination. Enemy ships can fire on the Rocket using normal targeting rules. No damage is applied if the rocket is destroyed before it reaches its destination.\nBlueprints are obtained by researching level 4+ Tetrahedrons.\nSpeed: 1,320AU/m in Red Star. 132AU/h in White Star.\nCooldown: 10m in Red Star. 4d 4h in White Star.\n"
-,
+        "Description": "A fast but weak Rocket that can be launched towards a single fixed target. The Rocket explodes and does area damage to all enemy ships when it reaches its destination. Enemy ships can fire on the Rocket using normal targeting rules. No damage is applied if the rocket is destroyed before it reaches its destination.\nBlueprints are obtained by researching level 4+ Tetrahedrons.\nSpeed: 1,320AU/m in Red Star. 132AU/h in White Star.\nCooldown: 10m in Red Star. 4d 4h in White Star.\n",
+        "Image": "https://i.imgur.com/Tlqu3Wq.png",
         "Category": "Support"
 },
     "Salvage": {
@@ -5386,8 +5420,8 @@
             "30,000",
             "32,500"
         ],
-        "Description": "Instantly restores a percentage of hull strength each time any ship is destroyed in the same sector.\nBlueprints are obtained by researching level 5+ Tetrahedrons.\n"
-,
+        "Description": "Instantly restores a percentage of hull strength each time any ship is destroyed in the same sector.\nBlueprints are obtained by researching level 5+ Tetrahedrons.\n",
+        "Image": "https://i.imgur.com/20S7tiE.png",
         "Category": "Support"
 },
     "Suppress": {
@@ -5531,8 +5565,8 @@
             "30,000",
             "32,500"
         ],
-        "Description": "Prevents a single enemy ship from firing for a small period of time. Using this module will also reset the damage of lasers, forcing them to begin ramping up from the minimum again.\nBlueprints are obtained by researching level 5+ Tetrahedrons.\nCooldown: 6m in Red Star. 2d 12h in White Star.\n"
-,
+        "Description": "Prevents a single enemy ship from firing for a small period of time. Using this module will also reset the damage of lasers, forcing them to begin ramping up from the minimum again.\nBlueprints are obtained by researching level 5+ Tetrahedrons.\nCooldown: 6m in Red Star. 2d 12h in White Star.\n",
+        "Image": "https://i.imgur.com/lFUWIZs.png",
         "Category": "Support"
 },
     "Destiny": {
@@ -5676,8 +5710,8 @@
             "32,500",
             "35,000"
         ],
-        "Description": "Does massive area damage to all enemy ships in range. Initiator ship instantly jumps to a random sector in the star system. After the jump, the ship stays disabled for a short period of time.\nCan't be activated if there are no valid teleport targets on the map.\nCan't be activated if there are no ennemies in the same sector.\nBlueprints are obtained by researching level 6+ Tetrahedrons.\nDisable Duration: 4s in every Star and 8h in White Star.\nCooldown: 5m in Red Star. 2d 2h in White Star.\n"
-,
+        "Description": "Does massive area damage to all enemy ships in range. Initiator ship instantly jumps to a random sector in the star system. After the jump, the ship stays disabled for a short period of time.\nCan't be activated if there are no valid teleport targets on the map.\nCan't be activated if there are no ennemies in the same sector.\nBlueprints are obtained by researching level 6+ Tetrahedrons.\nDisable Duration: 4s in every Star and 8h in White Star.\nCooldown: 5m in Red Star. 2d 2h in White Star.\n",
+        "Image": "https://i.imgur.com/NQQ2n6h.png",
         "Category": "Support"
 },
     "Barrier": {
@@ -5835,8 +5869,8 @@
             "37,500",
             "40,000"
         ],
-        "Description": "Creates a force field around the ship. Enemy ships and rockets cannot move while inside the force field.\nCan't use Teleport on objects that are on the effect area of Barrier.\nBlueprints are obtained by researching level 6+ Tetrahedrons.\nCooldown: 6m in Red Star. 2d 12h in White Star.\n"
-,
+        "Description": "Creates a force field around the ship. Enemy ships and rockets cannot move while inside the force field.\nCan't use Teleport on objects that are on the effect area of Barrier.\nBlueprints are obtained by researching level 6+ Tetrahedrons.\nCooldown: 6m in Red Star. 2d 12h in White Star.\n",
+        "Image": "https://i.imgur.com/w1dmSbG.png",
         "Category": "Support"
 },
     "Vengeance": {
@@ -5994,8 +6028,8 @@
             "40,000",
             "42,000"
         ],
-        "Description": "Starts activating automatically when the owner ship drops below the Hull Strength Threshold. Once the Activation Delay passes, and if the owner ship is still not destroyed, a massive explosion will apply Area damage to all enemy ships in range.\nActive Shield modules CAN be used while Vengeance is activating.\nBlueprints are obtained by researching level 7+ Tetrahedrons.\nCooldown: 5m in Red Star/Blue Star. 2d 2h in White Star.\nActivation Delay: 5s in Red Star. 10s in Blue Star. 4h in White Star.\n"
-,
+        "Description": "Starts activating automatically when the owner ship drops below the Hull Strength Threshold. Once the Activation Delay passes, and if the owner ship is still not destroyed, a massive explosion will apply Area damage to all enemy ships in range.\nActive Shield modules CAN be used while Vengeance is activating.\nBlueprints are obtained by researching level 7+ Tetrahedrons.\nCooldown: 5m in Red Star/Blue Star. 2d 2h in White Star.\nActivation Delay: 5s in Red Star. 10s in Blue Star. 4h in White Star.\n",
+        "Image": "https://i.imgur.com/zOa0rsC.png",
         "Category": "Support"
 },
     "DeltaRocket": {
@@ -6125,8 +6159,8 @@
             "52,500",
             "55,000"
         ],
-        "Description": "A very fast Rocket that does Area damage to all enemy ships when it reaches its final destination. The owner can optionally set a second waypoint after the launch.\nEnemy ships can fire on the Rocket using normal targeting rules. No damage is applied if the rocket is destroyed before it reaches its destination.\nDoes not work on sectors with Jump Gates on White Stars.\nBlueprints are obtained by researching level 7+ Tetrahedrons.\nSpeed: 1,500AU/m in Red Star. 150AU/h in White Star.\nCooldown: 10m in Red Star. 4d 4h in White Star.\n"
-,
+        "Description": "A very fast Rocket that does Area damage to all enemy ships when it reaches its final destination. The owner can optionally set a second waypoint after the launch.\nEnemy ships can fire on the Rocket using normal targeting rules. No damage is applied if the rocket is destroyed before it reaches its destination.\nDoes not work on sectors with Jump Gates on White Stars.\nBlueprints are obtained by researching level 7+ Tetrahedrons.\nSpeed: 1,500AU/m in Red Star. 150AU/h in White Star.\nCooldown: 10m in Red Star. 4d 4h in White Star.\n",
+        "Image": "https://i.imgur.com/pUdNaXj.png",
         "Category": "Support"
 },
     "Leap": {
@@ -6250,8 +6284,8 @@
             "40,000",
             "45,000"
         ],
-        "Description": "The owner ship initiates teleportation to the closest ally ship engaged in combat, anywhere in the current star system. After the activation delay period, and if the target ship is still alive, the owner ship will teleport to the object closest to the ally ship. After the jump, both the owner ship and the ally ship are disabled for a small period of time.\nBlueprints are obtained by researching level 8+ Tetrahedrons.\nCooldown: 10m in Red Star. 4d 4h in White Star.\n"
-,
+        "Description": "The owner ship initiates teleportation to the closest ally ship engaged in combat, anywhere in the current star system. After the activation delay period, and if the target ship is still alive, the owner ship will teleport to the object closest to the ally ship. After the jump, both the owner ship and the ally ship are disabled for a small period of time.\nBlueprints are obtained by researching level 8+ Tetrahedrons.\nCooldown: 10m in Red Star. 4d 4h in White Star.\n",
+        "Image": "https://i.imgur.com/k4xPAsS.png",
         "Category": "Support"
 },
     "Bond": {
@@ -6407,8 +6441,8 @@
             "40,000",
             "45,000"
         ],
-        "Description": "Creates a movement link with the targeted enemy ship. While the link is active, the enemy ship in unable to move independently. Any movement from the owner ship will be reflected on the enemy ship, so that the distance between the two ships always remains the same.\nThe owner ship will not be affected by a Barrier field activated by the enemy ship.\nThe enemy ship can break free from the link earlier by using Bond on the original ship, or a module that causes teleportation.\nDoes not work on public Red Star level 7 or lower. A ship that has a Cerberus under BOND influence cannot teleport in a public Red Star.\nDoes not work against Cerberus Storm.\nBlueprints are obtained by researching level 8+ Tetrahedrons.\nCooldown: 6m in Red Star. 2d 12h in White Star.\n"
-,
+        "Description": "Creates a movement link with the targeted enemy ship. While the link is active, the enemy ship in unable to move independently. Any movement from the owner ship will be reflected on the enemy ship, so that the distance between the two ships always remains the same.\nThe owner ship will not be affected by a Barrier field activated by the enemy ship.\nThe enemy ship can break free from the link earlier by using Bond on the original ship, or a module that causes teleportation.\nDoes not work on public Red Star level 7 or lower. A ship that has a Cerberus under BOND influence cannot teleport in a public Red Star.\nDoes not work against Cerberus Storm.\nBlueprints are obtained by researching level 8+ Tetrahedrons.\nCooldown: 6m in Red Star. 2d 12h in White Star.\n",
+        "Image": "https://i.imgur.com/2Kk738M.png",
         "Category": "Support"
 },
     "AlphaDrone": {
@@ -6538,8 +6572,8 @@
             "60,000",
             "62,000"
         ],
-        "Description": "Launches a single drone towards a destination anywhere in the Star System. The drone will automatically travel to the destination and stay there until destroyed or its activation timer runs out. Because the drone counts as an ally that is firing it can be used as a target for Leap.\nDoes not work on sectors with Jump Gates on White Stars.\nBlueprints are obtained by researching level 9+ Tetrahedrons.\nSpeed: 1,050AU/m in Red Star. 105AU/h in White Star.\nLifetime: 3m in Red Star. 1d in White Star.\nCooldown: 5m in Red Star. 2d 2h in White Star.\n"
-,
+        "Description": "Launches a single drone towards a destination anywhere in the Star System. The drone will automatically travel to the destination and stay there until destroyed or its activation timer runs out. Because the drone counts as an ally that is firing it can be used as a target for Leap.\nDoes not work on sectors with Jump Gates on White Stars.\nBlueprints are obtained by researching level 9+ Tetrahedrons.\nSpeed: 1,050AU/m in Red Star. 105AU/h in White Star.\nLifetime: 3m in Red Star. 1d in White Star.\nCooldown: 5m in Red Star. 2d 2h in White Star.\n",
+        "Image": "https://i.imgur.com/4uViioq.png",
         "Category": "Support"
 },
     "Suspend": {
@@ -6711,8 +6745,8 @@
             "60,000",
             "62,000"
         ],
-        "Description": "Slows down time in a large area around the ship. Overrides any effect of Time Warp within the effect area. An object in range of multiple Suspend areas is only affected by the highest level one.\nBlueprints are obtained by researching level 9+ Tetrahedrons.\nCooldown: 5m in Red Star. 2d 2h in White Star.\n"
-,
+        "Description": "Slows down time in a large area around the ship. Overrides any effect of Time Warp within the effect area. An object in range of multiple Suspend areas is only affected by the highest level one.\nBlueprints are obtained by researching level 9+ Tetrahedrons.\nCooldown: 5m in Red Star. 2d 2h in White Star.\n",
+        "Image": "https://i.imgur.com/Ke247PW.png",
         "Category": "Support"
 },
     "OmegaRocket": {
@@ -6870,8 +6904,8 @@
             "62,000",
             "64,000"
         ],
-        "Description": "A strong, slow Rocket that can be launched within a limited range and does massive Area damage to all enemy ships when it reaches its destination.\nEnemy ships can fire on the Rocket using normal targeting rules. The rocket still delivers a small amount of Area damage on a smaller radius to enemy ships if neutralized before reaching its destination.\nBlueprints are obtained by researching level 10+ Tetrahedrons.\nSpeed: 600AU/m in Red Star. 60AU/h in White Star.\nCooldown: 10m in Red Star. 4d 4h in White Star.\n"
-        ,
+        "Description": "A strong, slow Rocket that can be launched within a limited range and does massive Area damage to all enemy ships when it reaches its destination.\nEnemy ships can fire on the Rocket using normal targeting rules. The rocket still delivers a small amount of Area damage on a smaller radius to enemy ships if neutralized before reaching its destination.\nBlueprints are obtained by researching level 10+ Tetrahedrons.\nSpeed: 600AU/m in Red Star. 60AU/h in White Star.\nCooldown: 10m in Red Star. 4d 4h in White Star.\n",
+        "Image": "https://i.imgur.com/xf5yw8o.png",
         "Category": "Support"
     }
 }

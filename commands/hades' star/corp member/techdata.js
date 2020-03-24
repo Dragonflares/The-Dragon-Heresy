@@ -1,4 +1,4 @@
-const TechData = require("../../../techs.json")
+let TechData = require("../../../Database/Hades' Star/techs.json")
 const { RichEmbed } = require("discord.js")
 
 module.exports = {
@@ -62,8 +62,8 @@ module.exports = {
                 let techs = `${TechData[tech[1]].Description}\n`
                 embed.setTitle(`**Tech: ${tech[1]}**`)
                 embed.setDescription(techs)
-                embed.setFooter(`You may add a number between 1 and 
-                ${TechData[tech[1]].Level[TechData[tech[1]].Level.length - 1]} to get info about the required level`)
+                embed.setFooter(`You may add a number between 1 and ${TechData[tech[1]].Level[TechData[tech[1]].Level.length - 1]} to get info about the required level`)
+                embed.setThumbnail(`${TechData[tech[1]].Image}`)
                 return message.channel.send(embed)
             }
             else {
@@ -79,8 +79,8 @@ module.exports = {
                     if(techkeys[a] === "Description" || techkeys[a] === "Category") {
                         embed.addField(`*${techkeys[a]}*`, `${techinfo[a]}`)
                     }
-                    if(techkeys[a] === "Image") {
-                        embed.setThumbnail(`${techkeys[a]}`)
+                    else if(techkeys[a] === "Image") {
+                        embed.setThumbnail(`${techinfo[a]}`)
                     }
                     else {
                         embed.addField(`*${techkeys[a]}*`, `${techinfo[a][tech[2] - 1]}`)

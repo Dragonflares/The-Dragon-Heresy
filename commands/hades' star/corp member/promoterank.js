@@ -99,62 +99,7 @@ module.exports = {
                         return message.channel.send("An unexpected error ocurred, please contact my creator.")
                     }
                     else if(MemberDataResult.Corp.corpId === message.guild.id.toString()) {
-                        let authorrank = MemberDataResult.rank         
-                        if(author.hasPermission("ADMINISTRATOR")) {
-                            switch(authorrank){
-                                case "Officer": {
-                                    if(memberrank === "Officer") return message.channel.send("You can't promote another Officer!")
-                                    if(memberrank === "First Officer") return message.channel.send("You can't promote your First Officer beyond!")
-                                    if(memberrank === "Senior Member") {
-                                        ModifyRank(member, "Officer")
-                                        return message.channel.send("You have succesfully promoted the other Member")
-                                    }
-                                    else {
-                                        ModifyRank(member, "Senior Member")
-                                        return message.channel.send("You have succesfully promoted the other member")
-                                    }
-                                }
-                                case "First Officer": {
-                                    if(memberrank === "Officer") {
-                                        message.channel.send("Are you sure you want to promote this person to First Officer? Yes/No")
-                                        let response
-                                        try {
-                                            response = await (message.channel.awaitMessages(message2 => message2.content.length < 4 , {
-                                                maxMatches: 1,
-                                                time: 20000,
-                                                errors: ['time', 'length']
-                                            }))
-                                        }
-                                        catch (err) {
-                                            console.error(err);
-                                            return message.channel.send("Invalid confirmation.");
-                                        }
-                                        if(response.first().content.toLowerCase() === "yes") {
-                                            ModifyRank(member, "First Officer")
-                                            ModifyRank(author, "Officer")
-                                            return message.channel.send("You've succesfully promoted this person to First Officer. You have been demoted to Officer.")
-                                        }
-                                        if(response.first().content.toLowerCase() === "no") {
-                                            return message.channel.send("You are still our First Officer! Whew!")
-                                        }
-                                        else {
-                                            return message.channel.send("Invalid confirmation.");
-                                        }
-                                    }
-                                    else if(memberrank === "Senior Member") {
-                                        ModifyRank(member, "Officer")
-                                        return message.channel.send("You have succesfully promoted the other member")
-                                    }
-                                    else {
-                                        ModifyRank(member, "Senior Member")
-                                        return message.channel.send("You have succesfully promoted the other member")
-                                    }
-                                }
-                                default: {
-                                    return message.channel.send("You must be an officer to promote someone!")
-                                }
-                            }
-                        }
+                        upRank(MemberDataResult, memberrank, message, author, member)
                     }
                     else {
                         return message.channel.send("You aren't on your Corporation's server!")
@@ -163,6 +108,65 @@ module.exports = {
             }
         }
 
+    }
+}
+
+async function upRank(MemberDataResult, memberrank, message, author, member) {
+    let authorrank = MemberDataResult.rank         
+    if(author.hasPermission("ADMINISTRATOR")) {
+        switch(authorrank){
+            case "Officer": {
+                if(memberrank === "Officer") return message.channel.send("You can't promote another Officer!")
+                if(memberrank === "First Officer") return message.channel.send("You can't promote your First Officer beyond!")
+                if(memberrank === "Senior Member") {
+                    ModifyRank(member, "Officer")
+                    return message.channel.send("You have succesfully promoted the other Member")
+                }
+                else {
+                    ModifyRank(member, "Senior Member")
+                    return message.channel.send("You have succesfully promoted the other member")
+                }
+            }
+            case "First Officer": {
+                if(memberrank === "Officer") {
+                    message.channel.send("Are you sure you want to promote this person to First Officer? Yes/No")
+                    let response
+                    try {
+                        response = await message.channel.awaitMessages(message2 => message2.content.length < 4 , {
+                            maxMatches: 1,
+                            time: 20000,
+                            errors: ['time', 'length']
+                        })
+                    }
+                    catch (err) {
+                        console.error(err);
+                        return message.channel.send("Invalid confirmation.");
+                    }
+                    if(response.first().content.toLowerCase() === "yes") {
+                        ModifyRank(member, "First Officer")
+                        ModifyRank(author, "Officer")
+                        return message.channel.send("You've succesfully promoted this person to First Officer. You have been demoted to Officer.")
+                    }
+                    else if(response.first().content.toLowerCase() === "no") {
+                        return message.channel.send("You are still our First Officer! Whew!")
+                    }
+                    else {
+                        return message.channel.send("Invalid confirmation.");
+                    }
+                }
+                else if(memberrank === "Senior Member") {
+                    ModifyRank(member, "Officer")
+                    return message.channel.send("You have succesfully promoted the other member")
+                }
+                else {
+                    ModifyRank(member, "Senior Member")
+                    return message.channel.send("You have succesfully promoted the other member")
+                }
+            }
+            default: {
+                return message.channel.send("You must be an officer to promote someone!")
+            }
+        }
     }
 }
 

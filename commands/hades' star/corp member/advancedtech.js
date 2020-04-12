@@ -99,8 +99,6 @@ async function techInformation(message, CorpMember) {
                     tech.level++
                     tech.save()
                     instance.array[instance.page-1].fields[0].value = tech.level
-                    let currentPage = instance.page
-                    instance.page = currentPage
                 }
             })
         })
@@ -116,8 +114,6 @@ async function techInformation(message, CorpMember) {
                     tech.level--
                     tech.save()
                     instance.array[instance.page-1].fields[0].value = tech.level
-                    let currentPage = instance.page
-                    instance.page = currentPage
                 }
             })
         })

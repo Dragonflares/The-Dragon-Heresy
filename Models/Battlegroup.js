@@ -12,6 +12,12 @@ const Battlegroup = Schema ({
         type: Schema.Types.ObjectId, ref: 'Member'
     }
     ],
+    Battlemap: {
+        type: Schema.Types.ObjectId, ref: 'Battlemap'
+    },
+    textchannel: {
+        type: String
+    }
 })
 
 module.exports = model("Battlegroup", Battlegroup, "Battlegroup")

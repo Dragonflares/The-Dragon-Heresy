@@ -27,18 +27,10 @@ module.exports = {
         if(!author) 
             return message.channel.send("You aren't part of any Corporations, so you cannot request this information from anyone.")
         else {
-            await MemberModel.findOne({discordId: requester.id.toString()}).populate("Corp").exec((err, authored) => {
-                if(err) {
-                    console.log(err)
-                    error = true
-                    return message.channel.send("There was an issue requesting your profile.")
-                }
-                else if(authored.Corp.corpId != message.guild.id.toString()){
-                    error = true
-                    return message.channel.send("You aren't a Member of this Corporation!")
-                }
-            })
-            if(error) return
+            let Carrier = await MemberModel.findOne({discordId: requester.id.toString()}).populate("Corp").exec()
+            if(Carrier.Corp.corpId != message.guild.id.toString()){
+                return message.channel.send("You aren't a Member of this Corporation!")
+            }
         }
         let CorpMember
         let CorpMember2 = (await MemberModel.findOne({discordId: targetb.id.toString()}).catch(err => console.logg(err)))

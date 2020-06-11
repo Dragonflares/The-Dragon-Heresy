@@ -97,11 +97,11 @@ async function LeaveCorporation(newRank, message, MemberDataResult) {
             })
             Corporation.save()
             NewCorporation = Corporation
-            setTimeout(assignNewCorp, 6000, newRank, message, NewCorporation, MemberDataResult)
+            setTimeout(assignNewCorp, 1000, newRank, message, NewCorporation, MemberDataResult)
         }
         else {
             NewCorporation = ObtainedOne
-            setTimeout(assignNewCorp, 6000, newRank, message, NewCorporation, MemberDataResult)
+            setTimeout(assignNewCorp, 1000, newRank, message, NewCorporation, MemberDataResult)
         }
         
     }))

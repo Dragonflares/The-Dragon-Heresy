@@ -20,7 +20,7 @@ module.exports = {
         let targetb
         if(message.mentions.users > 1) return message.channel.send("You've mentioned more than one user.")
         let user = message.mentions.users.first()
-        if(!user) targetb = message.guild.member(message.author)
+        if(!user) return message.channel.send("You must mention a member for this command!")
         else targetb = message.guild.member(user)
         
         const messagesplit = message.content.split(" ")

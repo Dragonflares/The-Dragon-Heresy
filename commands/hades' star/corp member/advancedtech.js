@@ -12,7 +12,7 @@ module.exports = {
     aliases: ["iptech"],
     category: "hades' star",
     subcategory: "corp member",
-    description: "Shows the techs of a certain player in your corp.",
+    description: "Allows you to update and check your techs.",
     usage: "&interactivetech (player)",
     run: async (client, message, args) => {
         let targetb
@@ -20,7 +20,7 @@ module.exports = {
         if(!userb){
             targetb = message.guild.member(message.author)
         }
-        else targetb = message.guild.member(userb)
+        else return message.channel.send("You cannot set someone else's techs.")
         let requester = message.guild.member(message.author)
 
 
@@ -28,43 +28,28 @@ module.exports = {
         if(!author) 
             return message.channel.send("You aren't part of any Corporations, so you cannot request this information from anyone.")
         else {
-            await MemberModel.findOne({discordId: requester.id.toString()}).populate("Corp").exec((err, authored) => {
-                if(err) {
-                    console.log(err)
-                    return message.channel.send("There was an issue requesting your profile.")
-                }
-                else if(authored.Corp.corpId != message.guild.id.toString()){
-                    return message.channel.send("You aren't a Member of this Corporation!")
-                }
-            })
+            let Carrier = await MemberModel.findOne({discordId: requester.id.toString()}).populate("Corp").exec()
+            if(Carrier.Corp.corpId != message.guild.id.toString()){
+                return message.channel.send("You aren't a Member of this Corporation!")
+            }
         }
         let CorpMember
-        let CorpMember2 = (await MemberModel.findOne({discordId: targetb.id.toString()}).catch(err => console.logg(err)))
-        if(!CorpMember2){
-            if(!userb){
-                return message.channel.send("You were never part of a Corporation! You must join one to have a tech tracker!")
-            }
+        await MemberModel.findOne({discordId: targetb.id.toString()}).populate("Corp").exec((err, result) => {
+            if(err) return console.log(err)
             else {
-                return message.channel.send("This Member was never part of a Corporation! He must join one to have a tech tracker!")
-            }
-        } 
-        else {
-            await MemberModel.findOne({discordId: targetb.id.toString()}).populate("Corp").exec((err, result) => {
-                if(err) return console.log(err)
-                else {
-                    if(result.Corp.corpId != message.guild.id.toString()) {
-                        if(!userb)
-                            return message.channel.send("You aren't in your home server")
-                        else
-                            return message.channel.send("You aren't in the home server of this Member")
-                    }
-                    else {
-                        CorpMember = result
-                        return setTimeout(techInformation, 500, message, CorpMember)
-                    }
+                if(result.Corp.corpId != message.guild.id.toString()) {
+                    if(!userb)
+                        return message.channel.send("You aren't in your home server")
+                    else
+                        return message.channel.send("You aren't in the home server of this Member")
                 }
-            })
-        }
+                else {
+                    CorpMember = result
+                    return setTimeout(techInformation, 500, message, CorpMember)
+                }
+            }
+        })
+        
     }
 }
 
@@ -96,9 +81,14 @@ async function techInformation(message, CorpMember) {
                     return console.log(err)
                 }
                 else {
-                    tech.level++
-                    tech.save()
-                    instance.array[instance.page-1].fields[0].value = tech.level
+                    if((tech.level + 1) > Number(TechData[tech.name].Level[TechData[tech.name].Level.length - 1])) {
+                        message.channel.send(`The level you gave is invalid for that tech!`)
+                    }
+                    else {
+                        tech.level++
+                        tech.save()
+                        instance.array[instance.page-1].fields[0].value = tech.level
+                    }
                 }
             })
         })
@@ -111,9 +101,14 @@ async function techInformation(message, CorpMember) {
                     return console.log(err)
                 }
                 else {
-                    tech.level--
-                    tech.save()
-                    instance.array[instance.page-1].fields[0].value = tech.level
+                    if((tech.level - 1) < 0) {
+                        message.channel.send(`The level you gave is invalid for that tech!`)
+                    }
+                    else {
+                        tech.level--
+                        tech.save()
+                        instance.array[instance.page-1].fields[0].value = tech.level
+                    }
                 }
             })
         })

@@ -24,7 +24,8 @@ const Member = Schema ({
     techs: [{ type: Mongoose.Types.ObjectId, ref: 'Tech' }],
     battleship: { type: Mongoose.Types.ObjectId, ref: 'Battleship' },
     transport: { type: Mongoose.Types.ObjectId, ref: 'Transport' },
-    miner: { type: Mongoose.Types.ObjectId, ref: 'Miner' }
+    miner: { type: Mongoose.Types.ObjectId, ref: 'Miner' },
+    lastSeen: {type: Date}
 })
 
 module.exports = model("Member", Member, "Member")

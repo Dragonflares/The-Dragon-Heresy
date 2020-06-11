@@ -118,7 +118,9 @@ function play(guild, song, queue, client) {
 	const serverQueue = queue.get(guild.id);
 
 	if (!song) {
+
         queue.delete(guild.id);
+        
 		return;
 	}
 	console.log(serverQueue.songs);

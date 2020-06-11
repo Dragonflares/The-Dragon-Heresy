@@ -20,40 +20,26 @@ module.exports = {
         
         let memberrank
         let authorrank
-        let error = false
         let checkedMemberResult = (await MemberModel.findOne({discordId: member.id.toString()}))
         if(!checkedMemberResult)
             return message.channel.send("The Member you selected isnt't part of any Corporation. You should add him to one first.")
         else{
-            MemberModel.findOne({discordId: member.id.toString()}).populate('Corp').exec((err, CheckedMemberDataResult) => {
-                if(err) {
-                    error = true
-                    return console.log(err)
-                }
-                if(CheckedMemberDataResult.Corp.corpId != message.guild.id.toString()) {
-                    error = true
-                    return message.channel.send("You can not demote a Member of another Corporation.")
-                }
-                else
-                    memberrank = CheckedMemberDataResult.rank
-            })
+            let Carrier = await MemberModel.findOne({discordId: requester.id.toString()}).populate("Corp").exec()
+            if(Carrier.Corp.corpId != message.guild.id.toString()){
+                return message.channel.send("You can't demote a Member of another Corporation!")
+            }
+            memberrank = Carrier.rank  
         }
-        if(error) return
         
         let MemberResult = (await MemberModel.findOne({discordId: author.id.toString()}))
         if(!MemberResult)
             return message.channel.send("You aren't part of any Corporation. Join a Corporation first.")
         else {
-            MemberModel.findOne({discordId: author.id.toString()}).populate('Corp').exec((err, MemberDataResult) => {
-                if(err)
-                    return console.log(err)
-                if(MemberDataResult.Corp.corpId === message.guild.id.toString()) {
-                    authorrank = MemberDataResult.rank       
-                }
-                else {
-                    return message.channel.send("You aren't on your Corporation's server!")
-                }
-            })
+            let Carrier2 = await MemberModel.findOne({discordId: requester.id.toString()}).populate("Corp").exec()
+            if(Carrier2.Corp.corpId != message.guild.id.toString()){
+                return message.channel.send("You aren't in your corp's server!")
+            }
+            authorrank = Carrier2.rank  
         }
         if(authorrank === "Officer") {
             if(memberrank === "Member") return message.channel.send("You cannot demote this person any more! He's a Member!")

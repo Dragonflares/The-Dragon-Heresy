@@ -74,7 +74,7 @@ module.exports = {
             if(!checkedMemberResult)
                 return message.channel.send("The Member you selected isnt't part of any Corporation. You should add him to one first.")
             else{
-                let Carrier = await MemberModel.findOne({discordId: requester.id.toString()}).populate("Corp").exec()
+                let Carrier = await MemberModel.findOne({discordId: member.id.toString()}).populate("Corp").exec()
                 if(Carrier.Corp.corpId != message.guild.id.toString()){
                     return message.channel.send("You can't promote a Member of another Corporation!")
                 }

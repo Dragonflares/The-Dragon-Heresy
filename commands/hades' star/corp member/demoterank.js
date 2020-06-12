@@ -24,7 +24,7 @@ module.exports = {
         if(!checkedMemberResult)
             return message.channel.send("The Member you selected isnt't part of any Corporation. You should add him to one first.")
         else{
-            let Carrier = await MemberModel.findOne({discordId: requester.id.toString()}).populate("Corp").exec()
+            let Carrier = await MemberModel.findOne({discordId: member.id.toString()}).populate("Corp").exec()
             if(Carrier.Corp.corpId != message.guild.id.toString()){
                 return message.channel.send("You can't demote a Member of another Corporation!")
             }
@@ -35,7 +35,7 @@ module.exports = {
         if(!MemberResult)
             return message.channel.send("You aren't part of any Corporation. Join a Corporation first.")
         else {
-            let Carrier2 = await MemberModel.findOne({discordId: requester.id.toString()}).populate("Corp").exec()
+            let Carrier2 = await MemberModel.findOne({discordId: member.id.toString()}).populate("Corp").exec()
             if(Carrier2.Corp.corpId != message.guild.id.toString()){
                 return message.channel.send("You aren't in your corp's server!")
             }

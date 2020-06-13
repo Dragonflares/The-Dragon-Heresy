@@ -45,7 +45,6 @@ client.db.createCollection("Battlegroup")
 client.db.createCollection("Miner")
 client.db.createCollection("Transport")
 
-
 client.commands = new Collection();
 client.aliases = new Collection();
 client.categories = fs.readdirSync("./commands/");
@@ -116,7 +115,10 @@ client.on("message", async message => {
 });
 
 client.on("guildMemberUpdate", (oldMember, newMember) => {
-    console.log("New member name " + newMember.nickname)
+    if(!newMember.nickname)
+        console.log("New member name " + newMember.user.username)
+    else
+        console.log("New member name " + newMember.nickname)
     updateRun(newMember)
 })
 
@@ -129,13 +131,40 @@ async function updateRun(newMember){
         if(CorpMember.Corp.corpId != newMember.guild.id.toString()) {}
         else {
             if(!newMember.nickname) {
-                CorpMember.name = newMember.user.name
+                CorpMember.name = newMember.user.username
                 CorpMember.save()
             }
             else {
                 CorpMember.name = newMember.nickname
                 CorpMember.save()
             }
+        }
+    })
+}
+
+client.on("presenceUpdate", (oldPresence, newPresence) => {
+    var member = newPresence
+    if(newPresence.presence.status != oldPresence.presence.status){
+        if(newPresence.presence.status == "offline") {
+            var lastSeenDate = new Date() 
+            setLastSeenMember(lastSeenDate, member)
+        }
+    }
+    else {
+        return
+    }
+})
+
+async function setLastSeenMember(lastSeenDate, newMember) {
+    let member = await MemberModel.findOne({discordId: newMember.id.toString()})
+    if(!member) return
+    MemberModel.findOne({discordId: newMember.id.toString()}).populate("Corp").exec((err, CorpMember) => {
+        if(err) console.log(err)
+        if(!CorpMember){}
+        if(CorpMember.Corp.corpId != newMember.guild.id.toString()) {}
+        else {
+            CorpMember.lastSeen = lastSeenDate
+            CorpMember.save()
         }
     })
 }

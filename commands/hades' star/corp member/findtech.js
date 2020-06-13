@@ -101,7 +101,7 @@ async function getFindTechInformation(message,module){
 					let techrequest = await TechModel.findOne({name: module, playerId: member.id})	
 					if(techrequest)								
 						if(techrequest.level >0)
-							playersWithTech +=  `${member.user.username} ${techrequest.level}.\n`
+							playersWithTech +=  `${corpMember.name} ${techrequest.level}.\n`
 				}
 			}
 		}

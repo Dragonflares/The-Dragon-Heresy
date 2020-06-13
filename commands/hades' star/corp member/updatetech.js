@@ -52,7 +52,7 @@ module.exports = {
 }
 
 async function ModifyTech(tech, target, techlevel, message){
-    TechModel.findOneAndUpdate({name: tech, playerId: target.id.toString()}, {level: techlevel})
+    TechModel.findOneAndUpdate({name: tech, playerId: target.id.toString()}, {level: Math.floor(techlevel)})
     .catch(err => console.log(err))
     return message.channel.send(`Tech level updated.`)
 }

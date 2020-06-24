@@ -37,7 +37,7 @@ module.exports = {
         }
         else {
             if(!author.hasPermission("ADMINISTRATOR")) {
-                if(!author.hasPermission("MODERATOR")) {
+                if(!author.hasPermission("MANAGE_GUILD")) {
                     let MemberResult = (await MemberModel.findOne({discordId: author.id}))
                     if(!MemberResult)
                         return message.channel.send("You aren't a member of any Corporation")

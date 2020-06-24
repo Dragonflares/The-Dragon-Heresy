@@ -46,15 +46,15 @@ module.exports = {
                     if(!MemberResult)
                         return message.channel.send("You aren't a member of any Corporation")
                     else{
-                        MemberResult.populate("Corp").then(MemberDataResult => {
+                        MemberModel.findOne({discordId: author.id}).populate("Corp").then(MemberDataResult => {
                             if(MemberDataResult.Corp.corpId != message.guild.id.toString())
                                 return message.channel.send("You aren't a member of this Corporation")
-                            else{
-                                if(MemberDataResult.rank != "First Officer" || MemberDataResult.rank != "Officer")
-                                    return message.channel.send("You don't have the rank to remove a member from your Corporation, talk to an Officer or a Server Admin to remove this person from the Corp")
-                                else
-                                return removeMember("Member", message, target)
-                            }
+                                else{
+                                    if(MemberDataResult.rank === "First Officer" || MemberDataResult.rank === "Officer")
+                                        return addNewMember(client, message, target)
+                                    else
+                                        return message.channel.send("You don't have the rank to add a member to Corporation, talk to an Officer or a Server Admin to add this person to the Corp")
+                                }
                         }).catch(err => console.log(err))
                     }
                 }

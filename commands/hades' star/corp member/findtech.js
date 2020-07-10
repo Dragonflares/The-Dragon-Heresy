@@ -18,53 +18,22 @@ module.exports = {
 		   let embed = new RichEmbed()
             .setColor("RANDOM")
 		if(!tech[1]) {
-            let economytechs = ""
-            let weapontechs = ""
-            let miningtechs = ""
-            let shieldtechs = ""
-            let supporttechs = ""
-
             embed.setTitle(`**Known Techs**`)
 
-            for(let techname1 in TechData){ 
-                if(TechData[techname1].Category === "Economy") {
-                    economytechs += `${techname1}, `
-                }
-            }
-            for(let techname2 in TechData) { 
-                if(TechData[techname2].Category === "Mining") {
-                    miningtechs += `${techname2}, `
-                }
-            }
-            for(let techname3 in TechData) { 
-                if(TechData[techname3].Category === "Weapons") {
-                    weapontechs += `${techname3}, `
-                }
-            }
-            for(let techname4 in TechData) { 
-                if(TechData[techname4].Category === "Support") {
-                    supporttechs += `${techname4}, `
-                }
-            }
-            for(let techname5 in TechData) { 
-                if(TechData[techname5].Category === "Shields") {
-                        shieldtechs += `${techname5}, `
-                }
-            }
-
-            embed.addField("*Economy*", `${economytechs}`)
-            embed.addField("*Mining*", `${miningtechs}`)
-            embed.addField("*Weapons*", `${weapontechs}`)
-            embed.addField("*Shields*", `${shieldtechs}`)
-            embed.addField("*Support*", `${supporttechs}`)
-
+            let categories = new Map([
+				["Economy", []],
+				["Mining", []],
+				["Weapons", []],
+				["Support", []],
+				["Shields", []]
+			]);
+			Object.entries(TechData).forEach(([name, data]) => categories.get(data.Category).push(name));
+			categories.forEach((data, name) => embed.addField(`*${name}*`, categories.get(name).join(', ')));
             return message.channel.send(embed)
         }
         else {
             if(!TechData[tech[1]]) return message.channel.send(`There's no tech with said name!`)
 				
-			
-		
 			let requester = message.guild.member(message.author)
 			let error = false
 
@@ -77,7 +46,7 @@ module.exports = {
 					return message.channel.send("You aren't a Member of this Corporation!")
 				}
 			}
-            return  getFindTechInformation(message, tech[1])
+           return  getFindTechInformation(message, tech[1])
   
 		}
     }
@@ -105,6 +74,9 @@ async function getFindTechInformation(message,module){
 				}
 			}
 		}
-		if(playersWithTech) embed.addField("*Players*", `${playersWithTech}`)
+		if(playersWithTech) 
+			embed.addField("*Players*", `${playersWithTech}`)
+		else
+			embed.addField(`*Warning*`,`There are no members with this tech.`)
 		return message.channel.send(embed)
 }

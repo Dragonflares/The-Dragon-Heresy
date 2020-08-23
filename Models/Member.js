@@ -25,6 +25,8 @@ const Member = Schema ({
     battleship: { type: Mongoose.Types.ObjectId, ref: 'Battleship' },
     transport: { type: Mongoose.Types.ObjectId, ref: 'Transport' },
     miner: { type: Mongoose.Types.ObjectId, ref: 'Miner' },
+    online: {type: Boolean,
+        default: false},
     lastSeen: {type: Date}
 })
 

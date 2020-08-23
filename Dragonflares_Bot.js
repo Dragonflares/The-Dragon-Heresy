@@ -149,11 +149,25 @@ client.on("presenceUpdate", (oldPresence, newPresence) => {
             var lastSeenDate = new Date() 
             setLastSeenMember(lastSeenDate, member)
         }
-    }
-    else {
-        return
+        else {
+            setOnlineStatus(member)
+        }
     }
 })
+
+async function setOnlineStatus(newMember) {
+    let member = await MemberModel.findOne({discordId: newMember.id.toString()})
+    if(!member) return
+    MemberModel.findOne({discordId: newMember.id.toString()}).populate("Corp").exec((err, CorpMember) => {
+        if(err) console.log(err)
+        if(!CorpMember){}
+        if(CorpMember.Corp.corpId != newMember.guild.id.toString()) {}
+        else {
+            CorpMember.online = true
+            CorpMember.save()
+        }
+    })
+}
 
 async function setLastSeenMember(lastSeenDate, newMember) {
     let member = await MemberModel.findOne({discordId: newMember.id.toString()})
@@ -164,6 +178,7 @@ async function setLastSeenMember(lastSeenDate, newMember) {
         if(CorpMember.Corp.corpId != newMember.guild.id.toString()) {}
         else {
             CorpMember.lastSeen = lastSeenDate
+            CorpMember.online = false
             CorpMember.save()
         }
     })

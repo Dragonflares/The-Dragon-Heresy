@@ -30,7 +30,6 @@ export class RankCommand extends Command{
         }
     }
 
-
     async profile(message) {
         const member = message.author;
         const guildMember = await message.guild.members.fetch(member.id)

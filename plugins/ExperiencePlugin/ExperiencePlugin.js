@@ -1,8 +1,8 @@
 import Database from "better-sqlite3";
-import { DiscordBotPlugin } from '../../lib';
+import { Plugin } from '../../lib';
 import { RankCommand } from './RankCommand';
 
-export class ExperiencePlugin extends DiscordBotPlugin{
+export class ExperiencePlugin extends Plugin{
 	constructor(bot){
 		super(bot);
 
@@ -12,7 +12,7 @@ export class ExperiencePlugin extends DiscordBotPlugin{
 		this.commands.add(RankCommand);
 	}
 
-	enable(){
+	async enable(){
 		if(!this.enabled){
 			this.sql = new Database(process.env.EXPERIENCE_DATABASE);
 
@@ -30,15 +30,15 @@ export class ExperiencePlugin extends DiscordBotPlugin{
 
 		    this.bot.on('message', this.updateXp)
 		}
-		super.enable();
+		await super.enable();
 	}
 
-	disable(){
+	async disable(){
 		if(this.enabled){
 		    this.bot.off('message', this.updateXp);
 		    this.sql.close();
 		}
-		super.disable();
+		await super.disable();
 	}
 
 	updateXp = (message) => {

@@ -3,23 +3,33 @@ import mongoose from 'mongoose';
 mongoose.set('useCreateIndex', true);
 mongoose.set('useFindAndModify', false);
 
-const connectionString = process.env.DATABASE;
-
 export class Database{
-	static async connect(){
-		console.debug(`Connecting to ${connectionString}`);
+	constructor(connectionString){
+		this.connectionString = connectionString;
 
-		await mongoose.connect(connectionString, {
+		this.connection = null;
+	}
+	async connect(){
+		console.debug(`Connecting to ${this.connectionString}`);
+
+		await mongoose.connect(this.connectionString, {
 			useNewUrlParser: true,
 			useUnifiedTopology: true
 		}).catch(console.error);
 
 		mongoose.connection.on("error", console.log);
 
-		return mongoose.connection;
+		this.connection = mongoose.connection;
 	}
 
-	static async initialize(){
+	async disconnect(){
+		if(this.connection){
+			console.debug(`Disconnecting from ${this.connectionString}`);
+			this.connection.close();
+		}
+	}
+
+	async initialize(){
 		console.debug(`Building db structure...`);
 
 		// await mongoose.connection.createCollection("Corp");

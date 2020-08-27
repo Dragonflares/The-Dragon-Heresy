@@ -10,7 +10,7 @@ export class Database{
 		this.connection = null;
 	}
 	async connect(){
-		console.debug(`Connecting to ${this.connectionString}`);
+		logger.debug(`Connecting to ${this.connectionString}`);
 
 		await mongoose.connect(this.connectionString, {
 			useNewUrlParser: true,
@@ -23,21 +23,9 @@ export class Database{
 	}
 
 	async disconnect(){
-		if(this.connection){
-			console.debug(`Disconnecting from ${this.connectionString}`);
-			this.connection.close();
+		if(mongoose.connection){
+			logger.debug(`Disconnecting from ${this.connectionString}`);
+			mongoose.connection.close();
 		}
-	}
-
-	async initialize(){
-		console.debug(`Building db structure...`);
-
-		// await mongoose.connection.createCollection("Corp");
-		// await mongoose.connection.createCollection("Member");
-		// await mongoose.connection.createCollection("Tech");
-		// await mongoose.connection.createCollection("Battleship");
-		// await mongoose.connection.createCollection("Battlegroup");
-		// await mongoose.connection.createCollection("Miner");
-		// await mongoose.connection.createCollection("Transport");
 	}
 }

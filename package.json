@@ -17,10 +17,12 @@
   "dependencies": {
     "array-flatten": "^3.0.0",
     "better-sqlite3": "^7.1.0",
+    "camelize": "^1.0.0",
     "canvas": "^2.6.1",
     "discord.js": "^12.3.1",
     "dotenv": "^8.2.0",
     "esm": "^3.2.25",
+    "loglevel-colors": "^1.0.1",
     "mongoose": "^5.10.0"
   }
 }

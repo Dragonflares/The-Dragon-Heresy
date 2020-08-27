@@ -16,7 +16,6 @@ export class ExperiencePlugin extends Plugin{
 		if(!this.enabled){
 			this.sql = new Database(process.env.EXPERIENCE_DATABASE);
 
-			
 			const table = this.sql.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'xp';").get();
 		    if (!table['count(*)']) {
 		        this.sql.prepare("CREATE TABLE xp (id TEXT PRIMARY KEY, user TEXT, guild TEXT, experience INTEGER, level INTEGER);").run();

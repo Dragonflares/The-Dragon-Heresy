@@ -17,8 +17,19 @@ Here is the list of the available environment variables
 * `PREFIX`: This one is the command prefix of all commands used throughout the bot.
 * `EXPERIENCE_DATABASE`: This variable store the path to the Experience SQLite database
 * `LOGLEVEL`: This one store the logging level of the bot. If not specified, defaults to "info".
-* `LOGCHAT`: Boolean. Allows to display the error message of a command, when it's correctly returned as a promised. 
+* `LOGCHAT`: Boolean. Allows to display the error message of a command, when it's correctly returned as a promise. 
 
+To install the bot, use:
+```
+npm install
+```
+
+The start it using:
+```
+npm run start
+```
+
+You're good to go !
 
 ### Plugin structure 
 

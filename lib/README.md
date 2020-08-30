@@ -2,7 +2,22 @@
 
 This document will help write your own plugin and commands for the Bot.
 
-## Guidelines
+## Configuration and starting the bot
+
+The bot is using Environment Variables to gather his configuration.
+
+You can create a `.env` in the root directory of the repository and add you own configuration.
+
+The root directory contains a `.env.example` file containing the current available configuration.
+
+Here is the list of the available environment variables
+
+* `BOT_TOKEN`: This variable stores the Discrod token of the bot.
+* `DATABASE`: This variable stores the connection string of the MongoDB database.
+* `PREFIX`: This one is the command prefix of all commands used throughout the bot.
+* `EXPERIENCE_DATABASE`: This variable store the path to the Experience SQLite database
+* `LOGLEVEL`: This one store the logging level of the bot. If not specified, defaults to "info".
+* `LOGCHAT`: Boolean. Allows to display the error message of a command, when it's correctly returned as a promised. 
 
 
 ### Plugin structure 
@@ -262,5 +277,6 @@ export class MyCommand extends Command{
 }
 ```
 
-The plugin needs to define his name, aliases, description and usage by passing a configuration object to the Command instance
+The plugin needs to define his name, aliases, description and usage by passing a configuration object to the Command instance.
+
 Then you can do whatever you like with you command

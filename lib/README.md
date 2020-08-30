@@ -63,8 +63,9 @@ For more insight about this functionnality, please refer to Node import/export f
 
 ### Coding convention
 
-To keep the code as readable and maintainable as possible, some rules should be followed by contributing developpers:
+To keep the code as readable and maintainable as possible, some rules should be followed by contributing developers:
 
+* Don't use console.log for logging. Use the globally defined `logger` for that purpose.
 * Variables should NEVER start with an uppercase character. Use lower camelCase.
 * Methods should NEVER start with an uppercase character. Use lower camelCase.
 * Classes should ALWAYS start with an uppercase character. Use upper CamelCase.

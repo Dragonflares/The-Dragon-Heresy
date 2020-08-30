@@ -15,6 +15,7 @@ export class PresenceManager extends Manager{
 
 	disable(){
 		if(this.enabled){
+			this.client.off('presenceUpdate', this.presenceHandler);
 		}
 		super.disable();
 	}

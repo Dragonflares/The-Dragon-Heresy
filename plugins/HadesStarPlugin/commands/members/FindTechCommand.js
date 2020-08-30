@@ -84,7 +84,7 @@ export class FindTechCommand extends Command{
 
     async getFindTechInformation(message,module){
             let embed = new MessageEmbed().setColor("RANDOM")
-            let techs = `${TechData[module].Description}\n`
+            let techs = `${TechData[module].Description}\n`;
             embed.setTitle(`**Tech: ${module}**`)
             embed.setThumbnail(`${TechData[module].Image}`);
             let corpmembers = await message.guild.members.fetch();

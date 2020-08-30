@@ -1,6 +1,7 @@
 import Database from "better-sqlite3";
 import { Plugin } from '../../lib';
 import { RankCommand } from './RankCommand';
+import { MessageEmbed } from 'discord.js';
 
 export class ExperiencePlugin extends Plugin{
 	constructor(bot){
@@ -67,7 +68,7 @@ export class ExperiencePlugin extends Plugin{
 	        xp.level++;
 	        xp.experience -= nxtlevel
 	        if(xp.level%5 === 0) {
-	            let leveleupEmbed = new Discord.RichEmbed()
+	            let leveleupEmbed = new MessageEmbed()
 	            .setTitle("Level UP!")
 	            .setColor("a500ff")
 	            .addField(`Congratulations ${message.author.tag}! You are now level ${xp.level}!`, `Thanks for so many contributions`)

@@ -1,5 +1,5 @@
 import { MemberCommand } from './MemberCommand';
-import TechData from '../../../../assets/techs.json';
+import { TechTree } from '../../techs';
 import { Member } from '../../database';
 import { MessageEmbed } from 'discord.js';
 
@@ -14,84 +14,48 @@ export class TechDataCommand extends MemberCommand{
     }
 
     async run(message, args){
-        let embed = new MessageEmbed()
-            .setColor("RANDOM")
-        const tech = message.content.split(" ")
+        let embed = new MessageEmbed().setColor("RANDOM")
 
-        if(!tech[1]) {
-            let economytechs = ""
-            let weapontechs = ""
-            let miningtechs = ""
-            let shieldtechs = ""
-            let supporttechs = ""
+        if(!args.length) {
+            embed.setTitle(`**Known Techs**`);
 
-            embed.setTitle(`**Known Techs**`)
+            const categories = new Map();
+            TechTree.technologies.forEach((tech, name) => {
+                if(!categories.has(tech.category))
+                    categories.set(tech.category, new Set());
 
-            for(let techname1 in TechData){ 
-                if(TechData[techname1].Category === "Economy") {
-                    economytechs += `${techname1}, `
-                }
-            }
-            for(let techname2 in TechData) { 
-                if(TechData[techname2].Category === "Mining") {
-                    miningtechs += `${techname2}, `
-                }
-            }
-            for(let techname3 in TechData) { 
-                if(TechData[techname3].Category === "Weapons") {
-                    weapontechs += `${techname3}, `
-                }
-            }
-            for(let techname4 in TechData) { 
-                if(TechData[techname4].Category === "Support") {
-                    supporttechs += `${techname4}, `
-                }
-            }
-            for(let techname5 in TechData) { 
-                if(TechData[techname5].Category === "Shields") {
-                        shieldtechs += `${techname5}, `
-                }
-            }
+                categories.get(tech.category).add(name);
+            });
 
-            embed.addField("*Economy*", `${economytechs}`)
-            embed.addField("*Mining*", `${miningtechs}`)
-            embed.addField("*Weapons*", `${weapontechs}`)
-            embed.addField("*Shields*", `${shieldtechs}`)
-            embed.addField("*Support*", `${supporttechs}`)
+            categories.forEach((techs, name) => {
+                embed.addField(`*${name}*`, `${Array.from(techs).join(', ')}`)
+            });
 
             return message.channel.send(embed)
         }
         else {
-            if(!TechData[tech[1]]) return message.channel.send(`There's no tech with said name!`)
-            if(!tech[2]) {
-                let techs = `${TechData[tech[1]].Description}\n`
-                embed.setTitle(`**Tech: ${tech[1]}**`)
-                embed.setDescription(techs)
-                embed.setFooter(`You may add a number between 1 and ${TechData[tech[1]].Level[TechData[tech[1]].Level.length - 1]} to get info about the required level`)
-                embed.setThumbnail(`${TechData[tech[1]].Image}`)
+
+            const tech = TechTree.find(args[0]);
+            if(!args[1]) {
+                embed.setTitle(`**Tech: ${tech.name}**`)
+                embed.setDescription(`${tech.description}\n`)
+                embed.setFooter(`You may add a number between 1 and ${tech.level} to get info about the required level`)
+                embed.setThumbnail(`${tech.image}`)
                 return message.channel.send(embed)
             }
             else {
-                if((1 > tech[2]) || Number(TechData[tech[1]].Level[TechData[tech[1]].Level.length - 1]) < (tech[2])) {
+                const level = arg[1];
+                if(1 > level || tech.levels < level)
                     return message.channel.send(`The level you requested is invalid for that tech!`)
-                }
-                embed.setTitle(`**${tech[1]}**`)
-                let a = 0
-                const techinfo = Object.values(TechData[tech[1]])
-                const techkeys = Object.keys(TechData[tech[1]])
-                while(techkeys[a]){
-                    
-                    if(techkeys[a] === "Description" || techkeys[a] === "Category") {
-                        embed.addField(`*${techkeys[a]}*`, `${techinfo[a]}`)
-                    }
-                    else if(techkeys[a] === "Image") {
-                        embed.setThumbnail(`${techinfo[a]}`)
-                    }
-                    else {
-                        embed.addField(`*${techkeys[a]}*`, `${techinfo[a][tech[2] - 1]}`)
-                    }
-                    a++
-                }
+
+                embed.setTitle(`**${tech.name}**`);
+                embed.addField('*Category*', tech.category);
+                embed.addField('*Description*', tech.description);
+                embed.setThumbnail(tech.image);
+
+                tech.properties.forEach((levels, propery) => {
+                    embed.addField(`*${propery}*`, `${levels[args[1] - 1]}`)
+                });
                 return message.channel.send(embed)
             }
         }

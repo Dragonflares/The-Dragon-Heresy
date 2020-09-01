@@ -1,5 +1,5 @@
 import { MemberCommand } from './MemberCommand';
-import TechData from '../../../../assets/techs.json';
+import { TechTree } from '../../techs';
 import { Member, Tech } from '../../database';
 
 export class UpdateTechCommand extends MemberCommand{
@@ -23,36 +23,56 @@ export class UpdateTechCommand extends MemberCommand{
         else return message.channel.send("You cannot set another Member's tech!")
 
         const messagesplit = message.content.split(" ")
-        const tech = messagesplit[1]
+        const techName = args[0];
 
-        if(!tech) return message.channel.send(`Please specify the tech you want to update.`)
+        if(!techName) return message.channel.send(`Please specify the tech you want to update.`)
 
-        if(!TechData[tech]) return message.channel.send(`There's no tech with said name!`)
-        const techlevel = messagesplit[2] 
+        const tech = TechTree.find(techName);
+
+        if(tech.name.toLowerCase() != techName.toLowerCase()){
+            message.channel.send(`Did you mean *${tech.name}* ?`);
+            try {
+                const response = await message.channel.awaitMessages(
+                    m => m.author.id === message.author.id,{
+                    max: 1,
+                    time: 10000,
+                    errors: ['time']
+                });
+
+                if(!["y", "yes", "yeah", "yea", "yup"].includes(response.first().content.toLowerCase())){
+                    throw new Error();
+                }
+            } catch (err) {
+                return message.channel.send([
+                    "Allright, just retry without dyslexia.",
+                    "Jesus.. try again.",
+                    "Seriously ? Do it again.",
+                    "lol",
+                    "> https://learnenglish.britishcouncil.org/"
+                ][Math.round(Math.random()*4)]);
+            }
+        }
+
+        const techlevel = parseInt(args[1]);
 
         if(!techlevel) return message.channel.send(`Please specify the level of the tech you want to update.`)
 
-        if((0 > techlevel) || Number(TechData[tech].Level[TechData[tech].Level.length - 1]) < (techlevel)) {
+        if(0 > techlevel || tech.levels < techlevel)
             return message.channel.send(`The level you gave is invalid for that tech!`)
-        }
-        let MemberResult = (await Member.findOne({discordId: target.id.toString()}))
-        if(!MemberResult)
+        
+
+        let member = await Member.findOne({discordId: target.id.toString()}).populate('Corp').exec();
+        if(!member)
             return message.channel.send("You aren't part of any Corporation. Join a Corporation first.")
-        else{
-            Member.findOne({discordId: target.id.toString()}).populate('Corp').exec((err, member) => {
-                if(err)
-                    return console.log(err)
-                if(member.Corp.corpId === message.guild.id.toString()) 
-                    return this.modifyTech(tech, target, techlevel, message)    
-                else 
-                    return message.channel.send("You aren't on your Corporation's server!")
-            })
+
+        if(member.Corp.corpId === message.guild.id.toString()){
+            await this.modifyTech(tech, target, techlevel, message);
+            return message.channel.send(`Tech level updated.`)  
         }
+        return message.channel.send("You aren't on your Corporation's server!")
     }
 
     modifyTech(tech, target, techlevel, message){
-        Tech.findOneAndUpdate({name: tech, playerId: target.id.toString()}, {level: Math.floor(techlevel)})
-        .catch(err => console.log(err))
-        return message.channel.send(`Tech level updated.`)
+        return Tech.findOneAndUpdate({name: tech.name, playerId: target.id.toString()}, {level: Math.floor(techlevel)});
     }
 }

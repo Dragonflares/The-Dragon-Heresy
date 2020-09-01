@@ -7,20 +7,20 @@ class TechnologyProperty{
 	}
 }
 
-class Technology {
+export class Technology {
 	constructor({
 		name 		= "Unnamed Tech",
 		description = "No description",
 		category	= "Uncategorized",
 		image 		= "",
 		levels 		= 0,
-		properties 	= []
+		properties 	= {}
 	} = {}){
 		this._name 		 	= name;
 		this._description 	= description;
 		this._image 		= image;
 		this._levels 	 	= levels;
-		this._properties 	= new Map(properties);
+		this._properties 	= new Map(Array.from(properties));
 	}
 
 	get name(){ return this._name; }

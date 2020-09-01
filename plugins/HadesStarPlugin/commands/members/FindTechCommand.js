@@ -1,5 +1,5 @@
 import { MemberCommand } from './MemberCommand';
-import TechData from '../../../../assets/techs.json';
+import { TechTree } from '../../techs';
 import { Member, Tech } from '../../database';
 import { MessageEmbed } from 'discord.js';
 
@@ -14,79 +14,73 @@ export class FindTechCommand extends MemberCommand{
     }
 
     async run(message, args){
-        const tech = message.content.split(" ")
-           let embed = new MessageEmbed()
-            .setColor("RANDOM")
-        if(!tech[1]) {
-            let economytechs = ""
-            let weapontechs = ""
-            let miningtechs = ""
-            let shieldtechs = ""
-            let supporttechs = ""
-
+        let embed = new MessageEmbed().setColor("RANDOM")
+        if(!args[0]) {
             embed.setTitle(`**Known Techs**`)
 
-            for(let techname1 in TechData){ 
-                if(TechData[techname1].Category === "Economy") {
-                    economytechs += `${techname1}, `
-                }
-            }
-            for(let techname2 in TechData) { 
-                if(TechData[techname2].Category === "Mining") {
-                    miningtechs += `${techname2}, `
-                }
-            }
-            for(let techname3 in TechData) { 
-                if(TechData[techname3].Category === "Weapons") {
-                    weapontechs += `${techname3}, `
-                }
-            }
-            for(let techname4 in TechData) { 
-                if(TechData[techname4].Category === "Support") {
-                    supporttechs += `${techname4}, `
-                }
-            }
-            for(let techname5 in TechData) { 
-                if(TechData[techname5].Category === "Shields") {
-                        shieldtechs += `${techname5}, `
-                }
-            }
+            const categories = new Map();
+            TechTree.technologies.forEach((tech, name) => {
+                if(!categories.has(tech.category))
+                    categories.set(tech.category, new Set());
 
-            embed.addField("*Economy*", `${economytechs}`)
-            embed.addField("*Mining*", `${miningtechs}`)
-            embed.addField("*Weapons*", `${weapontechs}`)
-            embed.addField("*Shields*", `${shieldtechs}`)
-            embed.addField("*Support*", `${supporttechs}`)
+                categories.get(tech.category).add(name);
+            });
+
+            categories.forEach((techs, name) => {
+                embed.addField(`*${name}*`, `${Array.from(techs).join(', ')}`)
+            });
 
             return message.channel.send(embed)
         }
         else {
-            if(!TechData[tech[1]]) return message.channel.send(`There's no tech with said name!`)
+
+            const tech = TechTree.find(args[0]);
+
+            if(tech.name.toLowerCase() != args[0].toLowerCase()){
+                message.channel.send(`Did you mean *${tech.name}* ?`);
+                try {
+                    const response = await message.channel.awaitMessages(
+                        m => m.author.id === message.author.id,{
+                        max: 1,
+                        time: 10000,
+                        errors: ['time']
+                    });
+
+                    if(!["y", "yes", "yeah", "yea", "yup"].includes(response.first().content.toLowerCase())){
+                        throw new Error();
+                    }
+                } catch (err) {
+                    return message.channel.send([
+                        "Allright, just retry without dyslexia.",
+                        "Jesus.. try again.",
+                        "Seriously ? Do it again.",
+                        "lol",
+                        "> https://learnenglish.britishcouncil.org/"
+                    ][Math.round(Math.random()*4)]);
+                }
+            }
                 
             
         
             let requester = message.guild.member(message.author)
             let error = false
 
-            let author = (await Member.findOne({discordId: requester.id.toString()}).catch(err => console.log(err)))
-            if(!author) 
+            let member = await Member.findOne({discordId: requester.id.toString()}).populate("Corp").exec()
+            if(!member) 
                 return message.channel.send("You aren't part of any Corporations, so you cannot request this information from anyone.")
-            else {
-                let Carrier = await Member.findOne({discordId: requester.id.toString()}).populate("Corp").exec()
-                if(Carrier.Corp.corpId != message.guild.id.toString()){
-                    return message.channel.send("You aren't a Member of this Corporation!")
-                }
-            }
-            return this.getFindTechInformation(message, tech[1])
-  
+            
+            if(member.Corp.corpId != message.guild.id.toString())
+                return message.channel.send("You aren't a Member of this Corporation!")
+
+            return this.getFindTechInformation(message, tech)
         }
     }
 
-    async getFindTechInformation(message,module){
+    async getFindTechInformation(message, tech){
             let embed = new MessageEmbed().setColor("RANDOM")
-            let techs = `${TechData[module].Description}\n`;
-            embed.setTitle(`**Tech: ${module}**`)
-            embed.setThumbnail(`${TechData[module].Image}`);
+            let techs = `${tech.description}\n`;
+            embed.setTitle(`**Tech: ${tech.name}**`)
+            embed.setThumbnail(`${tech.image}`);
             let corpmembers = await message.guild.members.fetch();
             let playersWithTech = ""
             
@@ -96,7 +90,7 @@ export class FindTechCommand extends MemberCommand{
                 {
                     if(corpMember.Corp.corpId == message.guild.id.toString())
                     {
-                        let techrequest = await Tech.findOne({name: module, playerId: member.id})  
+                        let techrequest = await Tech.findOne({name: tech.name, playerId: member.id})  
                         if(techrequest)                             
                             if(techrequest.level >0)
                                 playersWithTech +=  `${corpMember.name} ${techrequest.level}.\n`

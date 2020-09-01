@@ -25,6 +25,7 @@
     "dotenv": "^8.2.0",
     "esm": "^3.2.25",
     "loglevel-colors": "^1.0.1",
-    "mongoose": "^5.10.0"
+    "mongoose": "^5.10.0",
+    "string-similarity": "^4.0.2"
   }
 }

@@ -1,5 +1,6 @@
 import { MemberCommand } from './MemberCommand';
 import { TechTree } from '../../techs';
+import { confirmTech } from '../../utils';
 import { Member, Tech } from '../../database';
 
 export class UpdateTechCommand extends MemberCommand{
@@ -29,29 +30,8 @@ export class UpdateTechCommand extends MemberCommand{
 
         const tech = TechTree.find(techName);
 
-        if(tech.name.toLowerCase() != techName.toLowerCase()){
-            message.channel.send(`Did you mean *${tech.name}* ?`);
-            try {
-                const response = await message.channel.awaitMessages(
-                    m => m.author.id === message.author.id,{
-                    max: 1,
-                    time: 10000,
-                    errors: ['time']
-                });
-
-                if(!["y", "yes", "yeah", "yea", "yup"].includes(response.first().content.toLowerCase())){
-                    throw new Error();
-                }
-            } catch (err) {
-                return message.channel.send([
-                    "Allright, just retry without dyslexia.",
-                    "Jesus.. try again.",
-                    "Seriously ? Do it again.",
-                    "lol",
-                    "> https://learnenglish.britishcouncil.org/"
-                ][Math.round(Math.random()*4)]);
-            }
-        }
+        if(!await confirmTech(message, techName, tech))
+            return;
 
         const techlevel = parseInt(args[1]);
 

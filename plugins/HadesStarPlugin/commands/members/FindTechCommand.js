@@ -1,5 +1,6 @@
 import { MemberCommand } from './MemberCommand';
 import { TechTree } from '../../techs';
+import { confirmTech } from '../../utils';
 import { Member, Tech } from '../../database';
 import { MessageEmbed } from 'discord.js';
 
@@ -15,7 +16,7 @@ export class FindTechCommand extends MemberCommand{
 
     async run(message, args){
         let embed = new MessageEmbed().setColor("RANDOM")
-        if(!args[0]) {
+        if(!args.length) {
             embed.setTitle(`**Known Techs**`)
 
             const categories = new Map();
@@ -34,33 +35,11 @@ export class FindTechCommand extends MemberCommand{
         }
         else {
 
-            const tech = TechTree.find(args[0]);
+            const techName = args[0];
+            const tech = TechTree.find(techName);
 
-            if(tech.name.toLowerCase() != args[0].toLowerCase()){
-                message.channel.send(`Did you mean *${tech.name}* ?`);
-                try {
-                    const response = await message.channel.awaitMessages(
-                        m => m.author.id === message.author.id,{
-                        max: 1,
-                        time: 10000,
-                        errors: ['time']
-                    });
-
-                    if(!["y", "yes", "yeah", "yea", "yup"].includes(response.first().content.toLowerCase())){
-                        throw new Error();
-                    }
-                } catch (err) {
-                    return message.channel.send([
-                        "Allright, just retry without dyslexia.",
-                        "Jesus.. try again.",
-                        "Seriously ? Do it again.",
-                        "lol",
-                        "> https://learnenglish.britishcouncil.org/"
-                    ][Math.round(Math.random()*4)]);
-                }
-            }
-                
-            
+            if(!await confirmTech(message, techName, tech))
+                return;
         
             let requester = message.guild.member(message.author)
             let error = false

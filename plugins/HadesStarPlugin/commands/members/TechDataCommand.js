@@ -1,5 +1,6 @@
 import { MemberCommand } from './MemberCommand';
 import { TechTree } from '../../techs';
+import { confirmTech } from '../../utils';
 import { Member } from '../../database';
 import { MessageEmbed } from 'discord.js';
 
@@ -35,7 +36,12 @@ export class TechDataCommand extends MemberCommand{
         }
         else {
 
-            const tech = TechTree.find(args[0]);
+            const techName = args[0];
+            const tech = TechTree.find(techName);
+
+            if(!await confirmTech(message, techName, tech))
+                return;
+            
             if(!args[1]) {
                 embed.setTitle(`**Tech: ${tech.name}**`)
                 embed.setDescription(`${tech.description}\n`)

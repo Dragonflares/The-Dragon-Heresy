@@ -1,8 +1,8 @@
-import { Command } from '../../../../lib';
+import { BattlegroupCommand } from './BattlegroupCommand';
 import { Member, Corp, Battlegroup } from '../../database';
 import Mongoose from 'mongoose';
 
-export class BattlegroupCreateCommand extends Command{
+export class BattlegroupCreateCommand extends BattlegroupCommand{
     constructor(plugin){
         super(plugin, {
             name: 'battlegroupcreate',

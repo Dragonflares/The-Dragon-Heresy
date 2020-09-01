@@ -1,8 +1,8 @@
-import { Command } from '../../../../lib';
+import { MemberCommand } from './MemberCommand';
 import TechData from '../../../../assets/techs.json';
 import { Member, Tech } from '../../database';
 
-export class UpdateTechCommand extends Command{
+export class UpdateTechCommand extends MemberCommand{
     constructor(plugin){
         super(plugin, {
             name: 'updatetech',

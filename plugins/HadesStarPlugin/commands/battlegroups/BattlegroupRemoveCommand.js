@@ -1,7 +1,7 @@
-import { Command } from '../../../../lib';
+import { BattlegroupCommand } from './BattlegroupCommand';
 import { Member, Corp, Battlegroup } from '../../database';
 
-export class BattlegroupRemoveCommand extends Command{
+export class BattlegroupRemoveCommand extends BattlegroupCommand{
     constructor(plugin){
         super(plugin, {
             name: 'battlegroupdelete',

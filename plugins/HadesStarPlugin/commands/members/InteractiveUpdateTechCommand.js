@@ -1,10 +1,10 @@
-import { Command } from '../../../../lib';
+import { MemberCommand } from './MemberCommand';
 import TechData from '../../../../assets/techs.json';
 import { Member, Tech } from '../../database';
 import { MessageEmbed } from 'discord.js';
 import { Embeds } from 'discord-paginationembed';
 
-export class InteractiveUpdateTechCommand extends Command{
+export class InteractiveUpdateTechCommand extends MemberCommand{
     constructor(plugin){
         super(plugin, {
             name: 'interactivetech',

@@ -1,7 +1,7 @@
-import { Command } from '../../../../lib';
+import { ShipCommand } from './ShipCommand';
 import { Member } from '../../database';
 
-export class SetSupportCommand extends Command{
+export class SetSupportCommand extends ShipCommand{
     constructor(plugin){
         super(plugin, {
             name: 'setsupport',

@@ -1,9 +1,9 @@
-import { Command } from '../../../../lib';
+import { OfficerCommand } from './OfficerCommand';
 import { Member, Corp, Tech } from '../../database';
 import TechData from '../../../../assets/techs.json';
 import Mongoose from 'mongoose';
 
-export class AddMemberCommand extends Command{
+export class AddMemberCommand extends OfficerCommand{
     constructor(plugin){
         super(plugin, {
             name: 'addmember',

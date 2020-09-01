@@ -1,8 +1,8 @@
-import { Command } from '../../../../lib';
+import { ShipCommand } from './ShipCommand';
 import { Member, Miner } from '../../database';
 import { MessageEmbed } from 'discord.js';
 
-export class GetMinerCommand extends Command{
+export class GetMinerCommand extends ShipCommand{
     constructor(plugin){
         super(plugin, {
             name: 'playerminer',

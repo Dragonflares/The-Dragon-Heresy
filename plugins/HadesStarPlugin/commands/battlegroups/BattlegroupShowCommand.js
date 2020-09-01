@@ -1,10 +1,10 @@
-import { Command } from '../../../../lib';
+import { BattlegroupCommand } from './BattlegroupCommand';
 import { Member, Corp, Battlegroup, Battleship, Miner, Transport } from '../../database';
 import { MessageEmbed, MessageAttachment } from 'discord.js';
 import TheCanvas from 'canvas';
 import { registerFont, Canvas, loadImage } from 'canvas';
 
-export class BattlegroupShowCommand extends Command{
+export class BattlegroupShowCommand extends BattlegroupCommand{
     constructor(plugin){
         super(plugin, {
             name: 'battlegrouplist',

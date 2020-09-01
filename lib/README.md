@@ -37,7 +37,7 @@ When writing a plugin, there may be lots of functionalities involved.
 
 So many that you need to structure and split your code.
 
-The ususal structure for a plugin should be this one:
+The usual structure for a plugin should be this one:
 
 ```
 MyPlugin/

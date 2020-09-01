@@ -10,7 +10,9 @@ export class RankCommand extends Command{
         super(plugin, {
             name: 'rank',
             description: "Gives the xp and the level you currently have.",
-            usage: "<id | mention>"
+            usage: "<id | mention>",
+            category:"discord",
+            subcategory:"info"
         });
     }
 

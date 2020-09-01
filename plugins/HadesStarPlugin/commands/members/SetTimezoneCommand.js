@@ -1,7 +1,7 @@
-import { Command } from '../../../../lib';
+import { MemberCommand } from './MemberCommand';
 import { Member } from '../../database';
 
-export class SetTimezoneCommand extends Command{
+export class SetTimezoneCommand extends MemberCommand{
     constructor(plugin){
         super(plugin, {
             name: 'settimezone',

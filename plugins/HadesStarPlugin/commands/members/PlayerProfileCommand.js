@@ -1,8 +1,8 @@
-import { Command } from '../../../../lib';
+import { MemberCommand } from './MemberCommand';
 import { Member } from '../../database';
 import { MessageEmbed } from 'discord.js';
 
-export class PlayerProfileCommand extends Command{
+export class PlayerProfileCommand extends MemberCommand{
     constructor(plugin){
         super(plugin, {
             name: 'playerprofile',

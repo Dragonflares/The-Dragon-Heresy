@@ -1,7 +1,7 @@
-import { Command } from '../../../../lib';
+import { OfficerCommand } from './OfficerCommand';
 import { Member } from '../../database';
 
-export class LastSeenCommand extends Command{
+export class LastSeenCommand extends OfficerCommand{
     constructor(plugin){
         super(plugin, {
             name: 'lastSeen',

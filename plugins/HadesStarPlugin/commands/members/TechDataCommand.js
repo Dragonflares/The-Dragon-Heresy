@@ -1,9 +1,9 @@
-import { Command } from '../../../../lib';
+import { MemberCommand } from './MemberCommand';
 import TechData from '../../../../assets/techs.json';
 import { Member } from '../../database';
 import { MessageEmbed } from 'discord.js';
 
-export class TechDataCommand extends Command{
+export class TechDataCommand extends MemberCommand{
     constructor(plugin){
         super(plugin, {
             name: 'techdata',

@@ -1,9 +1,9 @@
-import { Command } from '../../../../lib';
+import { ShipCommand } from './ShipCommand';
 import { Member, Battleship, Tech } from '../../database';
 import TechData from '../../../../assets/techs.json';
 import Mongoose from 'mongoose';
 
-export class SetBattleshipCommand extends Command{
+export class SetBattleshipCommand extends ShipCommand{
     constructor(plugin){
         super(plugin, {
             name: 'setbattleship',

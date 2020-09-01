@@ -1,7 +1,7 @@
-import { Command } from '../../../../lib';
+import { MemberCommand } from './MemberCommand';
 import { Member } from '../../database';
 
-export class SetWhiteStarCommand extends Command{
+export class SetWhiteStarCommand extends MemberCommand{
     constructor(plugin){
         super(plugin, {
             name: 'setwhitestar',

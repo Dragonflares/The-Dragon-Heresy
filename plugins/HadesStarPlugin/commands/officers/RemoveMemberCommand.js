@@ -1,8 +1,8 @@
-import { Command } from '../../../../lib';
+import { OfficerCommand } from './OfficerCommand';
 import { Member, Battlegroup, Corp } from '../../database';
 import Mongoose from 'mongoose';
 
-export class RemoveMemberCommand extends Command{
+export class RemoveMemberCommand extends OfficerCommand{
     constructor(plugin){
         super(plugin, {
             name: 'removemember',

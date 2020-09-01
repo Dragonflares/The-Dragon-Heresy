@@ -1,7 +1,7 @@
-import { Command } from '../../../../lib';
+import { MemberCommand } from './MemberCommand';
 import { Member, Corp, Battlegroup } from '../../database';
 
-export class ResignCommand extends Command{
+export class ResignCommand extends MemberCommand{
     constructor(plugin){
         super(plugin, {
             name: 'resign',

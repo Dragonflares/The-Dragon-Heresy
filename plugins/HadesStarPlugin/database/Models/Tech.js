@@ -2,7 +2,7 @@ import {Schema, model} from 'mongoose';
 
 const TechSchema = Schema ({
     name: String,
-    level: String,
+    level: Number,
     category: String,
     order: Number,
     playerId: String

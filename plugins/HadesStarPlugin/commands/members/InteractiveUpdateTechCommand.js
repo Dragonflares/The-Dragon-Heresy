@@ -1,5 +1,7 @@
 import { MemberCommand } from './MemberCommand';
 import TechData from '../../../../assets/techs.json';
+import { commandError } from '../../../../lib/utils';
+import { TechTree } from '../../techs';
 import { Member, Tech } from '../../database';
 import { MessageEmbed } from 'discord.js';
 import { Embeds } from 'discord-paginationembed';
@@ -16,91 +18,60 @@ export class InteractiveUpdateTechCommand extends MemberCommand{
 
     async run(message, args){
         let targetb
-        let userb = message.mentions.users.first()
-        if(!userb){
-            targetb = message.guild.member(message.author)
-        }
-        else return message.channel.send("You cannot set someone else's techs.")
-        let requester = message.guild.member(message.author)
+        let mentionedUser = message.mentions.users.first()
+        if(mentionedUser)
+            return message.channel.send("You cannot set someone else's techs.");
 
+        let member = await Member.findOne({discordId: message.author.id.toString()}).populate("Corp").exec();
 
-        let member = await Member.findOne({discordId: requester.id.toString()}).populate("Corp").exec();
         if(!member) 
-            return message.channel.send("You aren't part of any Corporations, so you cannot request this information from anyone.")
-        if(member.Corp.corpId != message.guild.id.toString())
-            return message.channel.send("You aren't a Member of this Corporation!")
+            return message.channel.send("You aren't part of any Corporations, so you cannot request this information from anyone.");
 
-        if(member.Corp.corpId != message.guild.id.toString()) {
-            if(!userb)
-                return message.channel.send("You aren't in your home server")
-            else
-                return message.channel.send("You aren't in the home server of this Member")
-        }
-        else {
-            return this.techInformation(message, member);
-        }
+        if(member.Corp.corpId != message.guild.id.toString())
+            return message.channel.send("You aren't a Member of this Corporation!");
+
+        return await this.techInformation(message, member);
     }
 
+    techInformation = async (message, member) => {
+        const embeds = await Promise.all(Array.from(TechTree.get().values()).map(async (tech) => {
+            let memberTech = await Tech.findOne({name: tech.name, playerId: member.discordId});
+            let embed = new MessageEmbed().setColor("RANDOM")
+                embed.setTitle(tech.name);
+                embed.setThumbnail(tech.image);
 
-    techInformation = async (message, CorpMember) => {
-        const messagesplit = message.content.split(" ")
+            embed.addField("Level", `${memberTech.level}\n`);
+            return embed;
+        }));
 
-        let embeds = []
-        
-        for(let tech in TechData) {
-            let Embed = new MessageEmbed().setColor("RANDOM")
-            Embed.setTitle(`${tech}`)
-            let tech2 = await Tech.findOne({name: tech, playerId: CorpMember.discordId})
-            let techresult = `${tech2.level}\n`
-            Embed.addField("Level", `${techresult}`)
-            Embed.setThumbnail(`${TechData[tech].Image}`)
-            embeds.push(Embed)
-        }
-        let iptech = new Embeds()
+        const embed = new Embeds()
             .setArray(embeds)
             .setAuthorizedUsers([message.author.id])
             .setChannel(message.channel)
-            .setDisabledNavigationEmojis(['DELETE'])
-            .addFunctionEmoji('🔼', (_, instance) => {
-                let currentEmbed = instance.array[instance.page-1]   
-                let techname = currentEmbed.title
-                Tech.findOne({name: techname, playerId: CorpMember.discordId},(err, tech) => {
-                    if(err) {
-                        message.channel.send("An unexpected error ocurred, please contact my creator.")
-                        return console.log(err)
-                    }
-                    else {
-                        if((tech.level + 1) > Number(TechData[tech.name].Level[TechData[tech.name].Level.length - 1])) {
-                            message.channel.send(`The level you gave is invalid for that tech!`)
-                        }
-                        else {
-                            tech.level++
-                            tech.save()
-                            instance.array[instance.page-1].fields[0].value = tech.level
-                        }
-                    }
-                })
-            })
-            .addFunctionEmoji('🔽', (_, instance) => {
-                let currentEmbed = instance.array[instance.page-1]
-                let techname = currentEmbed.title 
-                Tech.findOne({name: techname, playerId: CorpMember.discordId},(err, tech) => {
-                    if(err) {
-                        message.channel.send("An unexpected error ocurred, please contact my creator.")
-                        return console.log(err)
-                    }
-                    else {
-                        if((tech.level - 1) < 0) {
-                            message.channel.send(`The level you gave is invalid for that tech!`)
-                        }
-                        else {
-                            tech.level--
-                            tech.save()
-                            instance.array[instance.page-1].fields[0].value = tech.level
-                        }
-                    }
-                })
-            })
-            .build()
+            .setDisabledNavigationEmojis(['delete'])
+            .addFunctionEmoji('🔼', this.updateTech(message, member, +1))
+            .addFunctionEmoji('🔽', this.updateTech(message, member, -1));
+        return await embed.build();
+    }
+
+    updateTech(message, member, qty){
+        return async (_, instance) => {
+            try{
+                let embed        = instance.array[instance.page-1]   
+                const memberTech = await Tech.findOne({name: embed.title, playerId: member.discordId});
+                
+                const newLevel = parseInt(memberTech.level) + qty;
+
+                if(newLevel < 1 || newLevel > TechTree.get(embed.title).levels)
+                    return message.channel.send(`The level you gave is invalid for that tech!`);
+                
+                memberTech.level = newLevel;
+                memberTech.save();
+                instance.array[instance.page-1].fields[0].value = newLevel;
+            }
+            catch(e){
+                commandError(message, e);
+            }
+        }
     }
 }

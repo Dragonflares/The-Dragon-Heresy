@@ -7,6 +7,11 @@ class TechnologyTree{
 		this.technologies = new Map();
 	}
 
+	get(name = null){
+		if(!name) return this.technologies;
+		return this.technologies.get(name.toLowerCase());
+	}
+
 	find(query){
 		query = query.toLowerCase();
 

@@ -3,8 +3,15 @@ import { Technology } from './Technology';
 import { findBestMatch } from 'string-similarity';
 
 class TechnologyTree{
-	constructor(){
+	constructor(name){
+		this.name = name;
 		this.technologies = new Map();
+		this.categories   = new Map();
+	}
+
+	has(name){
+		name = name.toLowerCase();
+		return this.technologies.has(name) || this.categories.has(name);
 	}
 
 	get(name = null){
@@ -22,10 +29,23 @@ class TechnologyTree{
 		return this.technologies.get(rate.bestMatch.target);
 	}
 
+	findCategory(query){
+		query = query.toLowerCase();
+
+		if(this.categories.has(query))
+			return this.categories.get(query);
+
+		const rate = findBestMatch(query, [...this.categories.keys()]);
+		return this.categories.get(rate.bestMatch.target);
+	}
+
 	static load(){
 		logger.debug("Loading Technology Tree...");
-		const tree = new TechnologyTree();
+		const tree = new TechnologyTree("Root");
 		Object.entries(TechData).forEach(([name, data]) => {
+			const category = data.Category.toLowerCase();
+			if(!tree.categories.has(category))
+				tree.categories.set(category, new TechnologyTree(data.Category));
 
 
 			const settings = {
@@ -43,7 +63,10 @@ class TechnologyTree{
 
 			settings.properties = data;
 
-			tree.technologies.set(name.toLowerCase(), new Technology(settings));
+
+			const tech = new Technology(settings);
+			tree.technologies.set(name.toLowerCase(), tech);
+			tree.categories.get(category).get().set(name.toLowerCase(), tech);
 		});
 
 		return tree;

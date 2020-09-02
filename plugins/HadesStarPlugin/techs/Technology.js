@@ -1,12 +1,3 @@
-import camelize from 'camelize';
-
-class TechnologyProperty{
-	constructor(name, data){
-		this.name = name;
-		this.data = data;
-	}
-}
-
 export class Technology {
 	constructor({
 		name 		= "Unnamed Tech",

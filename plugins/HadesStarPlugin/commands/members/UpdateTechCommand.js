@@ -23,8 +23,8 @@ export class UpdateTechCommand extends MemberCommand{
             target = user
         else return message.channel.send("You cannot set another Member's tech!")
 
-        const messagesplit = message.content.split(" ")
-        const techName = args[0];
+        const level     = parseInt(args[args.length-1]);
+        const techName  = isNaN(level) ? args.join('') : args.slice(0, -1).join('');
 
         if(!techName) return message.channel.send(`Please specify the tech you want to update.`)
 
@@ -33,11 +33,9 @@ export class UpdateTechCommand extends MemberCommand{
         if(!await confirmTech(message, techName, tech))
             return;
 
-        const techlevel = parseInt(args[1]);
+        if(isNaN(level)) return message.channel.send(`Please specify the level of the tech you want to update.`)
 
-        if(!techlevel) return message.channel.send(`Please specify the level of the tech you want to update.`)
-
-        if(0 > techlevel || tech.levels < techlevel)
+        if(0 > level || tech.levels < level)
             return message.channel.send(`The level you gave is invalid for that tech!`)
         
 
@@ -46,13 +44,9 @@ export class UpdateTechCommand extends MemberCommand{
             return message.channel.send("You aren't part of any Corporation. Join a Corporation first.")
 
         if(member.Corp.corpId === message.guild.id.toString()){
-            await this.modifyTech(tech, target, techlevel, message);
+            await Tech.findOneAndUpdate({name: tech.name, playerId: target.id.toString()}, {level: Math.floor(level)});
             return message.channel.send(`Tech level updated.`)  
         }
         return message.channel.send("You aren't on your Corporation's server!")
-    }
-
-    modifyTech(tech, target, techlevel, message){
-        return Tech.findOneAndUpdate({name: tech.name, playerId: target.id.toString()}, {level: Math.floor(techlevel)});
     }
 }

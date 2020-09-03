@@ -28,34 +28,35 @@ export class TechDataCommand extends MemberCommand{
         }
         else {
 
-            const techName = args[0];
+            const level     = parseInt(args[args.length-1]);
+            const techName  = isNaN(level) ? args.join('') : args.slice(0, -1).join('');
+
             const tech = TechTree.find(techName);
 
             if(!await confirmTech(message, techName, tech))
                 return;
             
-            if(!args[1]) {
+            if(isNaN(level)) {
                 embed.setTitle(`**Tech: ${tech.name}**`)
                 embed.setDescription(`${tech.description}\n`)
                 embed.setFooter(`You may add a number between 1 and ${tech.levels} to get info about the required level`)
                 embed.setThumbnail(`${tech.image}`)
                 return message.channel.send(embed)
             }
-            else {
-                const level = args[1];
-                if(1 > level || tech.levels < level)
-                    return message.channel.send(`The level you requested is invalid for that tech!`)
 
-                embed.setTitle(`**${tech.name}**`);
-                embed.addField('*Category*', tech.category);
-                embed.addField('*Description*', tech.description);
-                embed.setThumbnail(tech.image);
+            if(1 > level || tech.levels < level)
+                return message.channel.send(`The level you requested is invalid for that tech!`)
 
-                tech.properties.forEach((levels, propery) => {
-                    embed.addField(`*${propery}*`, `${levels[args[1] - 1]}`)
-                });
-                return message.channel.send(embed)
-            }
+            embed.setTitle(`**${tech.name}**`);
+            embed.addField('*Level*', level);
+            embed.addField('*Category*', tech.category);
+            embed.addField('*Description*', tech.description);
+            embed.setThumbnail(tech.image);
+
+            tech.properties.forEach((levels, propery) => {
+                embed.addField(`*${propery}*`, `${levels[level - 1]}`)
+            });
+            return message.channel.send(embed)
         }
     }
 }

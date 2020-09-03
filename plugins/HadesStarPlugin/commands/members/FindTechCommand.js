@@ -35,7 +35,7 @@ export class FindTechCommand extends MemberCommand{
         }
         else {
 
-            const techName = args[0];
+            const techName = args.join('');
             const tech = TechTree.find(techName);
 
             if(!await confirmTech(message, techName, tech))
@@ -57,9 +57,9 @@ export class FindTechCommand extends MemberCommand{
 
     async getFindTechInformation(message, tech){
             let embed = new MessageEmbed().setColor("RANDOM")
-            let techs = `${tech.description}\n`;
-            embed.setTitle(`**Tech: ${tech.name}**`)
-            embed.setThumbnail(`${tech.image}`);
+                embed.setTitle(`**Tech: ${tech.name}**`);
+                embed.setThumbnail(`${tech.image}`);
+                
             let corpmembers = await message.guild.members.fetch();
             let playersWithTech = ""
             

@@ -37,12 +37,12 @@ export class TechDataCommand extends MemberCommand{
             if(!args[1]) {
                 embed.setTitle(`**Tech: ${tech.name}**`)
                 embed.setDescription(`${tech.description}\n`)
-                embed.setFooter(`You may add a number between 1 and ${tech.level} to get info about the required level`)
+                embed.setFooter(`You may add a number between 1 and ${tech.levels} to get info about the required level`)
                 embed.setThumbnail(`${tech.image}`)
                 return message.channel.send(embed)
             }
             else {
-                const level = arg[1];
+                const level = args[1];
                 if(1 > level || tech.levels < level)
                     return message.channel.send(`The level you requested is invalid for that tech!`)
 

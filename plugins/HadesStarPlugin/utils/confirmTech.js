@@ -19,7 +19,7 @@ export const confirmTech = async (message, query, tech) => {
                 errors: ['time']
             });
 
-            if(!["y", "yes", "yeah", "yea", "yup"].includes(response.first().content.toLowerCase())){
+            if(!["y", "yes", "yeah", "yea", "yup", "yep", "ye", "of course", "right", "true"].includes(response.first().content.toLowerCase())){
                 throw new Error();
             }
         } catch (err) {

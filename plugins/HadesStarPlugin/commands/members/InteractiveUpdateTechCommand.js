@@ -1,5 +1,4 @@
 import { MemberCommand } from './MemberCommand';
-import TechData from '../../../../assets/techs.json';
 import { commandError } from '../../../../lib/utils';
 import { TechTree } from '../../techs';
 import { Member, Tech } from '../../database';

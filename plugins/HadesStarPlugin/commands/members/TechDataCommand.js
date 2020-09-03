@@ -20,16 +20,8 @@ export class TechDataCommand extends MemberCommand{
         if(!args.length) {
             embed.setTitle(`**Known Techs**`);
 
-            const categories = new Map();
-            TechTree.technologies.forEach((tech, name) => {
-                if(!categories.has(tech.category))
-                    categories.set(tech.category, new Set());
-
-                categories.get(tech.category).add(name);
-            });
-
-            categories.forEach((techs, name) => {
-                embed.addField(`*${name}*`, `${Array.from(techs).join(', ')}`)
+            TechTree.categories.forEach((category, catId) => {
+                embed.addField(`*${category.name}*`, `${[...category.get().values()].map(t => t.name).join(', ')}`)
             });
 
             return message.channel.send(embed)

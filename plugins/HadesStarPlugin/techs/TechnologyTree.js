@@ -2,6 +2,9 @@ import TechData from '../../../assets/techs.json';
 import { Technology } from './Technology';
 import { findBestMatch } from 'string-similarity';
 
+/**
+ * Class used for Technology manipulation (mostly finding) and category hierarchy 
+ */
 class TechnologyTree{
 	constructor(name){
 		this.name = name;
@@ -9,16 +12,36 @@ class TechnologyTree{
 		this.categories   = new Map();
 	}
 
+	/**
+	 * Check if the tree has the given exact name of a technology or category
+	 */
 	has(name){
 		name = name.toLowerCase();
 		return this.technologies.has(name) || this.categories.has(name);
 	}
 
+	/**
+	 * Get a technology from its exact name. All techs are returned if no name is provided
+	 * @param {string} [name=null] - The exact technology name
+	 */
 	get(name = null){
 		if(!name) return this.technologies;
 		return this.technologies.get(name.toLowerCase());
 	}
 
+	/**
+	 * Get a category from its exact name. All categories are returned if no name is provided
+	 * @param {string} [name=null] - The exact category name
+	 */
+	getCategory(name = null){
+		if(!name) return this.categories;
+		return this.categories.get(name.toLowerCase());
+	}
+
+	/**
+	 * Finds a technology from the given query. The term can be approximated.
+	 * @param {string} query - The technology name
+	 */
 	find(query){
 		query = query.toLowerCase();
 
@@ -29,6 +52,10 @@ class TechnologyTree{
 		return this.technologies.get(rate.bestMatch.target);
 	}
 
+	/**
+	 * Finds a category from the given query. The term can be approximated.
+	 * @param {string} query - The category name
+	 */
 	findCategory(query){
 		query = query.toLowerCase();
 
@@ -39,6 +66,9 @@ class TechnologyTree{
 		return this.categories.get(rate.bestMatch.target);
 	}
 
+	/**
+	 * Loads the technology tree from the TechData json file
+	 */
 	static load(){
 		logger.debug("Loading Technology Tree...");
 		const tree = new TechnologyTree("Root");

@@ -1,0 +1,31 @@
+{
+  "name": "Dragonflares_Bot",
+  "version": "2.0.0",
+  "repository": "https://github.com/Dragonflares/Dragonflares-Bot",
+  "description": "A simple Discord Bot",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node -r esm bot.js"
+  },
+  "keywords": [
+    "discord",
+    "music",
+    "bot"
+  ],
+  "author": "Dragonflares",
+  "license": "",
+  "dependencies": {
+    "array-flatten": "^3.0.0",
+    "better-sqlite3": "^7.1.0",
+    "camelize": "^1.0.0",
+    "canvas": "^2.6.1",
+    "common-tags": "^1.8.0",
+    "discord-paginationembed": "^2.1.0",
+    "discord.js": "^12.3.1",
+    "dotenv": "^8.2.0",
+    "esm": "^3.2.25",
+    "loglevel-colors": "^1.0.1",
+    "mongoose": "^5.10.0",
+    "string-similarity": "^4.0.2"
+  }
+}

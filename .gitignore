@@ -1,3 +1,4 @@
-auth.json
+.env
 /node_modules/
-/Database/
+/data/
+.DS_Store

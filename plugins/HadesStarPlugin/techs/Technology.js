@@ -12,7 +12,7 @@ export class Technology {
 		this._description 	= description;
 		this._image 		= image;
 		this._levels 	 	= levels;
-		this._properties 	= new Map(Array.from(properties));
+		this._properties 	= new Map(Object.entries(properties));
 	}
 
 	get name(){ return this._name; }

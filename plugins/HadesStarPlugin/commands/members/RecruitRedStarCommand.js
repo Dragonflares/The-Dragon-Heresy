@@ -13,41 +13,40 @@ export class RecruitRedStarCommand extends Command {
   }
 
   async run(message, args) {
-    const tech = message.content.split(" ")
-    if (tech[1]) {
-      if (tech[1] > 0 && tech[1] < 12) { //If level between 1 and 12
-          return this.startMessage(this.client, message, tech[1], 600000) // Start with 10 minutes timout
+    if (args[0]) {
+      if (args[0] > 0 && args[0] < 12) { //If level between 1 and 12
+        return this.startMessage(message, args[0], 600000) // Start with 10 minutes timout
       } else {
         return message.channel.send("Please add a valid Red Star Level. (1-11)")
       }
     } else {
-      return message.channel.send("You must specifiy a valid Red Star level. A timeout can be added. &rrs num [timeout]")
+      return message.channel.send("You must specifiy a valid Red Star level. A timeout can be added.")
     }
   }
-  async startMessage(client, msgObject, rsLevel, timeout) {
+  async startMessage(msgObject, rsLevel, timeout) {
     msgObject.delete({ timeout: 1 });    //Delete User message
-    this.SendInitialMessage(msgObject, rsLevel, timeout); //Send recuit message
+    this.sendInitialMessage(msgObject, rsLevel, timeout); //Send recuit message
   }
 
-  async Failed(message, rsLevel,messageAutor) {
+  async failed(message, rsLevel) {
     var amm = 0;
     //Clear Reactions Dictionary
-    var Reacted = {}
+    var reacted = {}
 
     //Add Reactions to a dictionary
     let testString = ""
     message.reactions.cache.forEach(reaction =>
       reaction.users.cache.forEach(user =>
-        Reacted[user] = reaction.emoji.name
+        reacted[user] = reaction.emoji.name
       ))
 
 
     // Create Users Text and Count People In
-    Object.keys(Reacted).forEach(function (key) {
+    Object.keys(reacted).forEach(function (key) {
       if (!key.bot) {
-        if (Reacted[key] == "✅" || Reacted[key] == "❎") {
+        if (reacted[key] == "✅" || reacted[key] == "❎") {
           amm++;
-          testString += `${key} ${Reacted[key]}`
+          testString += `${key} ${reacted[key]}`
         }
       }
     });
@@ -65,25 +64,25 @@ export class RecruitRedStarCommand extends Command {
     }
   }
 
-  async UpdateEmbed(message, rsLevel,messageAutor) {
+  async updateEmbed(message, rsLevel, messageAutor) {
     let amm = 0;
 
     //Clear Reactions Dictionary
-    var Reacted = {}
+    var reacted = {}
 
     //Add Reactions to a dictionary
     let testString = ""
     message.reactions.cache.forEach(reaction =>
       reaction.users.cache.forEach(user =>
-        Reacted[user] = reaction.emoji.name
+        reacted[user] = reaction.emoji.name
       ))
 
     // Create Users Text and Count People In
-    Object.keys(Reacted).forEach(function (key) {
+    Object.keys(reacted).forEach(function (key) {
       if (!key.bot) {
-        if (Reacted[key] == "✅" || Reacted[key] == "❎") {
+        if (reacted[key] == "✅" || reacted[key] == "❎") {
           amm++;
-          testString += `${key} ${Reacted[key]} \n`
+          testString += `${key} ${reacted[key]} \n`
         }
       }
     });
@@ -100,16 +99,16 @@ export class RecruitRedStarCommand extends Command {
       .addField("Members", testString)
       .setFooter("This invitation will be on for 10 minutes")
 
-    if (amm == 4)  newEmbed.setColor("GREEN"); else  newEmbed.setColor("ORANGE"); //Set Color to Green when All Ready
+    if (amm == 4) newEmbed.setColor("GREEN"); else newEmbed.setColor("ORANGE"); //Set Color to Green when All Ready
     message.edit(newEmbed) // Send Edit
 
     if (amm == 4) {
       done[message.id] = true;
       // Ping people that is done
       let testString = ""
-      Object.keys(Reacted).forEach(function (key) {
+      Object.keys(reacted).forEach(function (key) {
         if (!key.bot) {
-          if (Reacted[key] == "✅" || Reacted[key] == "❎") {
+          if (reacted[key] == "✅" || reacted[key] == "❎") {
             amm++;
             testString += `${key}, `
           }
@@ -123,10 +122,10 @@ export class RecruitRedStarCommand extends Command {
     }
   }
 
-  async SendInitialMessage(msgObject, rsLevel, timeout) {
+  async sendInitialMessage(msgObject, rsLevel, timeout) {
 
     let role = msgObject.guild.roles.cache.find(role => role.name === `RS${rsLevel}`);
-   
+
     let pollEmbed = new Discord.MessageEmbed()
       .setTitle(`RS ${rsLevel} Recruitment invitation by ${msgObject.author.username}:`)
       .setThumbnail("https://i.imgur.com/hedXFRd.png")
@@ -136,7 +135,7 @@ export class RecruitRedStarCommand extends Command {
       .setColor("ORANGE")
       .setFooter("This invitation will be on for 10 minutes")
 
-    let reactionFilter = (reaction, user) =>    !user.bot
+    let reactionFilter = (reaction, user) => !user.bot
     const time = timeout
     var messageAutor = msgObject.author
     var done = false
@@ -159,28 +158,28 @@ export class RecruitRedStarCommand extends Command {
           if (reaction.emoji.name != '✅' && reaction.emoji.name != '❎') { // If its not V or X
             reaction.remove() // Remove the Reaction
           } else {
-            var Reacted = {}
+            var reacted = {}
             messageReaction.reactions.cache.forEach(reaction =>
               reaction.users.cache.forEach(user =>
-                (user in Reacted) ? Reacted[user]++ : Reacted[user] = 0
+                (user in reacted) ? reacted[user]++ : reacted[user] = 0
               )) // Get Every Reaction
 
-            if (Reacted[user] > 0) { // If User has already a reacion
+            if (reacted[user] > 0) { // If User has already a reacion
               reaction.users.remove(user); // Remove it
             } else {
-              this.UpdateEmbed(messageReaction, rsLevel,messageAutor) //Update the Embeed to show the new reaction
+              this.updateEmbed(messageReaction, rsLevel, messageAutor) //Update the Embeed to show the new reaction
             }
           }
         }
       });
       collector.on('remove', (reaction, reactionCollector) => { // When a reaction is removed
         if (done == false)
-          this.UpdateEmbed(messageReaction, rsLevel,messageAutor)
+          this.updateEmbed(messageReaction, rsLevel, messageAutor)
       });
 
       collector.on('end', (reaction, reactionCollector) => { // When timeout done
         messageReaction.reactions.removeAll()
-        this.Failed(messageReaction, rsLevel,messageAutor);
+        this.failed(messageReaction, rsLevel);
       });
     })
   }

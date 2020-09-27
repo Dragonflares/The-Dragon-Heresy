@@ -13,33 +13,32 @@ export class RecruitWhiteStarCommand extends Command {
   }
 
   async run(message, args) {
-    const tech = message.content.split(" ")
-    return this.startMessage(this.client, message) //Send Message
+    return this.startMessage(message) //Send Message
   }
-  async startMessage(client, msgObject) {
+  async startMessage(msgObject) {
     msgObject.delete({ timeout: 1 });    //Delete User message
-    this.SendInitialMessage(msgObject); //Send recuit message
+    this.sendInitialMessage(msgObject); //Send recuit message
   }
 
-  async UpdateEmbed(message,messageAutor) {
+  async updateEmbed(message,messageAutor) {
     let amm = 0;
 
     //Clear Reactions Dictionary
-    var Reacted = {}
+    var reacted = {}
 
     //Add Reactions to a dictionary
     let testString = ""
     message.reactions.cache.forEach(reaction =>
       reaction.users.cache.forEach(user =>
-        Reacted[user] = reaction.emoji.name
+        reacted[user] = reaction.emoji.name
       ))
 
     // Create Users Text and Count People In
-    Object.keys(Reacted).forEach(function (key) {
+    Object.keys(reacted).forEach(function (key) {
       if (!key.bot) {
-        if (Reacted[key] == "⚔️" || Reacted[key] == "🛡️" || Reacted[key] == "🗡️" || Reacted[key] == "❓") {
+        if (reacted[key] == "⚔️" || reacted[key] == "🛡️" || reacted[key] == "🗡️" || reacted[key] == "❓") {
           amm++;
-          testString += `${key} ${Reacted[key]} \n`
+          testString += `${key} ${reacted[key]} \n`
         }
       }
     });
@@ -64,9 +63,9 @@ export class RecruitWhiteStarCommand extends Command {
       done[message.id] = true;
       // Ping people that is done
       let testString = ""
-      Object.keys(Reacted).forEach(function (key) {
+      Object.keys(reacted).forEach(function (key) {
         if (!key.bot) {
-          if (Reacted[key] == "⚔️" || Reacted[key] == "🛡️" || Reacted[key] == "🗡️" || Reacted[key] == "❓") {
+          if (reacted[key] == "⚔️" || reacted[key] == "🛡️" || reacted[key] == "🗡️" || reacted[key] == "❓") {
             testString += `${key}, `
           }
         }
@@ -80,7 +79,7 @@ export class RecruitWhiteStarCommand extends Command {
     }
   }
 
-  async SendInitialMessage(msgObject) {
+  async sendInitialMessage(msgObject) {
 
     let role = msgObject.guild.roles.cache.find(role => role.name === `White Star`);
    
@@ -110,29 +109,29 @@ export class RecruitWhiteStarCommand extends Command {
             reaction.users.remove(user);
             done = true
             messageReaction.reactions.removeAll()
-            this.Failed(messageReaction, rsLevel);
+            this.failed(messageReaction, rsLevel);
           }
         } else {
           if (reaction.emoji.name != '⚔️' && reaction.emoji.name != '🛡️' && reaction.emoji.name != '🗡️' && reaction.emoji.name != '❓') { // If its not wanted reaction
             reaction.remove() // Remove the Reaction
           } else {
-            var Reacted = {}
+            var reacted = {}
             messageReaction.reactions.cache.forEach(reaction =>
               reaction.users.cache.forEach(user =>
-                (user in Reacted) ? Reacted[user]++ : Reacted[user] = 0
+                (user in reacted) ? reacted[user]++ : reacted[user] = 0
               )) // Get Every Reaction
 
-            if (Reacted[user] > 0) { // If User has already a reacion
+            if (reacted[user] > 0) { // If User has already a reacion
               reaction.users.remove(user); // Remove it
             } else {
-              this.UpdateEmbed(messageReaction,messageAutor) //Update the Embeed to show the new reaction
+              this.updateEmbed(messageReaction,messageAutor) //Update the Embeed to show the new reaction
             }
           }
         }
       });
       collector.on('remove', (reaction, reactionCollector) => { // When a reaction is removed
         if (done == false)
-          this.UpdateEmbed(messageReaction,messageAutor)
+          this.updateEmbed(messageReaction,messageAutor)
       });
 
     })

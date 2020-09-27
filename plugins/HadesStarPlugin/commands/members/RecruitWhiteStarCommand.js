@@ -1,7 +1,6 @@
 import { Command } from '../../../../lib';
 const Discord = require('discord.js');
 
-
 export class RecruitWhiteStarCommand extends Command {
   constructor(plugin) {
     super(plugin, {
@@ -13,62 +12,53 @@ export class RecruitWhiteStarCommand extends Command {
   }
 
   async run(message, args) {
-    return this.startMessage(message) //Send Message
-  }
-  async startMessage(msgObject) {
-    msgObject.delete({ timeout: 1 });    //Delete User message
-    this.sendInitialMessage(msgObject); //Send recuit message
+    message.delete({ timeout: 1 });    //Delete User message
+    this.sendInitialMessage(message); //Send recuit message
   }
 
   async updateEmbed(message, messageAutor) {
     //Variables
-    let amm = 0;
-    let reacted = {}
-    let testString = ""
+    const reacted = new Map();
     const role = message.guild.roles.cache.find(role => role.name === `White Star`);
 
     //Create Users Text and Count People In , Add Reactions to a dictionary
     message.reactions.cache.forEach(reaction =>
       reaction.users.cache.forEach(user => {
-        reacted[user] = reaction.emoji.name
         if (!user.bot) {
           if (reaction.emoji.name == "⚔️" || reaction.emoji.name == "🛡️" || reaction.emoji.name == "🗡️" || reaction.emoji.name == "❓") {
-            amm++;
-            testString += `${user} ${reaction.emoji.name} \n`
+            reacted.set(user, reaction.emoji.name);
           }
         }
       }))
 
     //If no people write None
+    let testString = ""
+    reacted.forEach((value, key) => {
+      testString += ` ${key} ${value} \n`
+    })
     if (testString == "") testString = "None";
-    
+
     let newEmbed = new Discord.MessageEmbed()
       .setTitle(`White Star Recruitment by ${messageAutor.username}:`)
       .setThumbnail("https://i.imgur.com/fNtJDNz.png")
       .setDescription(`Do you wish to partake in this White Star? <@&${role.id}>`)
-      .addField("Current People", `${amm}/15`)
+      .addField("Current People", `${reacted.size}/15`)
       .addField("Members", `${testString}`)
       .setColor("ORANGE")
 
-
-    if (amm == 15) newEmbed.setColor("GREEN"); else newEmbed.setColor("ORANGE"); //Set Color to Green when All Ready
+    if (reacted.size == 15) newEmbed.setColor("GREEN"); else newEmbed.setColor("ORANGE"); //Set Color to Green when All Ready
     message.edit(newEmbed) // Send Edit
 
-    if (amm == 15) {
+    if (reacted.size == 15) {
       done[message.id] = true;
-      // Ping people that is done
       let testString = ""
-      reacted.forEach(user => {
-        if (!user.bot) {
-          if (reacted[user] == "⚔️" || reacted[user] == "🛡️" || reacted[user] == "🗡️" || reacted[user] == "❓") {
-            testString += `${user}, `
-          }
-        }
+      reacted.forEach((value, key) => {
+        testString += ` ${key} ${value} ,`
       })
       if (testString == "")
         testString = "None"
       else
-        testString += `Full Team for White Star!`
+        testString += ` Full Team for White Star!`
       message.reactions.removeAll()
       message.channel.send(testString);
     }

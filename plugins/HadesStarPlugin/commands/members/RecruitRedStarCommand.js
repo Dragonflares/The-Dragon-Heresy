@@ -1,7 +1,6 @@
 import { Command } from '../../../../lib';
 const Discord = require('discord.js');
 
-
 export class RecruitRedStarCommand extends Command {
   constructor(plugin) {
     super(plugin, {
@@ -15,7 +14,8 @@ export class RecruitRedStarCommand extends Command {
   async run(message, args) {
     if (args[0]) {
       if (args[0] > 0 && args[0] < 12) { //If level between 1 and 12
-        return this.startMessage(message, args[0], 600000) // Start with 10 minutes timout
+        message.delete({ timeout: 1 });    //Delete User message
+        this.sendInitialMessage(message, args[0], 600000); //Send recuit message
       } else {
         return message.channel.send("Please add a valid Red Star Level. (1-11)")
       }
@@ -23,86 +23,73 @@ export class RecruitRedStarCommand extends Command {
       return message.channel.send("You must specifiy a valid Red Star level. A timeout can be added.")
     }
   }
-  async startMessage(msgObject, rsLevel, timeout) {
-    msgObject.delete({ timeout: 1 });    //Delete User message
-    this.sendInitialMessage(msgObject, rsLevel, timeout); //Send recuit message
-  }
 
   async failed(message, rsLevel) {
-    let amm = 0;
-
     //Add Reactions to a dictionary
     let testString = ""
     message.reactions.cache.forEach(reaction =>
       reaction.users.cache.forEach(user => {
         if (!user.bot) {
           if (reaction.emoji.name == "✅" || reaction.emoji.name == "❎") {
-            amm++;
             testString += `${user} ${reaction.emoji.name}`
           }
         }
       }
       ))
+    if (testString == "") testString = "None";
 
-    if (amm < 4) {
-      //If no people write None
-      if (testString == "") testString = "None";
-      let role = message.guild.roles.cache.find(role => role.name === `RS${rsLevel}`);
-      let newEmbed = new Discord.MessageEmbed()
-        .setTitle(`@RS${rsLevel} Recruitment:`)
-        .setDescription(`Do you want to be part of this Red Star? <@&${role.id}> \n React below if you have croid or not`)
-        .addField("Current People", `${amm}/4 Closed`)
-        .addField("Members", ` ${testString}\n Closed`)
-      newEmbed.setColor("RED")
-      message.edit(newEmbed)
-    }
+    //If no people write None
+    let role = message.guild.roles.cache.find(role => role.name === `RS${rsLevel}`);
+    let newEmbed = new Discord.MessageEmbed()
+      .setTitle(`@RS${rsLevel} Recruitment:`)
+      .setDescription(`Do you want to be part of this Red Star? <@&${role.id}> \n React below if you have croid or not`)
+      .addField("Current People", `0/0 Closed`)
+      .addField("Members", ` ${testString}\n Closed`)
+    newEmbed.setColor("RED")
+    message.edit(newEmbed)
   }
 
   async updateEmbed(message, rsLevel, messageAutor) {
     //Variables
-    let amm = 0;
-    var reacted = {}
-    let testString = ""
+    const reacted = new Map();
     const role = message.guild.roles.cache.find(role => role.name === `RS${rsLevel}`);
 
     //Add Reactions to a dictionary
     message.reactions.cache.forEach(reaction =>
       reaction.users.cache.forEach(user => {
         if (!user.bot) {
-          reacted[user] = reaction.emoji.name
           if (reaction.emoji.name == "✅" || reaction.emoji.name == "❎") {
-            amm++;
-            testString += `${user} ${reaction.emoji.name} \n`
+            reacted.set(user, reaction.emoji.name);
           }
         }
       }
       ))
 
-    //If no people wirte None
+    //If no people write None
+    let testString = ""
+    reacted.forEach((value, key) => {
+      testString += ` ${key} ${value} \n`
+    })
     if (testString == "") testString = "None";
 
     let newEmbed = new Discord.MessageEmbed()
       .setTitle(`@RS${rsLevel} Recruitment invitation by ${messageAutor.username}:`)
       .setThumbnail("https://i.imgur.com/hedXFRd.png")
       .setDescription(`Do you want to be part of this Red Star? <@&${role.id}> \n React below if you have croid or not`)
-      .addField("Current People", `${amm}/4`)
+      .addField("Current People", `${reacted.size}/4`)
       .addField("Members", testString)
       .setFooter("This invitation will be on for 10 minutes")
 
-    if (amm == 4) newEmbed.setColor("GREEN"); else newEmbed.setColor("ORANGE"); //Set Color to Green when All Ready
+    if (reacted.size == 4) newEmbed.setColor("GREEN"); else newEmbed.setColor("ORANGE"); //Set Color to Green when All Ready
     message.edit(newEmbed) // Send Edit
 
-    if (amm == 4) {
+    if (reacted.size == 4) {
       done[message.id] = true;
       // Ping people that is done
       let testString = ""
-      reacted.forEach(user => {
-        if (reacted[user] == "✅" || reacted[user] == "❎") {
-          amm++;
-          testString += `${user}, `
-        }
+      reacted.forEach((value, key) => {
+        testString += ` ${key} ${value} ,`
       })
-
       if (testString == "") testString = "None"
       else
         testString += `Full Team for RS${rsLevel}!`

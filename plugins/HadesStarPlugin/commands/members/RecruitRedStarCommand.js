@@ -137,51 +137,49 @@ export class RecruitRedStarCommand extends Command {
 
     let reactionFilter = (reaction, user) => !user.bot
     const time = timeout
-    var messageAutor = msgObject.author
     var done = false
-    msgObject.channel.send(pollEmbed).then(async messageReaction => {
-      await messageReaction.react('✅') //Send Initial Reaction
-      await messageReaction.react('❎') //Send Initial Reaction
-      await messageReaction.react('🚮') //Send Initial Reaction
+    const messageReaction = await msgObject.channel.send(pollEmbed);
+    await messageReaction.react('✅') //Send Initial Reaction
+    await messageReaction.react('❎') //Send Initial Reaction
+    await messageReaction.react('🚮') //Send Initial Reaction
 
-      let collector = messageReaction.createReactionCollector(reactionFilter, { time: time, dispose: true });
-      collector.on('collect', (reaction, user) => {
-        if (reaction.emoji.name == "🚮") { //When Trash
-          if (user.id == messageAutor.id) {
+    let collector = messageReaction.createReactionCollector(reactionFilter, { time: time, dispose: true });
+    collector.on('collect', (reaction, user) => {
+      if (reaction.emoji.name == "🚮") { //When Trash
+        if (user.id == msgObject.author.id) {
 
-            reaction.users.remove(user);
-            done = true
-            messageReaction.reactions.removeAll()
-            this.Failed(messageReaction, rsLevel);
-          }
+          reaction.users.remove(user);
+          done = true
+          messageReaction.reactions.removeAll()
+          this.Failed(messageReaction, rsLevel);
+        }
+      } else {
+        if (reaction.emoji.name != '✅' && reaction.emoji.name != '❎') { // If its not V or X
+          reaction.remove() // Remove the Reaction
         } else {
-          if (reaction.emoji.name != '✅' && reaction.emoji.name != '❎') { // If its not V or X
-            reaction.remove() // Remove the Reaction
-          } else {
-            var reacted = {}
-            messageReaction.reactions.cache.forEach(reaction =>
-              reaction.users.cache.forEach(user =>
-                (user in reacted) ? reacted[user]++ : reacted[user] = 0
-              )) // Get Every Reaction
+          var reacted = {}
+          messageReaction.reactions.cache.forEach(reaction =>
+            reaction.users.cache.forEach(user =>
+              (user in reacted) ? reacted[user]++ : reacted[user] = 0
+            )) // Get Every Reaction
 
-            if (reacted[user] > 0) { // If User has already a reacion
-              reaction.users.remove(user); // Remove it
-            } else {
-              this.updateEmbed(messageReaction, rsLevel, messageAutor) //Update the Embeed to show the new reaction
-            }
+          if (reacted[user] > 0) { // If User has already a reacion
+            reaction.users.remove(user); // Remove it
+          } else {
+            this.updateEmbed(messageReaction, rsLevel, msgObject.author) //Update the Embeed to show the new reaction
           }
         }
-      });
-      collector.on('remove', (reaction, reactionCollector) => { // When a reaction is removed
-        if (done == false)
-          this.updateEmbed(messageReaction, rsLevel, messageAutor)
-      });
+      }
+    });
+    collector.on('remove', (reaction, reactionCollector) => { // When a reaction is removed
+      if (done == false)
+        this.updateEmbed(messageReaction, rsLevel, msgObject.author)
+    });
 
-      collector.on('end', (reaction, reactionCollector) => { // When timeout done
-        messageReaction.reactions.removeAll()
-        this.failed(messageReaction, rsLevel);
-      });
-    })
+    collector.on('end', (reaction, reactionCollector) => { // When timeout done
+      messageReaction.reactions.removeAll()
+      this.failed(messageReaction, rsLevel);
+    });
   }
 
 }

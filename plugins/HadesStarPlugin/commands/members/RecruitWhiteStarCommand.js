@@ -20,7 +20,7 @@ export class RecruitWhiteStarCommand extends Command {
     this.sendInitialMessage(msgObject); //Send recuit message
   }
 
-  async updateEmbed(message,messageAutor) {
+  async updateEmbed(message, messageAutor) {
     let amm = 0;
 
     //Clear Reactions Dictionary
@@ -51,12 +51,12 @@ export class RecruitWhiteStarCommand extends Command {
       .setTitle(`White Star Recruitment by ${messageAutor.username}:`)
       .setThumbnail("https://i.imgur.com/fNtJDNz.png")
       .setDescription(`Do you wish to partake in this White Star? <@&${role.id}>`)
-      .addField("Current People",  `${amm}/15`)
+      .addField("Current People", `${amm}/15`)
       .addField("Members", `${testString}`)
       .setColor("ORANGE")
 
 
-    if (amm == 15)  newEmbed.setColor("GREEN"); else  newEmbed.setColor("ORANGE"); //Set Color to Green when All Ready
+    if (amm == 15) newEmbed.setColor("GREEN"); else newEmbed.setColor("ORANGE"); //Set Color to Green when All Ready
     message.edit(newEmbed) // Send Edit
 
     if (amm == 15) {
@@ -70,7 +70,7 @@ export class RecruitWhiteStarCommand extends Command {
           }
         }
       })
-      if (testString == "") 
+      if (testString == "")
         testString = "None"
       else
         testString += `Full Team for White Star!`
@@ -82,7 +82,7 @@ export class RecruitWhiteStarCommand extends Command {
   async sendInitialMessage(msgObject) {
 
     let role = msgObject.guild.roles.cache.find(role => role.name === `White Star`);
-   
+
     let pollEmbed = new Discord.MessageEmbed()
       .setTitle(`White Star Recruitment by ${msgObject.author.username}:`)
       .setThumbnail("https://i.imgur.com/fNtJDNz.png")
@@ -91,51 +91,46 @@ export class RecruitWhiteStarCommand extends Command {
       .addField("Members", "None")
       .setColor("ORANGE")
 
-    let reactionFilter = (reaction, user) =>    !user.bot
-   // const time = timeout
-    var messageAutor = msgObject.author
+    let reactionFilter = (reaction, user) => !user.bot
     var done = false
-    msgObject.channel.send(pollEmbed).then(async messageReaction => {
-      await messageReaction.react('⚔️') //Send Initial Reaction
-      await messageReaction.react('🛡️') //Send Initial Reaction
-      await messageReaction.react('🗡️') //Send Initial Reaction
-      await messageReaction.react('❓') //Send Initial Reaction
+    const messageReaction = await msgObject.channel.send(pollEmbed);
+    await messageReaction.react('⚔️') //Send Initial Reaction
+    await messageReaction.react('🛡️') //Send Initial Reaction
+    await messageReaction.react('🗡️') //Send Initial Reaction
+    await messageReaction.react('❓') //Send Initial Reaction
 
-      let collector = messageReaction.createReactionCollector(reactionFilter, { dispose: true });
-      collector.on('collect', (reaction, user) => {
-        if (reaction.emoji.name == "🚮") { //When Trash
-          if (user.id == messageAutor.id) {
+    let collector = messageReaction.createReactionCollector(reactionFilter, { dispose: true });
+    collector.on('collect', (reaction, user) => {
+      if (reaction.emoji.name == "🚮") { //When Trash
+        if (user.id == msgObject.author.id) {
 
-            reaction.users.remove(user);
-            done = true
-            messageReaction.reactions.removeAll()
-            this.failed(messageReaction, rsLevel);
-          }
+          reaction.users.remove(user);
+          done = true
+          messageReaction.reactions.removeAll()
+          this.failed(messageReaction, rsLevel);
+        }
+      } else {
+        if (reaction.emoji.name != '⚔️' && reaction.emoji.name != '🛡️' && reaction.emoji.name != '🗡️' && reaction.emoji.name != '❓') { // If its not wanted reaction
+          reaction.remove() // Remove the Reaction
         } else {
-          if (reaction.emoji.name != '⚔️' && reaction.emoji.name != '🛡️' && reaction.emoji.name != '🗡️' && reaction.emoji.name != '❓') { // If its not wanted reaction
-            reaction.remove() // Remove the Reaction
-          } else {
-            var reacted = {}
-            messageReaction.reactions.cache.forEach(reaction =>
-              reaction.users.cache.forEach(user =>
-                (user in reacted) ? reacted[user]++ : reacted[user] = 0
-              )) // Get Every Reaction
+          var reacted = {}
+          messageReaction.reactions.cache.forEach(reaction =>
+            reaction.users.cache.forEach(user =>
+              (user in reacted) ? reacted[user]++ : reacted[user] = 0
+            )) // Get Every Reaction
 
-            if (reacted[user] > 0) { // If User has already a reacion
-              reaction.users.remove(user); // Remove it
-            } else {
-              this.updateEmbed(messageReaction,messageAutor) //Update the Embeed to show the new reaction
-            }
+          if (reacted[user] > 0) { // If User has already a reacion
+            reaction.users.remove(user); // Remove it
+          } else {
+            this.updateEmbed(messageReaction, msgObject.author) //Update the Embeed to show the new reaction
           }
         }
-      });
-      collector.on('remove', (reaction, reactionCollector) => { // When a reaction is removed
-        if (done == false)
-          this.updateEmbed(messageReaction,messageAutor)
-      });
-
-    })
+      }
+    });
+    collector.on('remove', (reaction, reactionCollector) => { // When a reaction is removed
+      if (done == false)
+        this.updateEmbed(messageReaction, msgObject.author)
+    });
   }
-
 }
 

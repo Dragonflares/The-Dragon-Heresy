@@ -10,3 +10,5 @@ export * from './TechDataCommand';
 export * from './DemoteCommand';
 export * from './PromoteCommand';
 export * from './ResignCommand';
+export * from './RecruitRedStarCommand';
+export * from './RecruitWhiteStarCommand';

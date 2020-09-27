@@ -123,7 +123,7 @@ export class AddMemberCommand extends OfficerCommand{
             });
             arrival.Corp = corporation._id
             corporation.members.push(arrival)
-            await corp.save();
+            await corporation.save();
             return message.channel.send("Created this Coporation in the Hades' Corps area! It will be visible from any server who I am in when they ask for the known Corporations!")
         }
         arrival.Corp = corp._id

@@ -13,8 +13,8 @@ export class RecruitRedStarCommand extends Command {
 
   async run(message, args) {
     if (args[0] && (args[0] > 0 && args[0] < 12)) { //If level between 1 and 12
-        message.delete({ timeout: 1 });    //Delete User message
-        this.sendInitialMessage(message, args[0], 600000); //Send recuit message
+      message.delete({ timeout: 1 });    //Delete User message
+      this.sendInitialMessage(message, args[0], 600000); //Send recuit message
     } else {
       return message.channel.send("You must specifiy a valid Red Star level (1-11)")
     }
@@ -30,18 +30,15 @@ export class RecruitRedStarCommand extends Command {
             testString += `${user} ${reaction.emoji.name}`
           }
         }
-      }
-      ))
+      }))
     if (testString == "") testString = "None";
 
     //If no people write None
-    let role = message.guild.roles.cache.find(role => role.name === `RS${rsLevel}`);
-    let newEmbed = new Discord.MessageEmbed()
-      .setTitle(`@RS${rsLevel} Recruitment:`)
-      .setDescription(`Do you want to be part of this Red Star? <@&${role.id}> \n React below if you have croid or not`)
-      .addField("Current People", `0/0 Closed`)
-      .addField("Members", ` ${testString}\n Closed`)
+    let newEmbed = new Discord.MessageEmbed(message.embeds[0])
+    newEmbed.fields[0].value = `0/0` //"Current People"
+    newEmbed.fields[1].value = `${testString}` //"Members"
     newEmbed.setColor("RED")
+    newEmbed.setFooter("Closed")
     message.edit(newEmbed)
   }
 
@@ -85,6 +82,8 @@ export class RecruitRedStarCommand extends Command {
   async sendInitialMessage(msgObject, rsLevel, timeout) {
     //Variables
     let role = msgObject.guild.roles.cache.find(role => role.name === `RS${rsLevel}`);
+    let reactionFilter = (reaction, user) => !user.bot
+    var done = false
 
     let pollEmbed = new Discord.MessageEmbed()
       .setTitle(`RS ${rsLevel} Recruitment invitation by ${msgObject.author.username}:`)
@@ -95,45 +94,41 @@ export class RecruitRedStarCommand extends Command {
       .setColor("ORANGE")
       .setFooter("This invitation will be on for 10 minutes")
 
-    let reactionFilter = (reaction, user) => !user.bot
-    const time = timeout
-    var done = false
     const messageReaction = await msgObject.channel.send(pollEmbed);
     await messageReaction.react('✅') //Send Initial Reaction
     await messageReaction.react('❎') //Send Initial Reaction
     await messageReaction.react('🚮') //Send Initial Reaction
 
-    let collector = messageReaction.createReactionCollector(reactionFilter, { time: time, dispose: true });
+    let collector = messageReaction.createReactionCollector(reactionFilter, { time: timeout, dispose: true });
     collector.on('collect', (reaction, user) => {
-      if (reaction.emoji.name == "🚮") { //When Trash
-        if (user.id == msgObject.author.id) {
-
-          reaction.users.remove(user);
-          done = true
-          messageReaction.reactions.removeAll()
-          this.failed(messageReaction, rsLevel);
-        }
-      } else {
-        if (reaction.emoji.name != '✅' && reaction.emoji.name != '❎') { // If its not V or X
-          reaction.remove() // Remove the Reaction
+      if (done == true) reaction.remove();
+      else
+        if (reaction.emoji.name == "🚮") { //When Trash
+          if (user.id == msgObject.author.id) {
+            done = true
+            messageReaction.reactions.removeAll()
+            this.failed(messageReaction, rsLevel);
+          }
         } else {
-          var reacted = {}
-          messageReaction.reactions.cache.forEach(reaction =>
-            reaction.users.cache.forEach(user =>
-              (user in reacted) ? reacted[user]++ : reacted[user] = 0
-            )) // Get Every Reaction
-
-          if (reacted[user] > 0) { // If User has already a reacion
-            reaction.users.remove(user); // Remove it
+          if (reaction.emoji.name != '✅' && reaction.emoji.name != '❎') { // If its not V or X
+            reaction.remove() // Remove the Reaction
           } else {
-            this.updateEmbed(messageReaction, rsLevel) //Update the Embeed to show the new reaction
+            var reacted = {}
+            messageReaction.reactions.cache.forEach(reaction =>
+              reaction.users.cache.forEach(user =>
+                (user in reacted) ? reacted[user]++ : reacted[user] = 0
+              )) // Get Every Reaction
+
+            if (reacted[user] > 0) { // If User has already a reacion
+              reaction.users.remove(user); // Remove it
+            } else {
+              this.updateEmbed(messageReaction, rsLevel) //Update the Embeed to show the new reaction
+            }
           }
         }
-      }
     });
     collector.on('remove', (reaction, reactionCollector) => { // When a reaction is removed
-      if (done == false)
-        this.updateEmbed(messageReaction, rsLevel)
+      if (done == false) this.updateEmbed(messageReaction, rsLevel)
     });
 
     collector.on('end', (reaction, reactionCollector) => { // When timeout done

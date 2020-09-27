@@ -1,4 +1,5 @@
 import { Command } from '../../../../lib';
+import { id } from 'common-tags';
 const Discord = require('discord.js');
 
 export class RecruitWhiteStarCommand extends Command {
@@ -38,7 +39,7 @@ export class RecruitWhiteStarCommand extends Command {
     let newEmbed = new Discord.MessageEmbed(message.embeds[0])
     newEmbed.fields[0].value = `${reacted.size}/15` //"Current People"
     newEmbed.fields[1].value = `${testString}` //"Members"
-    
+
     if (reacted.size == 15) newEmbed.setColor("GREEN"); else newEmbed.setColor("ORANGE"); //Set Color to Green when All Ready
     message.edit(newEmbed) // Send Edit
 
@@ -55,6 +56,8 @@ export class RecruitWhiteStarCommand extends Command {
   async sendInitialMessage(msgObject) {
     //Variables
     let role = msgObject.guild.roles.cache.find(role => role.name === `White Star`);
+    let reactionFilter = (reaction, user) => !user.bot
+    var done = false
 
     let pollEmbed = new Discord.MessageEmbed()
       .setTitle(`White Star Recruitment by ${msgObject.author.username}:`)
@@ -64,20 +67,18 @@ export class RecruitWhiteStarCommand extends Command {
       .addField("Members", "None")
       .setColor("ORANGE")
 
-    let reactionFilter = (reaction, user) => !user.bot
-    var done = false
     const messageReaction = await msgObject.channel.send(pollEmbed);
     await messageReaction.react('⚔️') //Send Initial Reaction
     await messageReaction.react('🛡️') //Send Initial Reaction
     await messageReaction.react('🗡️') //Send Initial Reaction
     await messageReaction.react('❓') //Send Initial Reaction
 
+
     let collector = messageReaction.createReactionCollector(reactionFilter, { dispose: true });
     collector.on('collect', (reaction, user) => {
-      if (reaction.emoji.name == "🚮") { //When Trash
+      if(done ==  true)   reaction.remove();
+      else if (reaction.emoji.name == "🚮") { //When Trash
         if (user.id == msgObject.author.id) {
-
-          reaction.users.remove(user);
           done = true
           messageReaction.reactions.removeAll()
           this.failed(messageReaction, rsLevel);
@@ -101,8 +102,7 @@ export class RecruitWhiteStarCommand extends Command {
       }
     });
     collector.on('remove', (reaction, reactionCollector) => { // When a reaction is removed
-      if (done == false)
-        this.updateEmbed(messageReaction)
+      if (done == false) this.updateEmbed(messageReaction)
     });
   }
 }

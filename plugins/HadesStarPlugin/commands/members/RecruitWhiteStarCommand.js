@@ -16,10 +16,9 @@ export class RecruitWhiteStarCommand extends Command {
     this.sendInitialMessage(message); //Send recuit message
   }
 
-  async updateEmbed(message, messageAutor) {
+  async updateEmbed(message) {
     //Variables
     const reacted = new Map();
-    const role = message.guild.roles.cache.find(role => role.name === `White Star`);
 
     //Create Users Text and Count People In , Add Reactions to a dictionary
     message.reactions.cache.forEach(reaction =>
@@ -33,39 +32,28 @@ export class RecruitWhiteStarCommand extends Command {
 
     //If no people write None
     let testString = ""
-    reacted.forEach((value, key) => {
-      testString += ` ${key} ${value} \n`
-    })
+    reacted.forEach((value, key) => testString += ` ${key} ${value} \n`)
     if (testString == "") testString = "None";
 
-    let newEmbed = new Discord.MessageEmbed()
-      .setTitle(`White Star Recruitment by ${messageAutor.username}:`)
-      .setThumbnail("https://i.imgur.com/fNtJDNz.png")
-      .setDescription(`Do you wish to partake in this White Star? <@&${role.id}>`)
-      .addField("Current People", `${reacted.size}/15`)
-      .addField("Members", `${testString}`)
-      .setColor("ORANGE")
-
+    let newEmbed = new Discord.MessageEmbed(message.embeds[0])
+    newEmbed.fields[0].value = `${reacted.size}/15` //"Current People"
+    newEmbed.fields[1].value = `${testString}` //"Members"
+    
     if (reacted.size == 15) newEmbed.setColor("GREEN"); else newEmbed.setColor("ORANGE"); //Set Color to Green when All Ready
     message.edit(newEmbed) // Send Edit
 
-    if (reacted.size == 15) {
+    if (reacted.size == 15) {  // Ping people that is done
       done[message.id] = true;
       let testString = ""
-      reacted.forEach((value, key) => {
-        testString += ` ${key} ${value} ,`
-      })
-      if (testString == "")
-        testString = "None"
-      else
-        testString += ` Full Team for White Star!`
+      reacted.forEach((value, key) => testString += ` ${key} ${value} ,`)
+      testString += ` Full Team for White Star!`
       message.reactions.removeAll()
       message.channel.send(testString);
     }
   }
 
   async sendInitialMessage(msgObject) {
-
+    //Variables
     let role = msgObject.guild.roles.cache.find(role => role.name === `White Star`);
 
     let pollEmbed = new Discord.MessageEmbed()
@@ -107,14 +95,14 @@ export class RecruitWhiteStarCommand extends Command {
           if (reacted[user] > 0) { // If User has already a reacion
             reaction.users.remove(user); // Remove it
           } else {
-            this.updateEmbed(messageReaction, msgObject.author) //Update the Embeed to show the new reaction
+            this.updateEmbed(messageReaction) //Update the Embeed to show the new reaction
           }
         }
       }
     });
     collector.on('remove', (reaction, reactionCollector) => { // When a reaction is removed
       if (done == false)
-        this.updateEmbed(messageReaction, msgObject.author)
+        this.updateEmbed(messageReaction)
     });
   }
 }

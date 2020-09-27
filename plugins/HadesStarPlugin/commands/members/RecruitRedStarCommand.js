@@ -12,15 +12,11 @@ export class RecruitRedStarCommand extends Command {
   }
 
   async run(message, args) {
-    if (args[0]) {
-      if (args[0] > 0 && args[0] < 12) { //If level between 1 and 12
+    if (args[0] && (args[0] > 0 && args[0] < 12)) { //If level between 1 and 12
         message.delete({ timeout: 1 });    //Delete User message
         this.sendInitialMessage(message, args[0], 600000); //Send recuit message
-      } else {
-        return message.channel.send("Please add a valid Red Star Level. (1-11)")
-      }
     } else {
-      return message.channel.send("You must specifiy a valid Red Star level. A timeout can be added.")
+      return message.channel.send("You must specifiy a valid Red Star level (1-11)")
     }
   }
 
@@ -49,10 +45,9 @@ export class RecruitRedStarCommand extends Command {
     message.edit(newEmbed)
   }
 
-  async updateEmbed(message, rsLevel, messageAutor) {
+  async updateEmbed(message, rsLevel) {
     //Variables
     const reacted = new Map();
-    const role = message.guild.roles.cache.find(role => role.name === `RS${rsLevel}`);
 
     //Add Reactions to a dictionary
     message.reactions.cache.forEach(reaction =>
@@ -67,39 +62,28 @@ export class RecruitRedStarCommand extends Command {
 
     //If no people write None
     let testString = ""
-    reacted.forEach((value, key) => {
-      testString += ` ${key} ${value} \n`
-    })
+    reacted.forEach((value, key) => testString += ` ${key} ${value} \n`)
     if (testString == "") testString = "None";
 
-    let newEmbed = new Discord.MessageEmbed()
-      .setTitle(`@RS${rsLevel} Recruitment invitation by ${messageAutor.username}:`)
-      .setThumbnail("https://i.imgur.com/hedXFRd.png")
-      .setDescription(`Do you want to be part of this Red Star? <@&${role.id}> \n React below if you have croid or not`)
-      .addField("Current People", `${reacted.size}/4`)
-      .addField("Members", testString)
-      .setFooter("This invitation will be on for 10 minutes")
+    let newEmbed = new Discord.MessageEmbed(message.embeds[0])
+    newEmbed.fields[0].value = `${reacted.size}/4` //"Current People"
+    newEmbed.fields[1].value = `${testString}` //"Members"
 
     if (reacted.size == 4) newEmbed.setColor("GREEN"); else newEmbed.setColor("ORANGE"); //Set Color to Green when All Ready
     message.edit(newEmbed) // Send Edit
 
-    if (reacted.size == 4) {
+    if (reacted.size == 4) {  // Ping people that is done
       done[message.id] = true;
-      // Ping people that is done
       let testString = ""
-      reacted.forEach((value, key) => {
-        testString += ` ${key} ${value} ,`
-      })
-      if (testString == "") testString = "None"
-      else
-        testString += `Full Team for RS${rsLevel}!`
+      reacted.forEach((value, key) => testString += ` ${key} ${value} ,`)
+      testString += `Full Team for RS${rsLevel}!`
       message.reactions.removeAll()
       message.channel.send(testString);
     }
   }
 
   async sendInitialMessage(msgObject, rsLevel, timeout) {
-
+    //Variables
     let role = msgObject.guild.roles.cache.find(role => role.name === `RS${rsLevel}`);
 
     let pollEmbed = new Discord.MessageEmbed()
@@ -142,14 +126,14 @@ export class RecruitRedStarCommand extends Command {
           if (reacted[user] > 0) { // If User has already a reacion
             reaction.users.remove(user); // Remove it
           } else {
-            this.updateEmbed(messageReaction, rsLevel, msgObject.author) //Update the Embeed to show the new reaction
+            this.updateEmbed(messageReaction, rsLevel) //Update the Embeed to show the new reaction
           }
         }
       }
     });
     collector.on('remove', (reaction, reactionCollector) => { // When a reaction is removed
       if (done == false)
-        this.updateEmbed(messageReaction, rsLevel, msgObject.author)
+        this.updateEmbed(messageReaction, rsLevel)
     });
 
     collector.on('end', (reaction, reactionCollector) => { // When timeout done

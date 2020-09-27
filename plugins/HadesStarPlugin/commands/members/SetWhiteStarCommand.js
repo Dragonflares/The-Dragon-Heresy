@@ -22,12 +22,12 @@ export class SetWhiteStarCommand extends MemberCommand{
         else return message.channel.send("You can't set another player's white star avaibility!")
         
         let WSAviable
-        const messagesplit = message.content.split(" ")
-        if(!messagesplit[1]) return message.channel.send("Invalid declaration.")
-        else if(messagesplit[1].toLowerCase() === "yes"){
+
+        if(!args[0]) return message.channel.send("Invalid declaration.")
+        else if(args[0].toLowerCase() === "yes"){
             WSAviable = "Yes"
         }
-        else if(messagesplit[1].toLowerCase() === "no"){
+        else if(args[0].toLowerCase() === "no"){
             WSAviable = "No"
         } 
         else return message.channel.send("Invalid declaration.")

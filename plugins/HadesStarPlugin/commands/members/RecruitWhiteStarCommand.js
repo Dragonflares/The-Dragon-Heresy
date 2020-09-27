@@ -21,32 +21,27 @@ export class RecruitWhiteStarCommand extends Command {
   }
 
   async updateEmbed(message, messageAutor) {
+    //Variables
     let amm = 0;
-
-    //Clear Reactions Dictionary
-    var reacted = {}
-
-    //Add Reactions to a dictionary
+    let reacted = {}
     let testString = ""
+    const role = message.guild.roles.cache.find(role => role.name === `White Star`);
+
+    //Create Users Text and Count People In , Add Reactions to a dictionary
     message.reactions.cache.forEach(reaction =>
-      reaction.users.cache.forEach(user =>
+      reaction.users.cache.forEach(user => {
         reacted[user] = reaction.emoji.name
-      ))
-
-    // Create Users Text and Count People In
-    Object.keys(reacted).forEach(function (key) {
-      if (!key.bot) {
-        if (reacted[key] == "⚔️" || reacted[key] == "🛡️" || reacted[key] == "🗡️" || reacted[key] == "❓") {
-          amm++;
-          testString += `${key} ${reacted[key]} \n`
+        if (!user.bot) {
+          if (reaction.emoji.name == "⚔️" || reaction.emoji.name == "🛡️" || reaction.emoji.name == "🗡️" || reaction.emoji.name == "❓") {
+            amm++;
+            testString += `${user} ${reaction.emoji.name} \n`
+          }
         }
-      }
-    });
+      }))
 
-    //If no people wirte None
+    //If no people write None
     if (testString == "") testString = "None";
-    let role = message.guild.roles.cache.find(role => role.name === `White Star`);
-
+    
     let newEmbed = new Discord.MessageEmbed()
       .setTitle(`White Star Recruitment by ${messageAutor.username}:`)
       .setThumbnail("https://i.imgur.com/fNtJDNz.png")
@@ -63,10 +58,10 @@ export class RecruitWhiteStarCommand extends Command {
       done[message.id] = true;
       // Ping people that is done
       let testString = ""
-      Object.keys(reacted).forEach(function (key) {
-        if (!key.bot) {
-          if (reacted[key] == "⚔️" || reacted[key] == "🛡️" || reacted[key] == "🗡️" || reacted[key] == "❓") {
-            testString += `${key}, `
+      reacted.forEach(user => {
+        if (!user.bot) {
+          if (reacted[user] == "⚔️" || reacted[user] == "🛡️" || reacted[user] == "🗡️" || reacted[user] == "❓") {
+            testString += `${user}, `
           }
         }
       })

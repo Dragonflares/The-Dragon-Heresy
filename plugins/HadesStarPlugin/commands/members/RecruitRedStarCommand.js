@@ -29,27 +29,21 @@ export class RecruitRedStarCommand extends Command {
   }
 
   async failed(message, rsLevel) {
-    var amm = 0;
-    //Clear Reactions Dictionary
-    var reacted = {}
+    let amm = 0;
 
     //Add Reactions to a dictionary
     let testString = ""
     message.reactions.cache.forEach(reaction =>
-      reaction.users.cache.forEach(user =>
-        reacted[user] = reaction.emoji.name
-      ))
-
-
-    // Create Users Text and Count People In
-    Object.keys(reacted).forEach(function (key) {
-      if (!key.bot) {
-        if (reacted[key] == "✅" || reacted[key] == "❎") {
-          amm++;
-          testString += `${key} ${reacted[key]}`
+      reaction.users.cache.forEach(user => {
+        if (!user.bot) {
+          if (reaction.emoji.name == "✅" || reaction.emoji.name == "❎") {
+            amm++;
+            testString += `${user} ${reaction.emoji.name}`
+          }
         }
       }
-    });
+      ))
+
     if (amm < 4) {
       //If no people write None
       if (testString == "") testString = "None";
@@ -65,31 +59,27 @@ export class RecruitRedStarCommand extends Command {
   }
 
   async updateEmbed(message, rsLevel, messageAutor) {
+    //Variables
     let amm = 0;
-
-    //Clear Reactions Dictionary
     var reacted = {}
+    let testString = ""
+    const role = message.guild.roles.cache.find(role => role.name === `RS${rsLevel}`);
 
     //Add Reactions to a dictionary
-    let testString = ""
     message.reactions.cache.forEach(reaction =>
-      reaction.users.cache.forEach(user =>
-        reacted[user] = reaction.emoji.name
-      ))
-
-    // Create Users Text and Count People In
-    Object.keys(reacted).forEach(function (key) {
-      if (!key.bot) {
-        if (reacted[key] == "✅" || reacted[key] == "❎") {
-          amm++;
-          testString += `${key} ${reacted[key]} \n`
+      reaction.users.cache.forEach(user => {
+        if (!user.bot) {
+          reacted[user] = reaction.emoji.name
+          if (reaction.emoji.name == "✅" || reaction.emoji.name == "❎") {
+            amm++;
+            testString += `${user} ${reaction.emoji.name} \n`
+          }
         }
       }
-    });
+      ))
 
     //If no people wirte None
     if (testString == "") testString = "None";
-    let role = message.guild.roles.cache.find(role => role.name === `RS${rsLevel}`);
 
     let newEmbed = new Discord.MessageEmbed()
       .setTitle(`@RS${rsLevel} Recruitment invitation by ${messageAutor.username}:`)
@@ -106,14 +96,13 @@ export class RecruitRedStarCommand extends Command {
       done[message.id] = true;
       // Ping people that is done
       let testString = ""
-      Object.keys(reacted).forEach(function (key) {
-        if (!key.bot) {
-          if (reacted[key] == "✅" || reacted[key] == "❎") {
-            amm++;
-            testString += `${key}, `
-          }
+      reacted.forEach(user => {
+        if (reacted[user] == "✅" || reacted[user] == "❎") {
+          amm++;
+          testString += `${user}, `
         }
       })
+
       if (testString == "") testString = "None"
       else
         testString += `Full Team for RS${rsLevel}!`
@@ -151,7 +140,7 @@ export class RecruitRedStarCommand extends Command {
           reaction.users.remove(user);
           done = true
           messageReaction.reactions.removeAll()
-          this.Failed(messageReaction, rsLevel);
+          this.failed(messageReaction, rsLevel);
         }
       } else {
         if (reaction.emoji.name != '✅' && reaction.emoji.name != '❎') { // If its not V or X
@@ -181,6 +170,5 @@ export class RecruitRedStarCommand extends Command {
       this.failed(messageReaction, rsLevel);
     });
   }
-
 }
 

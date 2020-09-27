@@ -66,17 +66,17 @@ export class RecruitRedStarCommand extends Command {
     newEmbed.fields[0].value = `${reacted.size}/4` //"Current People"
     newEmbed.fields[1].value = `${testString}` //"Members"
 
-    if (reacted.size == 4) newEmbed.setColor("GREEN"); else newEmbed.setColor("ORANGE"); //Set Color to Green when All Ready
-    message.edit(newEmbed) // Send Edit
-
     if (reacted.size == 4) {  // Ping people that is done
-      done[message.id] = true;
+      newEmbed.setColor("GREEN");
       let testString = ""
       reacted.forEach((value, key) => testString += ` ${key} ${value} ,`)
       testString += `Full Team for RS${rsLevel}!`
       message.reactions.removeAll()
       message.channel.send(testString);
+    }else{
+      newEmbed.setColor("ORANGE");
     }
+    message.edit(newEmbed) // Send Edit
   }
 
   async sendInitialMessage(msgObject, rsLevel, timeout) {
@@ -127,6 +127,7 @@ export class RecruitRedStarCommand extends Command {
           }
         }
     });
+    
     collector.on('remove', (reaction, reactionCollector) => { // When a reaction is removed
       if (done == false) this.updateEmbed(messageReaction, rsLevel)
     });

@@ -12,3 +12,5 @@ export * from './PromoteCommand';
 export * from './ResignCommand';
 export * from './RecruitRedStarCommand';
 export * from './RecruitWhiteStarCommand';
+export * from './SetCroidCommand';
+export * from './GetCroidCommand';

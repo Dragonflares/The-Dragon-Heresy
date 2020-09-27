@@ -8,3 +8,4 @@ export * from './Miner';
 export * from './Tech';
 export * from './TimeTracker';
 export * from './Transport';
+export * from './RankRoles';

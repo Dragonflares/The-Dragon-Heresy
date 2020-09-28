@@ -26,7 +26,8 @@ const MemberSchema = Schema ({
     miner: { type: Schema.Types.ObjectId, ref: 'Miner' },
     online: {type: Boolean,
         default: false},
-    lastSeen: {type: Date}
+    lastSeen: {type: Date},
+    lastCroid: {type: Date, default: ""}
 })
 
 export const Member = model("Member", MemberSchema, "Member")

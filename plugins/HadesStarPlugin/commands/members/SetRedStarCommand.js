@@ -21,8 +21,7 @@ export class SetRedStarCommand extends MemberCommand{
             target = user
         else return message.channel.send("You cannot set another Member's Red Star Level!")
 
-        const messagesplit = message.content.split(" ")
-        let level = parseInt(messagesplit[1]);
+        let level = parseInt(args[0]);
         if(!level) return message.channel.send("You must specifiy a valid Red Star level.");
         else if(isNaN(level)) return message.channel.send("Invalid Red Star level.")
 

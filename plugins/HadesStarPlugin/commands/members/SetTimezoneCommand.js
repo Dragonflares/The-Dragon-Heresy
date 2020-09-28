@@ -21,12 +21,10 @@ export class SetTimezoneCommand extends MemberCommand{
             target = user
         else return message.channel.send("You cannot set another Member's timezone!")
 
-        const messagesplit = message.content.split(" ")
-        const ActualTimezone = messagesplit[1]
-
+        const ActualTimezone = args[0]
         if(!(ActualTimezone.startsWith("+") || ActualTimezone.startsWith("-"))) return message.channel.send("Invalid time zone.")
 
-        let timezone = parseInt(messagesplit[1]);
+        let timezone = parseInt(args[0]);
         if(isNaN(timezone)) return message.channel.send("Invalid time zone.")
         let member = await Member.findOne({discordId: target.id.toString()}).populate('Corp').exec();
         if(!member)

@@ -7,15 +7,29 @@ export class RecruitRedStarCommand extends Command {
     super(plugin, {
       name: 'recruitrs',
       aliases: ['rrs'],
-      description: "Start a RS recruit message.",
-      usage: "&rrs RSNUM"
+      description: "Start a RS recruit message. A Time argument in Minutes can be added",
+      usage: "&rrs <level> (time)"
     });
   }
 
   async run(message, args) {
     if (args[0] && (args[0] > 0 && args[0] < 12)) { //If level between 1 and 12
-      message.delete({ timeout: 1 });    //Delete User message
-      this.sendInitialMessage(message, args[0], 600000); //Send recuit message
+      if(args[1])
+      {
+        if(args[1] > 5 && args[1] < 60)
+        {
+          message.delete({ timeout: 1 });    //Delete User message
+          this.sendInitialMessage(message, args[0], 60000 * args[1]); //Send recuit message
+        }else{
+          return message.channel.send("Time must be between 5 and 60 minutes")
+        }
+      }else
+      {
+        message.delete({ timeout: 1 });    //Delete User message
+        this.sendInitialMessage(message, args[0], 600000); //Send recuit message
+      }
+      
+  
     } else {
       return message.channel.send("You must specifiy a valid Red Star level (1-11)")
     }
@@ -98,7 +112,7 @@ export class RecruitRedStarCommand extends Command {
       .addField("Current People", "0/4")
       .addField("Members", "None")
       .setColor("ORANGE")
-      .setFooter("This invitation will be on for 10 minutes")
+      .setFooter(`This invitation will be on for ${timeout/60000} minutes`)
 
     const messageReaction = await msgObject.channel.send(pollEmbed);
     await messageReaction.react('✅') //Send Initial Reaction

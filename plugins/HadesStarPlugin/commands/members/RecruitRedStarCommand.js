@@ -1,4 +1,5 @@
 import { Command } from '../../../../lib';
+import { RedStarRoles } from '../../database'
 const Discord = require('discord.js');
 
 export class RecruitRedStarCommand extends Command {
@@ -81,14 +82,19 @@ export class RecruitRedStarCommand extends Command {
 
   async sendInitialMessage(msgObject, rsLevel, timeout) {
     //Variables
-    let role = msgObject.guild.roles.cache.find(role => role.name === `RS${rsLevel}`);
+    let existentRedStarRoles = await RedStarRoles.findOne({corpId: msgObject.guild.id.toString()})
+    let role = existentRedStarRoles.redStarRoles.get(`${rsLevel}`)
+    
+    if(!role) {
+      return  msgObject.channel.send(`The Role ${rsLevel} wasnt setup by server Administrator`);
+    }
     let reactionFilter = (reaction, user) => !user.bot
     var done = false
 
     let pollEmbed = new Discord.MessageEmbed()
       .setTitle(`RS ${rsLevel} Recruitment invitation by ${msgObject.author.username}:`)
       .setThumbnail("https://i.imgur.com/hedXFRd.png")
-      .setDescription(`Do you want to be part of this Red Star? <@&${role.id}> \n React below if you have croid or not`)
+      .setDescription(`Do you want to be part of this Red Star? <@&${role}> \n React below if you have croid or not`)
       .addField("Current People", "0/4")
       .addField("Members", "None")
       .setColor("ORANGE")

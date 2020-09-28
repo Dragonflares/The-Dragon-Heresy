@@ -15,6 +15,8 @@ const CorpSchema = Schema ({
         type: Number,
         default: 1
     },
+    rankRoles:{type: Schema.Types.ObjectId, ref: "RankRole"},
+    redStarRoles: {type: Schema.Types.ObjectId, ref: "RedStarRole"},
     battlegroups: [{type: Schema.Types.ObjectId, ref: "Battlegroup"}],
     members: [{type: Schema.Types.ObjectId, ref: "Member"}]
 })

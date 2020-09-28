@@ -1,6 +1,6 @@
 import { Plugin } from '../../lib';
 import * as Managers from './managers';
-import * as Commands from './commands/info';
+import * as Commands from './commands';
 
 export class GenericPlugin extends Plugin{
 	constructor(bot){

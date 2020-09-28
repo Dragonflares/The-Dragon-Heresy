@@ -1,8 +1,8 @@
-import { Command } from '../../../../lib';
+import { MemberCommand } from './MemberCommand';
 import { id } from 'common-tags';
 const Discord = require('discord.js');
 
-export class RecruitWhiteStarCommand extends Command {
+export class RecruitWhiteStarCommand extends MemberCommand {
   constructor(plugin) {
     super(plugin, {
       name: 'recruitws',

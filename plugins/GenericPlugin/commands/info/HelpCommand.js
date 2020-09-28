@@ -1,21 +1,19 @@
-import { Command } from '../../lib';
 import { MessageEmbed } from 'discord.js';
 import { stripIndents } from 'common-tags';
+import { InfoCommand } from './InfoCommand';
 
 const capitalize = (s) => {
   if (typeof s !== 'string') return ''
   return s.charAt(0).toUpperCase() + s.slice(1)
 }
 
-export class HelpCommand extends Command{
+export class HelpCommand extends InfoCommand{
     constructor(plugin){
         super(plugin, {
             name: 'help',
             aliases: ['h'],
             description: "Returns all commands, or one specific command info",
-            usage: "&help <command>",
-            category:"generic",
-            subcategory:"info"
+            usage: "&help <command>"
         });
     }
 

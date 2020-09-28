@@ -1,8 +1,9 @@
+import { MemberCommand } from './MemberCommand';
 import { Command } from '../../../../lib';
 import { RedStarRoles } from '../../database'
 const Discord = require('discord.js');
 
-export class RecruitRedStarCommand extends Command {
+export class RecruitRedStarCommand extends MemberCommand {
   constructor(plugin) {
     super(plugin, {
       name: 'recruitrs',
@@ -14,22 +15,19 @@ export class RecruitRedStarCommand extends Command {
 
   async run(message, args) {
     if (args[0] && (args[0] > 0 && args[0] < 12)) { //If level between 1 and 12
-      if(args[1])
-      {
-        if(args[1] > 5 && args[1] < 60)
-        {
+      if (args[1]) {
+        if (args[1] > 5 && args[1] < 60) {
           message.delete({ timeout: 1 });    //Delete User message
           this.sendInitialMessage(message, args[0], 60000 * args[1]); //Send recuit message
-        }else{
+        } else {
           return message.channel.send("Time must be between 5 and 60 minutes")
         }
-      }else
-      {
+      } else {
         message.delete({ timeout: 1 });    //Delete User message
         this.sendInitialMessage(message, args[0], 600000); //Send recuit message
       }
-      
-  
+
+
     } else {
       return message.channel.send("You must specifiy a valid Red Star level (1-11)")
     }
@@ -88,19 +86,22 @@ export class RecruitRedStarCommand extends Command {
       testString += `Full Team for RS${rsLevel}!`
       message.reactions.removeAll()
       message.channel.send(testString);
-    }else{
+    } else {
       newEmbed.setColor("ORANGE");
     }
     message.edit(newEmbed) // Send Edit
+    var link = "http://discordapp.com/channels/" + message.guild.id + "/" + message.channel.id + "/" + message.id;
+    let sent = await message.channel.send(`There is currently a RS${rsLevel} going with ${reacted.size}/4!: ${link}`)
+    return sent;
   }
 
   async sendInitialMessage(msgObject, rsLevel, timeout) {
     //Variables
-    let existentRedStarRoles = await RedStarRoles.findOne({corpId: msgObject.guild.id.toString()})
+    let existentRedStarRoles = await RedStarRoles.findOne({ corpId: msgObject.guild.id.toString() })
     let role = existentRedStarRoles.redStarRoles.get(`${rsLevel}`)
 
-    if(!role) {
-      return  msgObject.channel.send(`The Role ${rsLevel} wasnt setup by server Administrator`);
+    if (!role) {
+      return msgObject.channel.send(`The Role ${rsLevel} wasnt setup by server Administrator`);
     }
     let reactionFilter = (reaction, user) => !user.bot
     var done = false
@@ -112,7 +113,7 @@ export class RecruitRedStarCommand extends Command {
       .addField("Current People", "0/4")
       .addField("Members", "None")
       .setColor("ORANGE")
-      .setFooter(`This invitation will be on for ${timeout/60000} minutes`)
+      .setFooter(`This invitation will be on for ${timeout / 60000} minutes`)
 
     const messageReaction = await msgObject.channel.send(pollEmbed);
     await messageReaction.react('✅') //Send Initial Reaction
@@ -120,7 +121,8 @@ export class RecruitRedStarCommand extends Command {
     await messageReaction.react('🚮') //Send Initial Reaction
 
     let collector = messageReaction.createReactionCollector(reactionFilter, { time: timeout, dispose: true });
-    collector.on('collect', (reaction, user) => {
+    let oldMessage
+    collector.on('collect', async (reaction, user) => {
       if (done == true) reaction.remove();
       else
         if (reaction.emoji.name == "🚮") { //When Trash
@@ -142,14 +144,18 @@ export class RecruitRedStarCommand extends Command {
             if (reacted[user] > 0) { // If User has already a reacion
               reaction.users.remove(user); // Remove it
             } else {
-              this.updateEmbed(messageReaction, rsLevel) //Update the Embeed to show the new reaction
+              if (oldMessage) oldMessage.delete({ timeout: 1 });
+              oldMessage = await this.updateEmbed(messageReaction, rsLevel) //Update the Embeed to show the new reaction
             }
           }
         }
     });
-    
-    collector.on('remove', (reaction, reactionCollector) => { // When a reaction is removed
-      if (done == false) this.updateEmbed(messageReaction, rsLevel)
+
+    collector.on('remove', async (reaction, reactionCollector) => { // When a reaction is removed
+      if (done == false) {
+        if (oldMessage) oldMessage.delete({ timeout: 1 });
+        oldMessage = await this.updateEmbed(messageReaction, rsLevel)
+      }
     });
 
     collector.on('end', (reaction, reactionCollector) => { // When timeout done

@@ -7,7 +7,7 @@ export class SetCroidCommand extends MemberCommand{
             name: 'setcroid',
             aliases: ['scroid'],
             description: "Sets your set your croid.",
-            usage: "&setcroid>"
+            usage: "&setcroid"
         });
     }
 

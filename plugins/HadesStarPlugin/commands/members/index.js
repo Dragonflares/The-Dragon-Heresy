@@ -14,3 +14,5 @@ export * from './RecruitRedStarCommand';
 export * from './RecruitWhiteStarCommand';
 export * from './SetCroidCommand';
 export * from './GetCroidCommand';
+export * from './GetRedStarRoleCommand';
+export * from './RemoveRedStarRoleCommand';

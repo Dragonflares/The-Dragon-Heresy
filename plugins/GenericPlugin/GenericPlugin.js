@@ -1,11 +1,13 @@
 import { Plugin } from '../../lib';
-import { HelpCommand } from './HelpCommand';
+import * as Managers from './managers';
+import * as Commands from './commands';
 
 export class GenericPlugin extends Plugin{
 	constructor(bot){
 		super(bot);
 
-		this.commands.add(HelpCommand);
+		this.addManagers(Object.values(Managers));
+		this.addCommands(Object.values(Commands));
 	}
 
 }

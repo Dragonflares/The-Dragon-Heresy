@@ -117,10 +117,7 @@ async function roster(message, CorpMember, pImages) {
 		let name = category;
 		if (name == "Economy") name = "Trade";
 		roster.fillText(name.toUpperCase(), initialPlaceLeft + 30, initialPlaceTop + 600 * index)
-		var d = timer(`Category ${name}`);
 		await drawModuleCategory(rosterImage, moduleback, name, CorpMember, initialPlaceTop + 600 * index, initialPlaceLeft, 6, pImages);
-		d.stop()
-
 	}))
 	return rosterImage.toBuffer()
 }
@@ -132,12 +129,17 @@ async function drawModuleCategory(rosterImage, moduleback, category, CorpMember,
 	let startPlaceLeft = initialPlaceLeft
 	let modulenum = 0
 
-
 	let techs = await TechTree.findCategory(category);
-	return await Promise.all(Array.from(techs.technologies.values()).map(async techFound => {
-		let tech = await Tech.findOne({ name: techFound.name, playerId: CorpMember.discordId })
+	let techsArray = Array.from(techs.technologies.values())
 
-		//await drawModule(rosterImage, moduleback, tech, techFound.name, startPlaceTop, startPlaceLeft, pImages)
+	let techData = {}
+	await Promise.all(techsArray.map(async techFound => {
+		techData[techFound.name] = await Tech.findOne({ name: techFound.name, playerId: CorpMember.discordId })
+	}))
+
+	return await Promise.all(techsArray.map( techFound => {
+		let tech = techData[techFound.name]
+
 		//constants
 		let moduleBackSize = 80
 		let moduleImageSize = 100
@@ -154,7 +156,6 @@ async function drawModuleCategory(rosterImage, moduleback, category, CorpMember,
 
 		//Draw module icon
 		roster.drawImage(pImages[techFound.name], smallFixLeft + startPlaceLeft + moduleBackSize / 2 + 13, startPlaceTop + moduleBackSize / 2 + deltaTitleSize)
-
 		//Add module level
 		roster.fillText(`${tech.level}`, startPlaceLeft + moduleImageSize + 64, startPlaceTop + moduleImageSize * 2 - 4)
 			
@@ -169,7 +170,6 @@ async function drawModuleCategory(rosterImage, moduleback, category, CorpMember,
 		}
 	})
 	);
-
 }
 
 

@@ -16,3 +16,4 @@ export * from './SetCroidCommand';
 export * from './GetCroidCommand';
 export * from './GetRedStarRoleCommand';
 export * from './RemoveRedStarRoleCommand';
+export * from './SlateCommand';

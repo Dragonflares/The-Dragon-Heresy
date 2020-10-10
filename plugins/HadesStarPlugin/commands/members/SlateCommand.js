@@ -101,7 +101,7 @@ async function roster(message, CorpMember, pImages) {
 	let initialPlaceLeft = 85
 
 	//Load module backgroud beforehand to not call it every time
-	const moduleback = await TheCanvas.loadImage(`https://i.imgur.com/gl66HlY.png`)
+	const moduleback = await TheCanvas.loadImage(`./assets/images/modules/ModuleBack.png`)
 
 	//Name
 	roster.fillStyle = `#a2a832`
@@ -109,17 +109,15 @@ async function roster(message, CorpMember, pImages) {
 	roster.fillText(`${CorpMember.name}:`, initialPlaceLeft + 30, initialPlaceTop)
 	initialPlaceTop += 100
 
+	roster.font = `50px "Atarian"`
+	roster.fillStyle = `#8debb1`
 
 	let categories = ["Economy", "Mining", "Weapons", "Shields", "Support"]
 	await Promise.all(categories.map(async (category, index) => {
-		console.log(category)
 		let name = category;
 		if (name == "Economy") name = "Trade";
-		roster.font = `50px "Atarian"`
-		roster.fillText(name, initialPlaceLeft + 30, initialPlaceTop + 600 * index)
-		roster.fillStyle = `#8debb1`
-		roster.font = `50px "Atarian"`
-		var d = timer(`Category ${name.toUpperCase()}`);
+		roster.fillText(name.toUpperCase(), initialPlaceLeft + 30, initialPlaceTop + 600 * index)
+		var d = timer(`Category ${name}`);
 		await drawModuleCategory(rosterImage, moduleback, name, CorpMember, initialPlaceTop + 600 * index, initialPlaceLeft, 6, pImages);
 		d.stop()
 
@@ -128,7 +126,7 @@ async function roster(message, CorpMember, pImages) {
 }
 
 async function drawModuleCategory(rosterImage, moduleback, category, CorpMember, initialPlaceTop, initialPlaceLeft, maxPerLine, pImages) {
-
+	const roster = rosterImage.getContext(`2d`)
 	//variables
 	let startPlaceTop = initialPlaceTop
 	let startPlaceLeft = initialPlaceLeft
@@ -138,9 +136,28 @@ async function drawModuleCategory(rosterImage, moduleback, category, CorpMember,
 	let techs = await TechTree.findCategory(category);
 	return await Promise.all(Array.from(techs.technologies.values()).map(async techFound => {
 		let tech = await Tech.findOne({ name: techFound.name, playerId: CorpMember.discordId })
-		var e = timer(`Module ${techFound.name}`);
-		await drawModule(rosterImage, moduleback, tech, techFound.name, startPlaceTop, startPlaceLeft, pImages)
-		e.stop()
+
+		//await drawModule(rosterImage, moduleback, tech, techFound.name, startPlaceTop, startPlaceLeft, pImages)
+		//constants
+		let moduleBackSize = 80
+		let moduleImageSize = 100
+		let deltaTitleSize = 30
+
+		//Draw Module background
+		roster.drawImage(moduleback, startPlaceLeft, startPlaceTop + deltaTitleSize)
+
+		//Small modules fixed required
+		let smallFixLeft = 0;
+		if (techFound.name == "WeakBattery") smallFixLeft += 18;
+		if (techFound.name == "Battery") smallFixLeft += 5;
+		if (techFound.name == "DartLauncher") smallFixLeft += 18;
+
+		//Draw module icon
+		roster.drawImage(pImages[techFound.name], smallFixLeft + startPlaceLeft + moduleBackSize / 2 + 13, startPlaceTop + moduleBackSize / 2 + deltaTitleSize)
+
+		//Add module level
+		roster.fillText(`${tech.level}`, startPlaceLeft + moduleImageSize + 64, startPlaceTop + moduleImageSize * 2 - 4)
+			
 		//Move next place
 		modulenum += 1;
 		if (modulenum == maxPerLine) {
@@ -166,26 +183,3 @@ var timer = function (name) {
 		}
 	}
 };
-async function drawModule(rosterImage, moduleback, tech, techname1, startPlaceTop, startPlaceLeft, pImages) {
-	const roster = rosterImage.getContext(`2d`)
-	//constants
-	let moduleBackSize = 80
-	let moduleImageSize = 100
-	let deltaTitleSize = 30
-
-	//Draw Module background
-	roster.drawImage(moduleback, startPlaceLeft, startPlaceTop + deltaTitleSize)
-
-	//Small modules fixed required
-	let smallFixLeft = 0;
-	if (techname1 == "WeakBattery") smallFixLeft += 18;
-	if (techname1 == "Battery") smallFixLeft += 5;
-	if (techname1 == "DartLauncher") smallFixLeft += 18;
-
-	//Draw module icon
-	roster.drawImage(pImages[techname1], smallFixLeft + startPlaceLeft + moduleBackSize / 2 + 13, startPlaceTop + moduleBackSize / 2 + deltaTitleSize)
-
-	//Add module level
-	roster.fillText(`${tech.level}`, startPlaceLeft + moduleImageSize + 64, startPlaceTop + moduleImageSize * 2 - 4)
-	return rosterImage.toBuffer();
-}

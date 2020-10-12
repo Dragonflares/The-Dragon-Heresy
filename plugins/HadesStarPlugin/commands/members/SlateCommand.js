@@ -60,13 +60,13 @@ export class SlateCommand extends MemberCommand {
 
 	async roster(CorpMember, pImages) {
 		//Canvas
-		const rosterImage = new Canvas(2325, 4350)
+		const rosterImage = new Canvas(2325, 4380)
 		const roster = rosterImage.getContext(`2d`)
 		roster.fillStyle = `#101415`;
 		roster.fillRect(0, 0, rosterImage.width, rosterImage.height);
 
 		//Initial Valules
-		let initialPlaceTop = 130
+		let initialPlaceTop = 180
 		let initialPlaceLeft = 85
 
 		//Load module backgroud beforehand to not call it every time
@@ -75,7 +75,7 @@ export class SlateCommand extends MemberCommand {
 		//Name
 		roster.fillStyle = "white"
 		roster.font = `120px "Atarian"`
-		roster.fillText(`${CorpMember.name}:`, initialPlaceLeft + 30, initialPlaceTop)
+		roster.fillText(`${CorpMember.name}`, initialPlaceLeft + 500, initialPlaceTop)
 		initialPlaceTop += 160	
 		let nextHeight = 0
 		let categories = ["Economy", "Mining", "Weapons", "Shields", "Support"]
@@ -103,17 +103,14 @@ export class SlateCommand extends MemberCommand {
 		let scale = 1.5
 		let maxPerLine = 7
 
+		//Get Player techs
+		const memberTechs = new Map(CorpMember.techs.filter(t => t.level > 0).map(t => [t.name, t]).sort((a,b) => a.name>b.name?1:-1));
+
+		//Get Technology Tree
 		let techs = await TechTree.getCategory(category);
-		let techsArray = Array.from(techs.technologies.values())
 
-		let techData = {}
-		await Promise.all(techsArray.map(async techFound => {
-			techData[techFound.name] = await Tech.findOne({ name: techFound.name, playerId: CorpMember.discordId })
-		}))
-
-		await Promise.all(techsArray.map(techFound => {
-			let tech = techData[techFound.name]
-			
+		await Promise.all(Array.from(techs.technologies.values()).map(techFound => {
+			let tech = memberTechs.get(techFound.name)
 			//Draw Module background
 			let backHeight = moduleback.naturalHeight * scale
 			let backWidth = moduleback.naturalWidth * scale
@@ -127,7 +124,9 @@ export class SlateCommand extends MemberCommand {
 			//Add module level
 			roster.font = `80px "Atarian"`
 			roster.fillStyle = `#8debb1`
-			roster.fillText(`${tech.level}`, startPlaceLeft + backWidth * 4 / 5, startPlaceTop + backHeight)
+			let level = 0
+			if(tech) level = tech.level;
+			roster.fillText(`${level}`, startPlaceLeft + backWidth * 4 / 5, startPlaceTop + backHeight)
 
 			//Move next place
 			modulenum += 1;

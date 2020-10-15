@@ -67,8 +67,10 @@ export class FindTechCommand extends MemberCommand {
         embed.setThumbnail(`${tech.image}`);
 
         let techList = await Tech.find({ name: tech.name.toString() }).exec();
-        
+
         const techListSorted = techList
+            .filter(function(t){return !(message.guild.members.cache.get(t.playerId) == null)})
+            .filter(function(t){return !(message.guild.members.cache.get(t.playerId).displayName == null)})
             .filter(t => t.level > 0)
             .filter( function (t) { if(limit) {return t.level==limit} else {return true}} )
             .sort((a, b) => a.level < b.level ? 1 : -1)

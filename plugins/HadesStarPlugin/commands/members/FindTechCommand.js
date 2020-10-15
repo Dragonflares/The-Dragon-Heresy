@@ -1,7 +1,7 @@
 import { MemberCommand } from './MemberCommand';
 import { TechTree } from '../../techs';
 import { confirmTech } from '../../utils';
-import { Member, Tech } from '../../database';
+import { Corp, Member, Tech } from '../../database';
 import { MessageEmbed } from 'discord.js';
 
 export class FindTechCommand extends MemberCommand {
@@ -52,7 +52,7 @@ export class FindTechCommand extends MemberCommand {
                 return message.channel.send("You aren't a Member of this Corporation!")
 
             if (args[1])
-                if(!isNaN(args[1]))
+                if (!isNaN(args[1]))
                     return this.getFindTechInformation(message, tech, args[1])
                 else
                     return message.channel.send("The number is not valid")
@@ -66,16 +66,36 @@ export class FindTechCommand extends MemberCommand {
         embed.setTitle(`**Tech: ${tech.name}**`);
         embed.setThumbnail(`${tech.image}`);
 
-        let techList = await Tech.find({ name: tech.name.toString() }).exec();
-        
-        const techListSorted = techList
-            .filter(t => t.level > 0)
-            .filter( function (t) { if(limit) {return t.level==limit} else {return true}} )
-            .sort((a, b) => a.level < b.level ? 1 : -1)
-            .map(t => `${message.guild.members.cache.get(t.playerId).displayName} ${t.level}`)
-            .join('\n');
+        let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate('members').exec();
 
-        if (techListSorted) embed.addField("*Players*", `${techListSorted}`)
+        //find tech ID
+        const members = Array.from(corp.members)
+
+        let memListSorted = await Promise.all(
+            members.map(async t => [t, await Tech.findOne({ _id: Array.from(t.techs)[GetModuleID(tech.name)] }).exec()])
+        )
+        memListSorted = memListSorted
+        .map(([key,value])=> [value.level,key.name])
+        .filter(([key,value]) => key>0)
+        .filter( function ([key,value]) { if(limit) {return key==limit} else {return true}} )
+        .sort((a, b) => a.key < b.key ? 1 : -1)
+        .map(([key,value]) => `${value} ${key}`)
+        .join('\n');
+
+        if (memListSorted) embed.addField("*Players*", `${memListSorted}`)
         return message.channel.send(embed)
     }
+}
+
+function GetModuleID(name) {
+    let value = null;
+    let i = 0;
+    TechTree.technologies.forEach((t) => {
+        if (t.name.toString() == name.toString()) {
+            value = i;
+        }
+        i++;
+    })
+
+    return value;
 }

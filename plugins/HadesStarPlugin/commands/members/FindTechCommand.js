@@ -78,7 +78,7 @@ export class FindTechCommand extends MemberCommand {
         .map(([key,value])=> [value.level,key.name])
         .filter(([key,value]) => key>0)
         .filter( function ([key,value]) { if(limit) {return key==limit} else {return true}} )
-        .sort((a, b) => a.key < b.key ? 1 : -1)
+        .sort(([keya,valuea], [keyb,valueb]) => keya < keyb ? 1 : -1)
         .map(([key,value]) => `${value} ${key}`)
         .join('\n');
 

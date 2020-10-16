@@ -75,7 +75,7 @@ export class SlateCommand extends MemberCommand {
 		//Name
 		roster.fillStyle = "white"
 		roster.font = `120px "Atarian"`
-		roster.fillText(`${CorpMember.name}:`, initialPlaceLeft + 500, initialPlaceTop)
+		roster.fillText(`${CorpMember.name}`, initialPlaceLeft, initialPlaceTop)
 		initialPlaceTop += 160	
 		let nextHeight = 0
 		let categories = ["Economy", "Mining", "Weapons", "Shields", "Support"]

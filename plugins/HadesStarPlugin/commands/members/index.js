@@ -17,3 +17,5 @@ export * from './GetCroidCommand';
 export * from './GetRedStarRoleCommand';
 export * from './RemoveRedStarRoleCommand';
 export * from './SlateCommand';
+export * from './WSRewardsCommand';
+export * from './GetResearchTimeCommand';

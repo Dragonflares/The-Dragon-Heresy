@@ -28,12 +28,11 @@ export class PlayerTechCommand extends MemberCommand{
         let target = await Member.findOne({discordId: dTarget.id.toString()}).populate("Corp").populate('techs').exec();
         if(!target)
             return message.channel.send("This Member was never part of a Corporation! He must join one to have a tech tracker!");
-
-        return this.techInformation(message, target, args);
+        return this.techInformation(message, target, args[0]);
     }
 
-    async techInformation(message, member, args) {
-        const categoryName = args[1];
+    async techInformation(message, member, cat) {
+        const categoryName = cat;
 
         if(categoryName)
             return await this.displayCategory(message, member, categoryName);

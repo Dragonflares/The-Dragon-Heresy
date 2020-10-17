@@ -1,0 +1,738 @@
+﻿{
+    "3": [
+        {
+            "Members": "15",
+            "Bars": "3",
+            "WinCredits": "35000",
+            "WinHydro": "4000",
+            "LossCredits": "21000",
+            "LossHydro": "2400",
+            "DrawCredits": "22750",
+            "DrawHydro": "2600"
+        },
+        {
+            "Members": "15",
+            "Bars": "2",
+            "WinCredits": "23100",
+            "WinHydro": "2640",
+            "LossCredits": "13860",
+            "LossHydro": "1584",
+            "DrawCredits": "15015",
+            "DrawHydro": "1716"
+        },
+        {
+            "Members": "15",
+            "Bars": "1",
+            "WinCredits": "11550",
+            "WinHydro": "1320",
+            "LossCredits": "6930",
+            "LossHydro": "792",
+            "DrawCredits": "7507.5",
+            "DrawHydro": "858"
+        },
+        {
+            "Members": "10",
+            "Bars": "3",
+            "WinCredits": "26250",
+            "WinHydro": "3000",
+            "LossCredits": "15750",
+            "LossHydro": "1800",
+            "DrawCredits": "17062.5",
+            "DrawHydro": "1950"
+        },
+        {
+            "Members": "10",
+            "Bars": "2",
+            "WinCredits": "17325",
+            "WinHydro": "1980",
+            "LossCredits": "10395",
+            "LossHydro": "1188",
+            "DrawCredits": "11261.25",
+            "DrawHydro": "1287"
+        },
+        {
+            "Members": "10",
+            "Bars": "1",
+            "WinCredits": "8663",
+            "WinHydro": "990",
+            "LossCredits": "5197.8",
+            "LossHydro": "594",
+            "DrawCredits": "5630.95",
+            "DrawHydro": "643.5"
+        },
+        {
+            "Members": "5",
+            "Bars": "3",
+            "WinCredits": "19250",
+            "WinHydro": "2200",
+            "LossCredits": "11550",
+            "LossHydro": "1320",
+            "DrawCredits": "12512.5",
+            "DrawHydro": "1430"
+        },
+        {
+            "Members": "5",
+            "Bars": "2",
+            "WinCredits": "12705",
+            "WinHydro": "1452",
+            "LossCredits": "7623",
+            "LossHydro": "871.2",
+            "DrawCredits": "8258.25",
+            "DrawHydro": "943.8"
+        },
+        {
+            "Members": "5",
+            "Bars": "1",
+            "WinCredits": "6353",
+            "WinHydro": "726",
+            "LossCredits": "3811.8",
+            "LossHydro": "435.6",
+            "DrawCredits": "4129.45",
+            "DrawHydro": "471.9"
+        }
+    ],
+    "4": [
+        {
+            "Members": "15",
+            "Bars": "3",
+            "WinCredits": "80000",
+            "WinHydro": "10000",
+            "LossCredits": "48000",
+            "LossHydro": "6000",
+            "DrawCredits": "52000",
+            "DrawHydro": "6500"
+        },
+        {
+            "Members": "15",
+            "Bars": "2",
+            "WinCredits": "52800",
+            "WinHydro": "6600",
+            "LossCredits": "31680",
+            "LossHydro": "3960",
+            "DrawCredits": "34320",
+            "DrawHydro": "4290"
+        },
+        {
+            "Members": "15",
+            "Bars": "1",
+            "WinCredits": "26400",
+            "WinHydro": "3300",
+            "LossCredits": "15840",
+            "LossHydro": "1980",
+            "DrawCredits": "17160",
+            "DrawHydro": "2145"
+        },
+        {
+            "Members": "10",
+            "Bars": "3",
+            "WinCredits": "60000",
+            "WinHydro": "7500",
+            "LossCredits": "36000",
+            "LossHydro": "4500",
+            "DrawCredits": "39000",
+            "DrawHydro": "4875"
+        },
+        {
+            "Members": "10",
+            "Bars": "2",
+            "WinCredits": "39600",
+            "WinHydro": "4950",
+            "LossCredits": "23760",
+            "LossHydro": "2970",
+            "DrawCredits": "25740",
+            "DrawHydro": "3217.5"
+        },
+        {
+            "Members": "10",
+            "Bars": "1",
+            "WinCredits": "19800",
+            "WinHydro": "2475",
+            "LossCredits": "11880",
+            "LossHydro": "1485",
+            "DrawCredits": "12870",
+            "DrawHydro": "1608.75"
+        },
+        {
+            "Members": "5",
+            "Bars": "3",
+            "WinCredits": "44000",
+            "WinHydro": "5500",
+            "LossCredits": "26400",
+            "LossHydro": "3300",
+            "DrawCredits": "28600",
+            "DrawHydro": "3575"
+        },
+        {
+            "Members": "5",
+            "Bars": "2",
+            "WinCredits": "29040",
+            "WinHydro": "3630",
+            "LossCredits": "17424",
+            "LossHydro": "2178",
+            "DrawCredits": "18876",
+            "DrawHydro": "2359.5"
+        },
+        {
+            "Members": "5",
+            "Bars": "1",
+            "WinCredits": "14520",
+            "WinHydro": "1815",
+            "LossCredits": "8712",
+            "LossHydro": "1089",
+            "DrawCredits": "9438",
+            "DrawHydro": "1179.75"
+        }
+    ],
+    "5": [
+        {
+            "Members": "15",
+            "Bars": "3",
+            "WinCredits": "160000",
+            "WinHydro": "15000",
+            "LossCredits": "96000",
+            "LossHydro": "9000",
+            "DrawCredits": "104000",
+            "DrawHydro": "9750"
+        },
+        {
+            "Members": "15",
+            "Bars": "2",
+            "WinCredits": "105600",
+            "WinHydro": "99000",
+            "LossCredits": "63360",
+            "LossHydro": "59400",
+            "DrawCredits": "68640",
+            "DrawHydro": "64350"
+        },
+        {
+            "Members": "15",
+            "Bars": "1",
+            "WinCredits": "52800",
+            "WinHydro": "4950",
+            "LossCredits": "31680",
+            "LossHydro": "2970",
+            "DrawCredits": "34320",
+            "DrawHydro": "3217.5"
+        },
+        {
+            "Members": "10",
+            "Bars": "3",
+            "WinCredits": "120000",
+            "WinHydro": "11250",
+            "LossCredits": "72000",
+            "LossHydro": "6750",
+            "DrawCredits": "78000",
+            "DrawHydro": "7312.5"
+        },
+        {
+            "Members": "10",
+            "Bars": "2",
+            "WinCredits": "79200",
+            "WinHydro": "7425",
+            "LossCredits": "47520",
+            "LossHydro": "4455",
+            "DrawCredits": "51480",
+            "DrawHydro": "4826.25"
+        },
+        {
+            "Members": "10",
+            "Bars": "1",
+            "WinCredits": "39600",
+            "WinHydro": "3714",
+            "LossCredits": "23760",
+            "LossHydro": "2228.4",
+            "DrawCredits": "25740",
+            "DrawHydro": "2414.1"
+        },
+        {
+            "Members": "5",
+            "Bars": "3",
+            "WinCredits": "88000",
+            "WinHydro": "8259",
+            "LossCredits": "52800",
+            "LossHydro": "4955.4",
+            "DrawCredits": "57200",
+            "DrawHydro": "5368.35"
+        },
+        {
+            "Members": "5",
+            "Bars": "2",
+            "WinCredits": "580580",
+            "WinHydro": "5445",
+            "LossCredits": "348348",
+            "LossHydro": "3267",
+            "DrawCredits": "377377",
+            "DrawHydro": "3539.25"
+        },
+        {
+            "Members": "5",
+            "Bars": "1",
+            "WinCredits": "29040",
+            "WinHydro": "2723",
+            "LossCredits": "17424",
+            "LossHydro": "1633.8",
+            "DrawCredits": "18876",
+            "DrawHydro": "1769.95"
+        }
+    ],
+    "6": [
+        {
+            "Members": "15",
+            "Bars": "3",
+            "WinCredits": "250000",
+            "WinHydro": "30000",
+            "LossCredits": "150000",
+            "LossHydro": "18000",
+            "DrawCredits": "162500",
+            "DrawHydro": "19500"
+        },
+        {
+            "Members": "15",
+            "Bars": "2",
+            "WinCredits": "165000",
+            "WinHydro": "19800",
+            "LossCredits": "99000",
+            "LossHydro": "11880",
+            "DrawCredits": "107250",
+            "DrawHydro": "12870"
+        },
+        {
+            "Members": "15",
+            "Bars": "1",
+            "WinCredits": "82500",
+            "WinHydro": "9900",
+            "LossCredits": "49500",
+            "LossHydro": "5940",
+            "DrawCredits": "53625",
+            "DrawHydro": "6435"
+        },
+        {
+            "Members": "10",
+            "Bars": "3",
+            "WinCredits": "187500",
+            "WinHydro": "22500",
+            "LossCredits": "112500",
+            "LossHydro": "13500",
+            "DrawCredits": "121875",
+            "DrawHydro": "14625"
+        },
+        {
+            "Members": "10",
+            "Bars": "2",
+            "WinCredits": "123750",
+            "WinHydro": "14850",
+            "LossCredits": "74250",
+            "LossHydro": "8910",
+            "DrawCredits": "80438",
+            "DrawHydro": "9653"
+        },
+        {
+            "Members": "10",
+            "Bars": "1",
+            "WinCredits": "61875",
+            "WinHydro": "7425",
+            "LossCredits": "37125",
+            "LossHydro": "4455",
+            "DrawCredits": "40219",
+            "DrawHydro": "4826"
+        },
+        {
+            "Members": "5",
+            "Bars": "3",
+            "WinCredits": "137500",
+            "WinHydro": "16500",
+            "LossCredits": "82500",
+            "LossHydro": "9900",
+            "DrawCredits": "89375",
+            "DrawHydro": "10725"
+        },
+        {
+            "Members": "5",
+            "Bars": "2",
+            "WinCredits": "90750",
+            "WinHydro": "10890",
+            "LossCredits": "54450",
+            "LossHydro": "6534",
+            "DrawCredits": "58988",
+            "DrawHydro": "7079"
+        },
+        {
+            "Members": "5",
+            "Bars": "1",
+            "WinCredits": "45375",
+            "WinHydro": "5445",
+            "LossCredits": "27225",
+            "LossHydro": "3267",
+            "DrawCredits": "29494",
+            "DrawHydro": "3539"
+        }
+    ],
+    "7": [
+        {
+            "Members": "15",
+            "Bars": "3",
+            "WinCredits": "500000",
+            "WinHydro": "45000",
+            "LossCredits": "300000",
+            "LossHydro": "27000",
+            "DrawCredits": "325000",
+            "DrawHydro": "29250"
+        },
+        {
+            "Members": "15",
+            "Bars": "2",
+            "WinCredits": "330000",
+            "WinHydro": "29700",
+            "LossCredits": "198000",
+            "LossHydro": "17820",
+            "DrawCredits": "214500",
+            "DrawHydro": "19305"
+        },
+        {
+            "Members": "15",
+            "Bars": "1",
+            "WinCredits": "165000",
+            "WinHydro": "14850",
+            "LossCredits": "99000",
+            "LossHydro": "8910",
+            "DrawCredits": "107250",
+            "DrawHydro": "9653"
+        },
+        {
+            "Members": "10",
+            "Bars": "3",
+            "WinCredits": "375000",
+            "WinHydro": "33750",
+            "LossCredits": "225000",
+            "LossHydro": "20250",
+            "DrawCredits": "243750",
+            "DrawHydro": "21938"
+        },
+        {
+            "Members": "10",
+            "Bars": "2",
+            "WinCredits": "247500",
+            "WinHydro": "22275",
+            "LossCredits": "148500",
+            "LossHydro": "13365",
+            "DrawCredits": "160875",
+            "DrawHydro": "14479"
+        },
+        {
+            "Members": "10",
+            "Bars": "1",
+            "WinCredits": "123750",
+            "WinHydro": "11138",
+            "LossCredits": "74250",
+            "LossHydro": "6683",
+            "DrawCredits": "80438",
+            "DrawHydro": "7239"
+        },
+        {
+            "Members": "5",
+            "Bars": "3",
+            "WinCredits": "275000",
+            "WinHydro": "24750",
+            "LossCredits": "165000",
+            "LossHydro": "14850",
+            "DrawCredits": "178750",
+            "DrawHydro": "16088"
+        },
+        {
+            "Members": "5",
+            "Bars": "2",
+            "WinCredits": "181500",
+            "WinHydro": "16335",
+            "LossCredits": "108900",
+            "LossHydro": "9801",
+            "DrawCredits": "117975",
+            "DrawHydro": "10618"
+        },
+        {
+            "Members": "5",
+            "Bars": "1",
+            "WinCredits": "90750",
+            "WinHydro": "8168",
+            "LossCredits": "54450",
+            "LossHydro": "4901",
+            "DrawCredits": "58988",
+            "DrawHydro": "5309"
+        }
+    ],
+    "8": [
+        {
+            "Members": "15",
+            "Bars": "3",
+            "WinCredits": "800000",
+            "WinHydro": "60000",
+            "LossCredits": "480000",
+            "LossHydro": "36000",
+            "DrawCredits": "520000",
+            "DrawHydro": "39000"
+        },
+        {
+            "Members": "15",
+            "Bars": "2",
+            "WinCredits": "528000",
+            "WinHydro": "39600",
+            "LossCredits": "316800",
+            "LossHydro": "23760",
+            "DrawCredits": "343200",
+            "DrawHydro": "25740"
+        },
+        {
+            "Members": "15",
+            "Bars": "1",
+            "WinCredits": "264000",
+            "WinHydro": "19800",
+            "LossCredits": "158400",
+            "LossHydro": "11880",
+            "DrawCredits": "171600",
+            "DrawHydro": "12870"
+        },
+        {
+            "Members": "10",
+            "Bars": "3",
+            "WinCredits": "600000",
+            "WinHydro": "45000",
+            "LossCredits": "360000",
+            "LossHydro": "27000",
+            "DrawCredits": "390000",
+            "DrawHydro": "29250"
+        },
+        {
+            "Members": "10",
+            "Bars": "2",
+            "WinCredits": "396000",
+            "WinHydro": "29700",
+            "LossCredits": "237600",
+            "LossHydro": "17820",
+            "DrawCredits": "257400",
+            "DrawHydro": "19305"
+        },
+        {
+            "Members": "10",
+            "Bars": "1",
+            "WinCredits": "198000",
+            "WinHydro": "14850",
+            "LossCredits": "118800",
+            "LossHydro": "8910",
+            "DrawCredits": "128700",
+            "DrawHydro": "9653"
+        },
+        {
+            "Members": "5",
+            "Bars": "3",
+            "WinCredits": "440000",
+            "WinHydro": "33000",
+            "LossCredits": "264000",
+            "LossHydro": "19800",
+            "DrawCredits": "286000",
+            "DrawHydro": "21450"
+        },
+        {
+            "Members": "5",
+            "Bars": "2",
+            "WinCredits": "290400",
+            "WinHydro": "21780",
+            "LossCredits": "174240",
+            "LossHydro": "13066",
+            "DrawCredits": "188760",
+            "DrawHydro": "14157"
+        },
+        {
+            "Members": "5",
+            "Bars": "1",
+            "WinCredits": "145200",
+            "WinHydro": "10890",
+            "LossCredits": "87120",
+            "LossHydro": "6534",
+            "DrawCredits": "94380",
+            "DrawHydro": "7079"
+        }
+    ],
+    "9": [
+        {
+            "Members": "15",
+            "Bars": "3",
+            "WinCredits": "1200000",
+            "WinHydro": "80000",
+            "LossCredits": "720000",
+            "LossHydro": "48000",
+            "DrawCredits": "780000",
+            "DrawHydro": "52000"
+        },
+        {
+            "Members": "15",
+            "Bars": "2",
+            "WinCredits": "792000",
+            "WinHydro": "52800",
+            "LossCredits": "475200",
+            "LossHydro": "31680",
+            "DrawCredits": "514800",
+            "DrawHydro": "34240"
+        },
+        {
+            "Members": "15",
+            "Bars": "1",
+            "WinCredits": "396000",
+            "WinHydro": "26400",
+            "LossCredits": "237600",
+            "LossHydro": "15840",
+            "DrawCredits": "257400",
+            "DrawHydro": "17160"
+        },
+        {
+            "Members": "10",
+            "Bars": "3",
+            "WinCredits": "900000",
+            "WinHydro": "60000",
+            "LossCredits": "540000",
+            "LossHydro": "36000",
+            "DrawCredits": "585000",
+            "DrawHydro": "39000"
+        },
+        {
+            "Members": "10",
+            "Bars": "2",
+            "WinCredits": "594000",
+            "WinHydro": "39600",
+            "LossCredits": "356400",
+            "LossHydro": "23760",
+            "DrawCredits": "390000",
+            "DrawHydro": "29250"
+        },
+        {
+            "Members": "10",
+            "Bars": "1",
+            "WinCredits": "297000",
+            "WinHydro": "19800",
+            "LossCredits": "178200",
+            "LossHydro": "11880",
+            "DrawCredits": "193050",
+            "DrawHydro": "12870"
+        },
+        {
+            "Members": "5",
+            "Bars": "3",
+            "WinCredits": "660000",
+            "WinHydro": "44000",
+            "LossCredits": "396000",
+            "LossHydro": "26400",
+            "DrawCredits": "429000",
+            "DrawHydro": "28600"
+        },
+        {
+            "Members": "5",
+            "Bars": "2",
+            "WinCredits": "435600",
+            "WinHydro": "29040",
+            "LossCredits": "261360",
+            "LossHydro": "17424",
+            "DrawCredits": "283140",
+            "DrawHydro": "18876"
+        },
+        {
+            "Members": "5",
+            "Bars": "1",
+            "WinCredits": "217800",
+            "WinHydro": "14520",
+            "LossCredits": "130680",
+            "LossHydro": "8712",
+            "DrawCredits": "141570",
+            "DrawHydro": "9438"
+        }
+    ],
+    "10": [
+        {
+            "Members": "15",
+            "Bars": "3",
+            "WinCredits": "1600000",
+            "WinHydro": "120000",
+            "LossCredits": "960000",
+            "LossHydro": "72000",
+            "DrawCredits": "1040000",
+            "DrawHydro": "78000"
+        },
+        {
+            "Members": "15",
+            "Bars": "2",
+            "WinCredits": "1056000",
+            "WinHydro": "79200",
+            "LossCredits": "633600",
+            "LossHydro": "47520",
+            "DrawCredits": "686400",
+            "DrawHydro": "51480"
+        },
+        {
+            "Members": "15",
+            "Bars": "1",
+            "WinCredits": "528000",
+            "WinHydro": "39600",
+            "LossCredits": "316800",
+            "LossHydro": "23760",
+            "DrawCredits": "343200",
+            "DrawHydro": "25740"
+        },
+        {
+            "Members": "10",
+            "Bars": "3",
+            "WinCredits": "1200000",
+            "WinHydro": "90000",
+            "LossCredits": "720000",
+            "LossHydro": "54000",
+            "DrawCredits": "780000",
+            "DrawHydro": "58500"
+        },
+        {
+            "Members": "10",
+            "Bars": "2",
+            "WinCredits": "792000",
+            "WinHydro": "59400",
+            "LossCredits": "475200",
+            "LossHydro": "35640",
+            "DrawCredits": "514800",
+            "DrawHydro": "38610"
+        },
+        {
+            "Members": "10",
+            "Bars": "1",
+            "WinCredits": "396000",
+            "WinHydro": "29700",
+            "LossCredits": "237600",
+            "LossHydro": "17820",
+            "DrawCredits": "257400",
+            "DrawHydro": "19305"
+        },
+        {
+            "Members": "5",
+            "Bars": "3",
+            "WinCredits": "888000",
+            "WinHydro": "66000",
+            "LossCredits": "528000",
+            "LossHydro": "39600",
+            "DrawCredits": "572000",
+            "DrawHydro": "42900"
+        },
+        {
+            "Members": "5",
+            "Bars": "2",
+            "WinCredits": "580800",
+            "WinHydro": "43560",
+            "LossCredits": "348480",
+            "LossHydro": "26136",
+            "DrawCredits": "377520",
+            "DrawHydro": "28314"
+        },
+        {
+            "Members": "5",
+            "Bars": "1",
+            "WinCredits": "290400",
+            "WinHydro": "21780",
+            "LossCredits": "174240",
+            "LossHydro": "13068",
+            "DrawCredits": "188760",
+            "DrawHydro": "14157"
+        }
+    ]
+}

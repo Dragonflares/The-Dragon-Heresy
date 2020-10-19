@@ -10,3 +10,4 @@ export * from './TimeTracker';
 export * from './Transport';
 export * from './RankRoles';
 export * from './RedStarRoles';
+export * from './RedStarMessage';

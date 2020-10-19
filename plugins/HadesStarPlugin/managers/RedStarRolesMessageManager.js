@@ -41,7 +41,7 @@ export class RedStarRolesMessageManager extends Manager {
             messageReaction.users.remove(user); // Remove it
 
             let level = 99
-            let reactionsIcons = ['1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣']
+            let reactionsIcons = ['1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟','‼️']
             if(reactionsIcons.includes(messageReaction.emoji.name)) level = reactionsIcons.indexOf(messageReaction.emoji.name)+1
 
             if (level != 99) {

@@ -1,9 +1,11 @@
 import { MemberCommand } from './MemberCommand';
-import { Member, Tech } from '../../database';
+import { Member, Tech, Corp } from '../../database';
 import { MessageAttachment } from 'discord.js';
 import { TechTree } from '../../techs';
 import TechData from '../../../../assets/techs.json';
 import { Canvas, loadImage } from 'canvas';
+import { findBestMatch } from 'string-similarity';
+import { confirmResult } from '../../utils';
 
 export class SlateCommand extends MemberCommand {
 	constructor(plugin) {
@@ -18,6 +20,18 @@ export class SlateCommand extends MemberCommand {
 	async run(message, args) {
 		let dMember = message.author;
 		let dTarget = message.mentions.users.first() || message.author;
+		let target
+		if (!args[0]) {
+			dTarget = message.mentions.users.first() || message.author;
+			target = (await Member.findOne({ discordId: dTarget.id.toString() }).populate("Corp").catch(err => console.logg(err)))
+		} else {
+			let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate('members').exec();
+			let memberslist = new Map(corp.members.map(t => [t.name, t]))
+			const rate = findBestMatch(args[0], [...memberslist.keys()]);
+			if (!await confirmResult(message, args[0], rate.bestMatch.target))
+				return;
+			target = memberslist.get(rate.bestMatch.target)
+		}
 
 		let member = await Member.findOne({ discordId: dMember.id.toString() }).populate("Corp").exec();
 		if (!member)
@@ -26,7 +40,7 @@ export class SlateCommand extends MemberCommand {
 		if (dMember.id != dTarget.id && member.Corp.corpId != message.guild.id.toString())
 			return message.channel.send("You can't see a Member tech outside of your Corporation!");
 
-		let target = await Member.findOne({ discordId: dTarget.id.toString() }).populate("Corp").populate('techs').exec();
+		//let target = await Member.findOne({ discordId: dTarget.id.toString() }).populate("Corp").populate('techs').exec();
 		if (!target)
 			return message.channel.send("This Member was never part of a Corporation! He must join one to have a tech tracker!");
 
@@ -76,10 +90,10 @@ export class SlateCommand extends MemberCommand {
 		roster.fillStyle = "white"
 		roster.font = `120px "Atarian"`
 		roster.fillText(`${CorpMember.name}`, initialPlaceLeft, initialPlaceTop)
-		initialPlaceTop += 160	
+		initialPlaceTop += 160
 		let nextHeight = 0
 		let categories = ["Economy", "Mining", "Weapons", "Shields", "Support"]
-		let separations = [0,800, 1600, 2200, 2800]
+		let separations = [0, 800, 1600, 2200, 2800]
 		await Promise.all(categories.map(async (category, index) => {
 			roster.font = `100px "Atarian"`
 			roster.fillStyle = `#44645b`
@@ -88,13 +102,13 @@ export class SlateCommand extends MemberCommand {
 		return rosterImage.toBuffer()
 	}
 
-	async drawModuleCategory(rosterImage, moduleback, category, CorpMember, initialPlaceTop, initialPlaceLeft , pImages) {
+	async drawModuleCategory(rosterImage, moduleback, category, CorpMember, initialPlaceTop, initialPlaceLeft, pImages) {
 		const roster = rosterImage.getContext(`2d`)
 
 		//Title
 		let name = category;
 		if (name == "Economy") name = "Trade";
-		roster.fillText(name.toUpperCase(), initialPlaceLeft, initialPlaceTop )
+		roster.fillText(name.toUpperCase(), initialPlaceLeft, initialPlaceTop)
 
 		//variables
 		let startPlaceTop = initialPlaceTop + 100
@@ -104,7 +118,7 @@ export class SlateCommand extends MemberCommand {
 		let maxPerLine = 7
 
 		//Get Player techs
-		const memberTechs = new Map(CorpMember.techs.filter(t => t.level > 0).map(t => [t.name, t]).sort((a,b) => a.name>b.name?1:-1));
+		const memberTechs = new Map(CorpMember.techs.filter(t => t.level > 0).map(t => [t.name, t]).sort((a, b) => a.name > b.name ? 1 : -1));
 
 		//Get Technology Tree
 		let techs = await TechTree.getCategory(category);
@@ -125,7 +139,7 @@ export class SlateCommand extends MemberCommand {
 			roster.font = `80px "Atarian"`
 			roster.fillStyle = `#8debb1`
 			let level = 0
-			if(tech) level = tech.level;
+			if (tech) level = tech.level;
 			roster.fillText(`${level}`, startPlaceLeft + backWidth * 4 / 5, startPlaceTop + backHeight)
 
 			//Move next place

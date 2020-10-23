@@ -26,28 +26,31 @@ export class PlayerTechCommand extends MemberCommand {
             return message.channel.send("You aren't part of any Corporations, so you cannot request this information from anyone.")
 
         if (!message.mentions.users.first()) {
-            let playername;
-            const techorMemberName = args.join('');
-            let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate('members').exec();
-            let members = Array.from(corp.members).map(t => t.name)
-            let joined = members.concat(Array.from(TechTree.categories.keys()))
-            const rate = findBestMatch(techorMemberName, joined);
+            if (args[0]) {
+                let playername;
+                const techorMemberName = args.join('');
+                let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate('members').exec();
+                let members = Array.from(corp.members).map(t => t.name)
+                let joined = members.concat(Array.from(TechTree.categories.keys()))
+                const rate = findBestMatch(techorMemberName, joined);
 
-            if (!await confirmResult(message, techorMemberName, rate.bestMatch.target))
-            return;
+                if (!await confirmResult(message, techorMemberName, rate.bestMatch.target))
+                    return;
 
-            if (Array.from(members).includes(rate.bestMatch.target)) {
-                playername = rate.bestMatch.target
+                if (Array.from(members).includes(rate.bestMatch.target)) {
+                    playername = rate.bestMatch.target
+                } else {
+                    playername = member.name
+                    category = rate.bestMatch.target
+                }
+
+                if (member.Corp.corpId != message.guild.id.toString())
+                    return message.channel.send("You can't see a Member tech outside of your Corporation!");
+
+                target = await Member.findOne({ name: playername }).populate("Corp").populate('techs').exec();
             } else {
-                playername = member.name
-                category = rate.bestMatch.target
+                target = await Member.findOne({ discordId: dMember.id.toString() }).populate("Corp").populate('techs').exec();
             }
-
-            if (member.Corp.corpId != message.guild.id.toString())
-                return message.channel.send("You can't see a Member tech outside of your Corporation!");
-
-            target = await Member.findOne({ name: playername }).populate("Corp").populate('techs').exec();
-
         } else {
             category = args[0]
 

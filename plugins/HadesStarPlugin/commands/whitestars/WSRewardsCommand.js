@@ -1,12 +1,12 @@
-import { MemberCommand } from './MemberCommand';
+import { WhitestarsCommand } from './WhitestarsCommand';
 import { Member } from '../../database';
 import WSRewardsData from '../../../../assets/wsrewards.json';
 
-export class WSRewardsCommand extends MemberCommand{
+export class WSRewardsCommand extends WhitestarsCommand{
     constructor(plugin){
         super(plugin, {
             name: 'wsrewards',
-            aliases: ['wsrewards'],
+            aliases: ['whitestarrewards'],
             description: "Get Rewards List.",
             usage: "&wsrewards <members> <rslevel>"
         });

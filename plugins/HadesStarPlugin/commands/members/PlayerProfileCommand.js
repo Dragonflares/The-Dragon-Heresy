@@ -28,7 +28,7 @@ export class PlayerProfileCommand extends MemberCommand {
                 const rate = findBestMatch(args[0], [...memberslist.keys()]);
                 if (!await confirmResult(message, args[0], rate.bestMatch.target))
                     return;
-                CorpMember = memberslist.get(rate.bestMatch.target)
+                CorpMember = (await Member.findOne({ discordId: memberslist.get(rate.bestMatch.target).discordId.toString() }).populate("Corp").populate("techs").catch(err => console.logg(err)))
             }
         }
         else {

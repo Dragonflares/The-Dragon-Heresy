@@ -53,6 +53,7 @@ export class GetResearchTimeCommand extends MemberCommand{
             var i;
             for (i = 1; i < element[1]+1; i++) {
                 if(!TechTree.find(element[0]).properties.get('Research Time')) continue;
+                if(!TechTree.find(element[0]).properties.get('Unlock Price')) continue;
                let sPostFix  = TechTree.find(element[0]).properties.get('Research Time')[i-1].slice(-1);
                let num =TechTree.find(element[0]).properties.get('Research Time')[i-1].slice(0, -1);
                let multiplier =0;

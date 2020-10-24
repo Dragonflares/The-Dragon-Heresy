@@ -27,10 +27,10 @@ export class WhiteStarsManager extends Manager {
     reactListener = async (messageReaction, user) => {
         if (user.bot) return;
 
-        const reactions = ['⚔️', '🛡️', '🗡️', '❓', '❌']
+        const reactions = ['⚔️', '🛡️', '🗡️', '❓', '❌', '🚮']
 
 
-        const ws = await WhiteStar.findOne({ recruitmessage: messageReaction.message.id }).populate('members').exec();
+        const ws = await WhiteStar.findOne({ recruitmessage: messageReaction.message.id }).populate('author').populate('members').exec();
         if (ws) {
             let member = await Member.findOne({ discordId: user.id.toString() }).exec();
             messageReaction.users.remove(user); // Remove it
@@ -39,22 +39,29 @@ export class WhiteStarsManager extends Manager {
                 let remainingMembers = ws.members.filter(m => m.discordId != member.discordId)
                 ws.members = remainingMembers
                 ws.preferences.delete(member.discordId)
+            } else if (messageReaction.emoji.name == '🚮') {
+                if (user.id == ws.author.discordId)
+                {
+                    ws.remove();
+                    let msg = await this.client.channels.cache.get(ws.retruitchannel).messages.fetch(ws.recruitmessage.toString());
+                    msg.delete({ timeout: 1 })
+                }
             } else if (reactions.includes(messageReaction.emoji.name)) {
                 if (!ws.members.some(e => e.discordId === member.discordId))
                     ws.members.push(member)
-                ws.preferences.set(member.discordId,messageReaction.emoji.name)
+                ws.preferences.set(member.discordId, messageReaction.emoji.name)
             }
             ws.save()
 
             //Update Embed
-            //Get Membets
+            //Get Members
             let testString = ""
-            ws.members.forEach(t => testString += `${t.name} ${ ws.preferences.get(t.discordId)}\n`)
+            ws.members.forEach(t => testString += `${t.name} ${ws.preferences.get(t.discordId)}\n`)
             if (testString == "") testString = "None";
 
             //Make Message
             let rolesEmbed = new Discord.MessageEmbed()
-                .setTitle(`White Star Recruitment by ${ws.author}:`)
+                .setTitle(`White Star Recruitment by ${ws.author.name}:`)
                 .setThumbnail("https://i.imgur.com/fNtJDNz.png")
                 .setDescription(`${ws.description}`)
                 .addField("Group:", `<@&${ws.wsrole}>`)

@@ -2,7 +2,7 @@ import {Schema, model} from 'mongoose';
 
 const WhiteStarSchema = Schema ({
     Corp: {type: Schema.Types.ObjectId, ref: "Corp"},
-    author:String,
+    author: {type: Schema.Types.ObjectId, ref: "Member"},
     wsrole: String,
     description: String,
     recruitmessage: String,

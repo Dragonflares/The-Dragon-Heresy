@@ -19,7 +19,9 @@ export const confirmTech = async (message, query, tech) => {
                 errors: ['time']
             });
 
-            if(!["y", "yes", "yeah", "yea", "yup", "yep", "ye", "of course", "right", "true"].includes(response.first().content.toLowerCase())){
+            const possitiveList = ["y", "yes", "yeah", "yea", "yup", "yep", "ye", "sure", "absolutly", "of course", "right", "true"]
+            const rate = findBestMatch(response.first().content.toLowerCase(), Array.from(possitiveList));
+            if (rate.bestMatch.rating < 0.5 && !possitiveList.some(v => response.first().content.toLowerCase().includes(v))) {
                 throw new Error();
             }
         } catch (err) {

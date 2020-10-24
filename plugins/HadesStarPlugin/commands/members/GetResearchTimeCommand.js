@@ -1,6 +1,8 @@
 import { MemberCommand } from './MemberCommand';
-import { Member } from '../../database';
+import { Member, Corp } from '../../database';
 import { TechTree } from '../../techs';
+import { findBestMatch } from 'string-similarity';
+import { confirmResult } from '../../utils';
 
 export class GetResearchTimeCommand extends MemberCommand{
     constructor(plugin){
@@ -13,19 +15,33 @@ export class GetResearchTimeCommand extends MemberCommand{
     }
 
     async run(message, args){
-        let target = message.mentions.users.first()
-        if(!target){
-            target = message.guild.member(message.author)
+        let target
+        let CorpMember
+        const user = message.mentions.users.first()
+        if (!user) {
+            if (!args[0]) {
+                target = message.guild.member(message.author)
+                CorpMember = (await Member.findOne({ discordId: target.id.toString() }).populate("Corp").populate("techs").exec().catch(err => console.logg(err)))
+            } else {
+                let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate('members').populate("members.techs").exec();
+                let memberslist = new Map(corp.members.map(t => [t.name, t]))
+                const rate = findBestMatch(args[0], [...memberslist.keys()]);
+                if (!await confirmResult(message, args[0], rate.bestMatch.target))
+                    return;
+                CorpMember = (await Member.findOne({ discordId: memberslist.get(rate.bestMatch.target).discordId.toString() }).populate("Corp").populate("techs").exec().catch(err => console.logg(err)))
+            }
+        }
+        else {
+            target = message.guild.member(user)
+            CorpMember = (await Member.findOne({ discordId: target.id.toString() }).populate("Corp").populate("techs").exec().catch(err => console.logg(err)))
         }
 
-        let member = await Member.findOne({discordId: target.id.toString()}).populate('Corp').populate('techs').exec();
-        if(!member)
-            return message.channel.send("You aren't part of any Corporation. Join a Corporation first.")
-        else{
-            //if(member.Corp.corpId === message.guild.id.toString()) 
-                return this.getResearchTime(member, message)    
-            
-            return message.channel.send("You aren't on your Corporation's server!");
+        if (!CorpMember) {
+            if (!user) return message.channel.send("You were never part of a Corporation! You must join one to have a profile!")
+            else return message.channel.send("This Member isn't part of any Corporation, therefore has no profile.")
+        }
+        else {
+            return this.getResearchTime(CorpMember, message) 
         }
     }
     getResearchTime = async (member, message) => {

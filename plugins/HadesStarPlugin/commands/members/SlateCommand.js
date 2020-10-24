@@ -23,24 +23,22 @@ export class SlateCommand extends MemberCommand {
 		let target
 		if (!args[0]) {
 			dTarget = message.mentions.users.first() || message.author;
-			target = (await Member.findOne({ discordId: dTarget.id.toString() }).populate("Corp").catch(err => console.logg(err)))
+			target = (await Member.findOne({ discordId: dTarget.id.toString() }).populate("Corp").populate("techs").catch(err => console.logg(err)))
 		} else {
 			let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate('members').exec();
 			let memberslist = new Map(corp.members.map(t => [t.name, t]))
 			const rate = findBestMatch(args[0], [...memberslist.keys()]);
 			if (!await confirmResult(message, args[0], rate.bestMatch.target))
 				return;
-			target = memberslist.get(rate.bestMatch.target)
+			target = (await Member.findOne({ discordId: memberslist.get(rate.bestMatch.target).discordId.toString() }).populate("Corp").populate("techs").catch(err => console.logg(err)))
 		}
 
-		let member = await Member.findOne({ discordId: dMember.id.toString() }).populate("Corp").exec();
-		if (!member)
+		if (!target)
 			return message.channel.send("You aren't part of any Corporations, so you cannot request this information from anyone.")
 
 		if (dMember.id != dTarget.id && member.Corp.corpId != message.guild.id.toString())
 			return message.channel.send("You can't see a Member tech outside of your Corporation!");
 
-		//let target = await Member.findOne({ discordId: dTarget.id.toString() }).populate("Corp").populate('techs').exec();
 		if (!target)
 			return message.channel.send("This Member was never part of a Corporation! He must join one to have a tech tracker!");
 

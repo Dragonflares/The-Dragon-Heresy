@@ -1,7 +1,7 @@
 import { WhitestarsCommand } from './WhitestarsCommand';
 import { Member, WhiteStar, Corp } from '../../database';
+import * as WsUtils from '../../utils/whiteStarsUtils.js'
 import Mongoose from 'mongoose'
-const Discord = require('discord.js');
 
 export class RecruitWhiteStarCommand extends WhitestarsCommand {
   constructor(plugin) {
@@ -22,25 +22,21 @@ export class RecruitWhiteStarCommand extends WhitestarsCommand {
     else {
       if (!roles) return message.channel.send("Please input a discord role for the WS!")
       if (member.Corp.corpId === message.guild.id.toString())
-        return this.roleMessage(message, roles, args.join(' '),member)
+        return this.roleMessage(message, roles, args.join(' '), member)
       else
         return message.channel.send("You aren't on your Corporation's server!")
     }
   }
 
-  roleMessage = async (message, role, desc,member) => {
+  roleMessage = async (message, role, desc, member) => {
     message.delete({ timeout: 1 });    //Delete User message
 
     let description = 'Do you wish to partake in this White Star?';
     if (desc) description = desc
 
-    //Save Message ID
     //Get Whitestart with role
     const ws = await WhiteStar.findOne({ wsrole: role.id }).populate('author').populate('members').exec()
     if (!ws) {
-      //Send Message
-      let messageReaction = await this.sendWsMessage(message, role, description, 0, "None",member.name);
-
       //Create new Whitestar
       const corp = await Corp.findOne({ corpId: message.guild.id.toString() }).exec()
       let newWhiteStar = new WhiteStar({
@@ -49,56 +45,89 @@ export class RecruitWhiteStarCommand extends WhitestarsCommand {
         Corp: corp,
         wsrole: role.id,
         description: description,
-        recruitmessage: messageReaction.id.toString(),
-        retruitchannel: messageReaction.channel.id.toString(),
+        recruitmessage: null,
+        retruitchannel: null,
+        statusmessage: null,
+        statuschannel: null,
+        scantime: null,
+        matchtime: null,
         status: "Recruiting",
         members: new Array(),
-        preferences: new Map()
+        preferences: new Map(),
+        leadPreferences: new Map(),
+        bsGroupsRoles: new Array(),
+        spGroupsRoles: new Array(),
+        groupNotes: new Map(),
+        playerBsNotes: new Map(),
+        playerSpNotes: new Map()
       })
-      newWhiteStar.save();
+
+      //Debug
+      if (description == "debug") {
+        let member = await Member.findOne({ discordId: "624387466907877376" }).exec();
+        newWhiteStar.members.push(member)
+        newWhiteStar.preferences.set(member.discordId, '🗡️',)
+        let roleMember = await message.guild.members.fetch(member.discordId)
+        roleMember.roles.add(newWhiteStar.wsrole)
+
+        member = await Member.findOne({ discordId: "741855907129983040" }).exec();
+        newWhiteStar.members.push(member)
+        newWhiteStar.preferences.set(member.discordId, '❓',)
+        roleMember = await message.guild.members.fetch(member.discordId)
+        roleMember.roles.add(newWhiteStar.wsrole)
+
+        member = await Member.findOne({ discordId: "626878307203284994" }).exec();
+        newWhiteStar.members.push(member)
+        newWhiteStar.preferences.set(member.discordId, '❓',)
+        roleMember = await message.guild.members.fetch(member.discordId)
+        roleMember.roles.add(newWhiteStar.wsrole)
+      }
+
+      //Send Message
+      const rolesEmbed = await WsUtils.whiteStarRecruitMessage(newWhiteStar);
+
+      //Send Message
+      const messageReaction = await message.channel.send(rolesEmbed);
+
+      //React
+      WsUtils.whiteStarPrefEmojiGroup.forEach(async (value, key) => await messageReaction.react(key))
+      WsUtils.whiteStarRecruitReactions.forEach(async react => await messageReaction.react(react))
+
+      //Save new ids in the database
+      newWhiteStar.recruitmessage = messageReaction.id.toString()
+      newWhiteStar.retruitchannel = messageReaction.channel.id.toString()
+
+      //Save
+      await newWhiteStar.save();
     } else {
       if (ws.status == "Recruiting") {
+        let msg;
 
-        let msg = await this.client.channels.cache.get(ws.retruitchannel).messages.fetch(ws.recruitmessage.toString())
-        msg.delete({ timeout: 1 })
-
-        //Get Members
-        let testString = ""
-        ws.members.forEach(t => testString += `${t.name} ${ws.preferences.get(t.discordId)}\n`)
-        if (testString == "") testString = "None";
+        //Check if previous message exists and if does, delete
+        try {
+          msg = await this.client.channels.cache.get(ws.retruitchannel).messages.fetch(ws.recruitmessage.toString())
+          if (msg) msg.delete({ timeout: 1 })
+        } catch { }
 
         //Send Message
-        let messageReaction = await this.sendWsMessage(message, role, ws.description, Object.keys(ws.members).length, testString,ws.author.name);
+        let recruitEmbed = await WsUtils.whiteStarRecruitMessage(ws);
+        const messageReaction = await message.channel.send(recruitEmbed);
 
+        //React
+        WsUtils.whiteStarPrefEmojiGroup.forEach(async (value, key) => await messageReaction.react(key))
+        WsUtils.whiteStarRecruitReactions.forEach(async react => await messageReaction.react(react))
+
+        //Save new ids in the database
         ws.recruitmessage = messageReaction.id.toString()
         ws.retruitchannel = messageReaction.channel.id.toString()
-        ws.save()
+
+        //Save
+        await ws.save()
       } else {
         return message.channel.send("A WS is running on that group!")
       }
 
     }
-  }
-
-  sendWsMessage = async (message, role, description, amount, members,author) => {
-    let rolesEmbed = new Discord.MessageEmbed()
-      .setTitle(`White Star Recruitment by ${author}:`)
-      .setThumbnail("https://i.imgur.com/fNtJDNz.png")
-      .setDescription(`${description}`)
-      .addField("Group:", `<@&${role.id}>`)
-      .addField("Current People", amount)
-      .addField("Members", members)
-      .setColor("ORANGE")
-      .setFooter(`⚔️ - Attack 🛡️ - Guardian 🗡️ - Assassin ❓ - Doesnt matter ❌ - Delist`)
-
-    const reactions = ['⚔️', '🛡️', '🗡️', '❓', '❌','🚮']
-
-    //Send Message
-    const messageReaction = await message.channel.send(rolesEmbed);
-
-    //React
-    reactions.forEach(async react => await messageReaction.react(react))
-    return messageReaction;
   }
 }
 

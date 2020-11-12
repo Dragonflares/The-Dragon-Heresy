@@ -238,13 +238,31 @@ export const RefreshStatusMessage = async (client, ws, interval) => {
         msgStatus = await client.channels.cache.get(intWs.statuschannel).messages.fetch(intWs.statusmessage.toString());
 
         //Create new message
-        const statusEmbed = await whiteStarStatusMessage(msgStatus, intWs);
+        const statusEmbed = await whiteStarStatusMessage(msgStatus, intWs); 
 
         //Remove Reactions
         msgStatus.edit(statusEmbed)
 
     }
     return msgStatus;
+}
+
+export const RefreshRecruitMessage = async (client, ws, interval) => {
+    let intWs = await WhiteStar.findOne({ wsrole: ws.wsrole }).populate('author').populate('members').exec();
+    let msgRecruit;
+    if (intWs) {
+
+        //Fetch old message
+        msgRecruit = await client.channels.cache.get(intWs.retruitchannel).messages.fetch(intWs.recruitmessage.toString());
+        
+        //Create new message
+        const recruitEmbed = await whiteStarRecruitMessage(intWs);
+
+        //Remove Reactions
+        await msgRecruit.edit(recruitEmbed)
+
+    }
+    return msgRecruit;
 }
 
 export const StartTimerStatusRefresh = async (client, ws) => {

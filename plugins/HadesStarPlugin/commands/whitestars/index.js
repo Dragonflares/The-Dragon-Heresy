@@ -5,3 +5,5 @@ export * from './KillWhiteStarCommand';
 export * from './SetRolesWhiteStarCommand';
 export * from './NoteGroupWhiteStarCommand';
 export * from './NotePlayerWhiteStarCommand';
+export * from './AddPlayerWhiteStarCommand';
+export * from './RemovePlayerWhiteStarCommand';

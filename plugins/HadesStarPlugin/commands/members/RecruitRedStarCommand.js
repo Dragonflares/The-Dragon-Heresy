@@ -16,7 +16,7 @@ export class RecruitRedStarCommand extends MemberCommand {
   async run(message, args) {
     if (args[0] && (args[0] > 0 && args[0] < 12)) { //If level between 1 and 12
       if (args[1]) {
-        if (args[1] > 5 && args[1] < 60) {
+        if (args[1] > 5 && args[1] <= 60) {
           message.delete({ timeout: 1 });    //Delete User message
           this.sendInitialMessage(message, args[0], 60000 * args[1]); //Send recuit message
         } else {

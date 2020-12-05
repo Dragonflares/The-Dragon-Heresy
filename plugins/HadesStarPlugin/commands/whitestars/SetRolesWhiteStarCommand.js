@@ -29,7 +29,7 @@ export class SetRolesWhiteStarCommand extends WhitestarsCommand {
   }
 
   setRolesWs = async (message) => {
-    message.delete({ timeout: 1 });    //Delete User message
+    //message.delete({ timeout: 1 });    //Delete User message
     let data = message.content.split(" ")
     let role = data[1].replace("<@&", "").replace(">", "")
     let roles = []

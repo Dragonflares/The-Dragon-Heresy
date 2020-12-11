@@ -67,7 +67,7 @@ export class TechDataCommand extends MemberCommand {
             if (level < tech.levels) await messageReaction.react('▶️') //Send Initial Reaction
 
             let reactionFilter = (reaction, user) => !user.bot
-            let collector = messageReaction.createReactionCollector(reactionFilter, { dispose: true });
+            let collector = messageReaction.createReactionCollector(reactionFilter, { dispose: true ,time: 2 * 60 *1000 });
             collector.on('collect', async (reaction, user) => {
                 if (reaction.emoji.name != '◀️' && reaction.emoji.name != '▶️') {
                 reaction.remove() // Remove the Reaction
@@ -89,6 +89,9 @@ export class TechDataCommand extends MemberCommand {
                     if (level < tech.levels) await messageReaction.react('▶️') //Send Initial Reaction
         
                 }
+            });
+            collector.on('end', collected => {
+                messageReaction.reactions.removeAll()
             });
         }
     }

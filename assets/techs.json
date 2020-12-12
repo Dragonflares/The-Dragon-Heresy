@@ -5710,7 +5710,7 @@
             "32,500",
             "35,000"
         ],
-        "Description": "Does massive area damage to all enemy ships in range. Initiator ship instantly jumps to a random sector in the star system. After the jump, the ship stays disabled for a short period of time.\nCan't be activated if there are no valid teleport targets on the map.\nCan't be activated if there are no ennemies in the same sector.\nBlueprints are obtained by researching level 6+ Tetrahedrons.\nDisable Duration: 4s in every Star and 8h in White Star.\nCooldown: 5m in Red Star. 2d 2h in White Star.\n",
+        "Description": "Does massive area damage to all enemy ships in range. Initiator ship instantly jumps to a random sector in the star system. After the jump, the ship stays disabled for a short period of time.\nCan't be activated if there are no valid teleport targets on the map.\nCan't be activated if there are no enemies in the same sector.\nBlueprints are obtained by researching level 6+ Tetrahedrons.\nDisable Duration: 4s in every Star and 8h in White Star.\nCooldown: 5m in Red Star. 2d 2h in White Star.\n",
         "Image": "https://i.imgur.com/NQQ2n6h.png",
         "Category": "Support"
 },

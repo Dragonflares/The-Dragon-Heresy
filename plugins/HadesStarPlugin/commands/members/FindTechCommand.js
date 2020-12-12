@@ -34,8 +34,10 @@ export class FindTechCommand extends MemberCommand {
             return message.channel.send(embed)
         }
         else {
+            const level     = parseInt(args[args.length-1]);
+            const techName  = isNaN(level) ? args.join('') : args.slice(0, -1).join('');
 
-            const techName = args[0];
+            //const techName = args[0];
             const tech = TechTree.find(techName);
 
             if (!await confirmTech(message, techName, tech))
@@ -51,11 +53,8 @@ export class FindTechCommand extends MemberCommand {
             if (member.Corp.corpId != message.guild.id.toString())
                 return message.channel.send("You aren't a Member of this Corporation!")
 
-            if (args[1])
-                if (!isNaN(args[1]))
-                    return this.getFindTechInformation(message, tech, args[1])
-                else
-                    return message.channel.send("The number is not valid")
+            if (!isNaN(level))
+                return this.getFindTechInformation(message, tech,level)
             else
                 return this.getFindTechInformation(message, tech, null)
         }

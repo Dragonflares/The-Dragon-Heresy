@@ -26,7 +26,7 @@ export class PingManager extends Manager{
   
         else if(message.mentions.has('236891878690258944') && this.client.users.cache.find(u=> u.id == "236891878690258944").presence.status == "offline")
 		{	
-			message.channel.send("Hope its important, or he might get angry!")
+			message.channel.send("You had better hope that ping was important... He's grumpy..")
 		}
     }
 

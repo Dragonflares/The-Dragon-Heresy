@@ -2,6 +2,7 @@ import { MemberCommand } from './MemberCommand';
 import { TechTree } from '../../techs';
 import { confirmTech } from '../../utils';
 import { Member, Tech } from '../../database';
+import Mongoose from 'mongoose';
 
 export class UpdateTechCommand extends MemberCommand{
     constructor(plugin){
@@ -39,11 +40,33 @@ export class UpdateTechCommand extends MemberCommand{
             return message.channel.send(`The level you gave is invalid for that tech!`)
         
 
-        let member = await Member.findOne({discordId: target.id.toString()}).populate('Corp').exec();
+        let member = await Member.findOne({discordId: target.id.toString()}).populate('Corp').populate('techs').exec();
         if(!member)
             return message.channel.send("You aren't part of any Corporation. Join a Corporation first.")
 
         if(member.Corp.corpId === message.guild.id.toString()){
+            let techFound = await Tech.find({name: tech.name, playerId: target.id.toString()})
+            if(techFound.length == 0)
+            {
+                let orderMax=0;
+                member.techs.map(t => {
+                    if (t.order> orderMax) orderMax = t.order;
+                })
+                orderMax = orderMax + 1
+                console.log(`Creating new tech ${tech.name} to player`)
+                let dbTech = new Tech({
+                    _id: new Mongoose.Types.ObjectId(),
+                    name: tech.name,
+                    level: 0,
+                    category: tech.category,
+                    order: orderMax,
+                    playerId: target.id.toString()
+                })
+                member.techs.push(dbTech);
+                await dbTech.save()
+                member.save()
+            }
+           // console.log(techFound)
             await Tech.findOneAndUpdate({name: tech.name, playerId: target.id.toString()}, {level: Math.floor(level)});
             return message.channel.send(`Tech level updated.`)  
         }

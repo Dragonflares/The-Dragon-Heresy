@@ -1124,8 +1124,7 @@
 ,
         "Image": "https://i.imgur.com/XqmJ64y.png",
         "Category": "Economy"
-},
-    
+}, 
     "MiningBoost": {
         "Level": [
             "1",
@@ -6907,5 +6906,136 @@
         "Description": "A strong, slow Rocket that can be launched within a limited range and does massive Area damage to all enemy ships when it reaches its destination.\nEnemy ships can fire on the Rocket using normal targeting rules. The rocket still delivers a small amount of Area damage on a smaller radius to enemy ships if neutralized before reaching its destination.\nBlueprints are obtained by researching level 10+ Tetrahedrons.\nSpeed: 600AU/m in Red Star. 60AU/h in White Star.\nCooldown: 10m in Red Star. 4d 4h in White Star.\n",
         "Image": "https://i.imgur.com/xf5yw8o.png",
         "Category": "Support"
-    }
+},
+    "RelicDrone": {
+        "Level": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12"
+        ],
+        "Blueprints Required": [
+            "1",
+            "20",
+            "50",
+            "100",
+            "200",
+            "500",
+            "1,000",
+            "1,500",
+            "2,000",
+            "2,500",
+            "3,000",
+            "4,000"
+        ],
+        "Unlock Price": [
+            "200,000",
+            "400,000",
+            "600,000",
+            "800,000",
+            "1,000,000",
+            "1,200,000",
+            "1,400,000",
+            "1,600,000",
+            "1,800,000",
+            "2,000,000",
+            "2,500,000",
+            "3,000,000"
+        ],
+        "Research Time": [
+            "1d",
+            "2d",
+            "3d",
+            "4d",
+            "5d",
+            "5d",
+            "6d",
+            "6d",
+            "7d",
+            "7d",
+            "7d",
+            "7d"
+        ],
+        "Relic Capacity": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12"
+        ],
+        "Load Time Per Relic": [
+            "8h",
+            "7h",
+            "6h",
+            "5h",
+            "4h",
+            "3h 20m",
+            "2h 50m",
+            "2h 30m",
+            "2h 12m",
+            "2h",
+            "1h 50m",
+            "1h 40m"
+        ],
+        "Install Price": [
+            "20,000",
+            "22,500",
+            "24,000",
+            "26,000",
+            "28,000",
+            "30,500",
+            "32,000",
+            "34,500",
+            "36,000",
+            "38,500",
+            "40,000",
+            "42,000"
+        ],
+        "Hull Strength": [
+            "500",
+            "500",
+            "500",
+            "500",
+            "500",
+            "500",
+            "500",
+            "500",
+            "500",
+            "500",
+            "500",
+            "500"
+        ],
+        "Activation Cost": [
+            "1,000",
+            "1,100",
+            "1,200",
+            "1,300",
+            "1,400",
+            "1,500",
+            "1,600",
+            "1,700",
+            "1,800",
+            "1,900",
+            "2,000",
+            "2,100"
+        ],
+        "Description": "The Drone will travel to the target planet and start loading Relics until the planet is empty or its capacity is full. It will then automatically travel to the Jumpgate and jump out of the system, depositing the Relics to your Corporation.\n",
+        "Image": "https://i.imgur.com/YjBzucr.png",
+		"Category": "Economy"
+}
 }

@@ -219,9 +219,20 @@ export const killWS = async (client, ws, message) => {
         statusmsg.reactions.removeAll()
     }
     ws.members.forEach(async t => {
-        let roleMember = await message.guild.members.fetch(t.discordId)
+        let statusmsg = await client.channels.cache.get(ws.statuschannel).messages.fetch(ws.statusmessage.toString());
+        let roleMember = await statusmsg.guild.members.fetch(t.discordId)
         roleMember.roles.remove(ws.wsrole)
+        ws.bsGroupsRoles.forEach(async bsRole => {
+            let roleMember = await statusmsg.guild.members.fetch(t.discordId)
+            roleMember.roles.remove(bsRole)
+        })
+        ws.spGroupsRoles.forEach(async spGroupsRoles => {
+            let roleMember = await statusmsg.guild.members.fetch(t.discordId)
+            roleMember.roles.remove(spGroupsRoles)
+        })
     })
+   
+
     ws.remove();
 }
 
@@ -230,10 +241,11 @@ export const RefreshStatusMessage = async (client, ws, interval) => {
     let msgStatus;
     if (intWs) {
         if (interval) {
-            if (intWs.status == "WaitForScan" || intWs.status == "Recruiting") {
+            if (intWs.status == "Recruiting") {
                 clearInterval(interval);
             }
         }
+
         //Fetch old message
         msgStatus = await client.channels.cache.get(intWs.statuschannel).messages.fetch(intWs.statusmessage.toString());
 
@@ -242,6 +254,20 @@ export const RefreshStatusMessage = async (client, ws, interval) => {
 
         //Remove Reactions
         msgStatus.edit(statusEmbed)
+
+        if(intWs.status == "Running")
+        {
+            //Check if to kill WS
+            let today = new Date()
+            let diffMs = 432000000 - (today - intWs.matchtime)
+            var diffDays = Math.floor(diffMs / 86400000); // days
+            var diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours
+            var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
+
+            if(diffMs <= 0) {
+                await killWS(client, intWs, msgStatus)
+            }
+        }
 
     }
     return msgStatus;

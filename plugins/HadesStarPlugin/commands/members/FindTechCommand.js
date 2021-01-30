@@ -34,8 +34,8 @@ export class FindTechCommand extends MemberCommand {
             return message.channel.send(embed)
         }
         else {
-            const level     = parseInt(args[args.length-1]);
-            const techName  = isNaN(level) ? args.join('') : args.slice(0, -1).join('');
+            const level = parseInt(args[args.length - 1]);
+            const techName = isNaN(level) ? args.join('') : args.slice(0, -1).join('');
 
             //const techName = args[0];
             const tech = TechTree.find(techName);
@@ -54,7 +54,7 @@ export class FindTechCommand extends MemberCommand {
                 return message.channel.send("You aren't a Member of this Corporation!")
 
             if (!isNaN(level))
-                return this.getFindTechInformation(message, tech,level)
+                return this.getFindTechInformation(message, tech, level)
             else
                 return this.getFindTechInformation(message, tech, null)
         }
@@ -71,30 +71,30 @@ export class FindTechCommand extends MemberCommand {
         const members = Array.from(corp.members)
 
         let memListSorted = await Promise.all(
-            members.map(async t => [t, await Tech.findOne({ _id: Array.from(t.techs)[GetModuleID(tech.name)] }).exec()])
+            //members.map(async t => [t, await Tech.findOne({ _id: Array.from(t.techs)[GetModuleID(tech.name)] }).exec()])
+            members.map(async t => [t, await this.GetModule(t, tech.name)])
         )
+
+        // console.log(memListSorted)
         memListSorted = memListSorted
-        .map(([key,value])=> [value.level,key.name])
-        .filter(([key,value]) => key>0)
-        .filter( function ([key,value]) { if(limit) {return key==limit} else {return true}} )
-        .sort(([keya,valuea], [keyb,valueb]) => keya < keyb ? 1 : -1)
-        .map(([key,value]) => `${value} ${key}`)
-        .join('\n');
+            .filter(([key, value]) => value != null)
+            .map(([key, value]) => [value.level, key.name])
+            .filter(([key, value]) => key > 0)
+            .filter(function ([key, value]) { if (limit) { return key == limit } else { return true } })
+            .sort(([keya, valuea], [keyb, valueb]) => keya < keyb ? 1 : -1)
+            .map(([key, value]) => `${value} ${key}`)
+            .join('\n');
 
         if (memListSorted) embed.addField("*Players*", `${memListSorted}`)
         return message.channel.send(embed)
     }
-}
+    async GetModule(member, techName) {
+        let techFound;
+        let techs = await Tech.find({ _id: Array.from(member.techs) })
 
-function GetModuleID(name) {
-    let value = null;
-    let i = 0;
-    TechTree.technologies.forEach((t) => {
-        if (t.name.toString() == name.toString()) {
-            value = i;
-        }
-        i++;
-    })
-
-    return value;
+        techs.map(t => {
+            if (t.name == techName) techFound = t;
+        })
+        return techFound
+    }
 }

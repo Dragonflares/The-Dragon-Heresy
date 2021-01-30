@@ -36,7 +36,7 @@ export class SlateCommand extends MemberCommand {
 		if (!target)
 			return message.channel.send("You aren't part of any Corporations, so you cannot request this information from anyone.")
 
-		if (dMember.id != dTarget.id && member.Corp.corpId != message.guild.id.toString())
+		if (dMember.id != dTarget.id && target.Corp.corpId != message.guild.id.toString())
 			return message.channel.send("You can't see a Member tech outside of your Corporation!");
 
 		if (!target)

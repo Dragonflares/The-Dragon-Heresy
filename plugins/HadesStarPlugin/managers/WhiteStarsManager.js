@@ -135,7 +135,7 @@ export class WhiteStarsManager extends Manager {
                     ws.matchtime = new Date(ws.matchtime.getTime() - 60000);
                     await ws.save()
                 } else if (messageReaction.emoji.name == '🕑') { //10
-                    ws.matchtime = new Date(ws.matchtime.getTime() - 60000000);
+                    ws.matchtime = new Date(ws.matchtime.getTime() - 600000);
                     await ws.save()
                 }
             

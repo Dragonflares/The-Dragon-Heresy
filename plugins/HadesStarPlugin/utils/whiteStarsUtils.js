@@ -175,6 +175,8 @@ export const whiteStarStatusMessage = async (message, ws) => {
         //Generate Players string
         let playersString = Array.from(ws.members)
             .map(t => {
+                if( t.timezone == "+0")
+                    return `-<@${t.discordId}> (TOD: Not  set up)`
                 let today = new Date()
                 today = new Date(today.getTime() + today.getTimezoneOffset() * 60 * 1000);
                 today = new Date(today.getTime() + t.timezone * 60 * 60 * 1000);

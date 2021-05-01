@@ -19,12 +19,11 @@ export class HugCommand extends GenericCommand {
             return;
         }
 
-        let amountOfReplies = 8;
+        let amountOfReplies = 7;
         var randomnumber = Math.floor(Math.random() * (amountOfReplies)) ;
         let stringsArray = [
         `https://www.thecultureconcept.com/wp-content/uploads/2010/06/Hugging-the-Dragon-may-be-more-Helpful.jpg`,
-        `https://img.17qq.com/images/fhpgksqnhqy.jpeg`,
-        `https://i.redd.it/ewl32evvea751.png`,
+        `https://img.17qq.com/images/fhpgksqnhqy.jpeg`
         `https://i.pinimg.com/originals/40/f4/94/40f494153e9e640dd7ea4ae2e310e034.jpg`,
         `http://dragonridersofberk.yolasite.com/resources/hiccup-toothless-how-to-train-your-dragon-11265475-900-814.jpg`,
         `https://preview.redd.it/dkfb6oce2mc51.png?width=640&crop=smart&auto=webp&s=f5b2daf199019214caefd38ac1456dfecae21496`,

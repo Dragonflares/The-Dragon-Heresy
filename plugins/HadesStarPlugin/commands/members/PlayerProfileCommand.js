@@ -52,12 +52,16 @@ export class PlayerProfileCommand extends MemberCommand {
         let playerrank = CorpMember.rank
         let playercorp = CorpMember.Corp.name
         let playertimezone = CorpMember.timezone
+        if(playertimezone == '+0') 
+            playertimezone = "Timezone not Setup"
+        else
+            playertimezone = `GMT ${playertimezone}`
         let playerrslevel = CorpMember.rslevel
         let playerwhitestaron = CorpMember.wsStatus
 
         ProfileEmbed.addField(`*Corporation*`, `${playercorp}`)
         ProfileEmbed.addField(`*Rank*`, playerrank)
-        ProfileEmbed.addField(`*Time Zone*`, `GMT ${playertimezone}`)
+        ProfileEmbed.addField(`*Time Zone*`, `${playertimezone}`)
         ProfileEmbed.addField(`*Red Star level*`, `${playerrslevel}`)
         ProfileEmbed.addField(`*Avaible for White Stars*`, `${playerwhitestaron}`)
         ProfileEmbed.setFooter("For the techs this player has, use &playertech, for their white star battleship, use &playerbattleship")

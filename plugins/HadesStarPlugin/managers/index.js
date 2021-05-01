@@ -3,3 +3,4 @@ export * from './GuildManager';
 export * from './RedStarRolesMessageManager';
 export * from './WhiteStarsManager';
 export * from './CachingManager';
+export * from './AfkManager';

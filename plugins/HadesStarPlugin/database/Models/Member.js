@@ -27,7 +27,9 @@ const MemberSchema = Schema ({
     online: {type: Boolean,
         default: false},
     lastSeen: {type: Date},
-    lastCroid: {type: Date, default: ""}
+    lastCroid:{type: Date, default: ""},
+    awayTime: {type: Date, default: Date.now()},
+    awayDesc: {type: String , default: "Away"}
 })
 
 export const Member = model("Member", MemberSchema, "Member")

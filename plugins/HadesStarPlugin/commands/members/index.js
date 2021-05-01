@@ -15,3 +15,4 @@ export * from './SetCroidCommand';
 export * from './GetCroidCommand';
 export * from './SlateCommand';
 export * from './GetResearchTimeCommand';
+export * from './AfkCommand';

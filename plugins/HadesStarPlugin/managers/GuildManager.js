@@ -1,5 +1,6 @@
 import { Manager } from '../../../lib';
 import { Member, Corp } from '../database';
+import { MemberDAO, CorpDAO } from '../../../lib/utils/DatabaseObjects'
 
 export class GuildManager extends Manager{
 	constructor(plugin){
@@ -32,12 +33,46 @@ export class GuildManager extends Manager{
 	    channel.send(`Welcome ${member}! May the Light of the Khala guide you.`)
 	}
 
-	guildMemberUpdate = (oldMember, newMember) => {
-	    if(!newMember.nickname)
-	        console.log("New member name " + newMember.user.username)
-	    else
-	        console.log("New member name " + newMember.nickname)
-	    return this.updateRun(newMember)
+	guildMemberUpdate = async (oldMember, newMember) => {
+		//The bot will only mind if the Corp exists in HS
+		let Corp = await CorpDAO.find(newMember.guild.id)
+		if(Corp != null) {
+			if(oldMember.nickname != newMember.nickname){
+				if(!newMember.nickname)
+					console.log("New member name " + newMember.user.username)
+				else
+					console.log("New member name " + newMember.nickname)
+				return this.updateRun(newMember)
+			}
+			Corp = await CorpDAO.populateRanks(Corp)
+			//Checks if it gets a Merc role from the Guild
+			if(!oldMember.roles.cache.has(Corp.rankRoles.Mercenary) && newMember.roles.cache.has(Corp.rankRoles.Mercenary) && !oldMember.roles.cache.has(Corp.rankRoles.Member)){
+				let arrival = await MemberDAO.findOrCreate(newMember)
+				if(!arrival.Corp) await CorpDAO.addToEmptyCorp(arrival)
+			}
+			// Check for the Member role
+			else if(!oldMember.roles.cache.has(Corp.rankRoles.Member) && newMember.roles.cache.has(Corp.rankRoles.Member)){
+				let arrival = await MemberDAO.findOrCreate(newMember)
+				if(!arrival.Corp) await CorpDAO.addToCorporation(arrival, newMember.guild)
+				else {
+					arrival = await MemberDAO.PopulateMember(arrival, "Corp")
+					if(arrival.Corp.corpId === '-1') 
+						await CorpDAO.addToCorporation(arrival, newMember.guild)
+					else if(!oldMember.guild.me.hasPermission("ADMINISTRATOR") || !oldMember.guild.me.hasPermission("MANAGE_GUILD")){
+						oldMember.guild.systemChannel.send(`Excuse me, but ${oldMember} is already part of ${arrival.Corp.name}, I don't have the power to remove his member role, so please, DO SO.`)
+					}
+					else {
+						oldMember.guild.systemChannel.send(`Excuse me, but ${oldMember} is already part of ${arrival.Corp.name}, I've removed his role, so he should probably resign his Corp before.`)
+						newMember.roles.remove(newMember.guild.roles.cache.get(Corp.rankRoles.Member))
+					}
+				}
+			}
+			// Checks if the member was removed
+			else if (oldMember.roles.cache.has(Corp.rankRoles.Member) && !newMember.roles.cache.has(Corp.rankRoles.Member)) {
+				let theMember = await MemberDAO.find(oldMember) 
+				CorpDAO.removeFromCorp(theMember)				
+			}
+		}
 	}
 
 	guildMemberRemove = async (member) => {

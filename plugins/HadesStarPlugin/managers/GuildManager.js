@@ -1,6 +1,5 @@
 import { Manager } from '../../../lib';
 import { Member, Corp } from '../database';
-import { MemberDAO, CorpDAO } from '../../../lib/utils/DatabaseObjects'
 
 export class GuildManager extends Manager{
 	constructor(plugin){
@@ -32,6 +31,7 @@ export class GuildManager extends Manager{
 	    }
 	    channel.send(`Welcome ${member}! May the Light of the Khala guide you.`)
 	}
+
 
 	guildMemberUpdate = async (oldMember, newMember) => {
 		//The bot will only mind if the Corp exists in HS

@@ -27,7 +27,7 @@ export class SetRedStarRolesCommand extends CorpCommand{
             if(!MemberResult)
                 return message.channel.send("You aren't a member of any Corporations.")
             else{
-                await Member.findOne({discordId: author.id}).populate("Corp").then(member => {
+                Member.findOne({discordId: author.id}).populate("Corp").then(member => {
                     if(member.Corp.corpId != message.guild.id.toString())
                         return message.channel.send("You aren't a member of this Corporation.")
                     else{
@@ -75,7 +75,7 @@ async function setRedStarRole(redStarLevel, roleId, message){
             let newRedStarRoles = new RedStarRoles({
                 _id: new Mongoose.Types.ObjectId(),
                 corpId: message.guild.id.toString(),
-                redStarRoles : {default: "help"}
+                redStarRoles : {defaul: "help"}
             })
             newRedStarRoles.redStarRoles.set(`${redStarLevel}`,`${roleId}`)
             newRedStarRoles.save()

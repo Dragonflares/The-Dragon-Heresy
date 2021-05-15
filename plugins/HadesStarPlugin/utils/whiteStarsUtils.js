@@ -249,7 +249,10 @@ export const RefreshStatusMessage = async (client, ws, interval) => {
         }
 
         //Fetch old message
-        msgStatus = await client.channels.cache.get(intWs.statuschannel).messages.fetch(intWs.statusmessage.toString());
+        let statusChannel = await client.channels.cache.get(intWs.statuschannel)
+        if (statusChannel) {
+            msgStatus = await statusChannel.messages.fetch(intWs.statusmessage.toString())
+        }
 
         //Create new message
         const statusEmbed = await whiteStarStatusMessage(msgStatus, intWs); 

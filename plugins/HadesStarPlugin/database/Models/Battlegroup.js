@@ -6,11 +6,9 @@ const BattlegroupSchema = Schema ({
     captain: {
         type: Schema.Types.ObjectId, ref: 'Member'
     },
-    members: [
-    {
+    members: [{
         type: Schema.Types.ObjectId, ref: 'Member'
-    }
-    ],
+    }],
     Battlemap: {
         type: Schema.Types.ObjectId, ref: 'Battlemap'
     },

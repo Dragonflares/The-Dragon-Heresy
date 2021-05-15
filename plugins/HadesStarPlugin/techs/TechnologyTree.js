@@ -70,7 +70,7 @@ class TechnologyTree{
 	 * Loads the technology tree from the TechData json file
 	 */
 	static load(){
-		//logger.debug("Loading Technology Tree...");
+		logger.debug("Loading Technology Tree...");
 		const tree = new TechnologyTree("Root");
 		Object.entries(TechData).forEach(([name, data]) => {
 			const category = data.Category.toLowerCase();

@@ -247,29 +247,27 @@ export const RefreshStatusMessage = async (client, ws, interval) => {
                 clearInterval(interval);
             }
         }
-        if(!intWs.statusChannel || !intWs.statusmessage){}
-        else {
-            //Fetch old message
-            msgStatus = await client.channels.cache.get(intWs.statuschannel).messages.fetch(intWs.statusmessage.toString());
 
-            //Create new message
-            const statusEmbed = await whiteStarStatusMessage(msgStatus, intWs); 
+        //Fetch old message
+        msgStatus = await client.channels.cache.get(intWs.statuschannel).messages.fetch(intWs.statusmessage.toString());
 
-            //Remove Reactions
-            msgStatus.edit(statusEmbed)
+        //Create new message
+        const statusEmbed = await whiteStarStatusMessage(msgStatus, intWs); 
 
-            if(intWs.status == "Running")
-            {
-                //Check if to kill WS
-                let today = new Date()
-                let diffMs = 432000000 - (today - intWs.matchtime)
-                var diffDays = Math.floor(diffMs / 86400000); // days
-                var diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours
-                var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
+        //Remove Reactions
+        msgStatus.edit(statusEmbed)
 
-                if(diffMs <= 0) {
-                    await killWS(client, intWs, msgStatus)
-                }
+        if(intWs.status == "Running")
+        {
+            //Check if to kill WS
+            let today = new Date()
+            let diffMs = 432000000 - (today - intWs.matchtime)
+            var diffDays = Math.floor(diffMs / 86400000); // days
+            var diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours
+            var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
+
+            if(diffMs <= 0) {
+                await killWS(client, intWs, msgStatus)
             }
         }
 
@@ -281,21 +279,20 @@ export const RefreshRecruitMessage = async (client, ws, interval) => {
     let intWs = await WhiteStar.findOne({ wsrole: ws.wsrole }).populate('author').populate('members').exec();
     let msgRecruit;
     if (intWs) {
-        if(!intWs.statusChannel || !intWs.statusmessage){}
-        else {
-        //Fetch old message
-        let statusChannel = await client.channels.cache.get(intWs.statuschannel)
-        if (statusChannel) {
-            msgStatus = await statusChannel.messages.fetch(intWs.statusmessage.toString())
-        }
-        
-        //Create new message
-        const recruitEmbed = await whiteStarRecruitMessage(intWs);
 
-        //Remove Reactions
-        await msgRecruit.edit(recruitEmbed)
-        }
+    //Fetch old message
+    let statusChannel = await client.channels.cache.get(intWs.statuschannel)
+    if (statusChannel) {
+        msgStatus = await statusChannel.messages.fetch(intWs.statusmessage.toString())
     }
+    
+    //Create new message
+    const recruitEmbed = await whiteStarRecruitMessage(intWs);
+
+    //Remove Reactions
+    await msgRecruit.edit(recruitEmbed)
+    }
+    
     return msgRecruit;
 }
 

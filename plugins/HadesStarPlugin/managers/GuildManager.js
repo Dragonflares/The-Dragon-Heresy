@@ -55,7 +55,7 @@ export class GuildManager extends Manager{
 				let arrival = await MemberDAO.findOrCreate(newMember)
 				if(!arrival.Corp) await CorpDAO.addToCorporation(arrival, newMember.guild)
 				else {
-					postArrival = await MemberDAO.PopulateMember(arrival, "Corp")
+					let postArrival = await MemberDAO.PopulateMember(arrival, "Corp")
 					if(postArrival.Corp.corpId === '-1') 
 						await CorpDAO.addToCorporation(postArrival, newMember.guild)
 					else if(!oldMember.guild.me.hasPermission("ADMINISTRATOR") || !oldMember.guild.me.hasPermission("MANAGE_GUILD")){

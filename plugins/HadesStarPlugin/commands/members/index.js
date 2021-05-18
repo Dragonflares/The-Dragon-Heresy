@@ -7,8 +7,6 @@ export * from './SetRedStarCommand';
 export * from './SetWhiteStarCommand';
 export * from './SetTimezoneCommand';
 export * from './TechDataCommand';
-export * from './DemoteCommand';
-export * from './PromoteCommand';
 export * from './ResignCommand';
 export * from './RecruitRedStarCommand';
 export * from './SetCroidCommand';

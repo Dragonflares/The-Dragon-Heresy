@@ -1,5 +1,6 @@
 import { MemberCommand } from './MemberCommand';
 import { Member } from '../../database';
+import { MemberDAO, CorpDAO } from '../../../../lib/utils/DatabaseObjects'
 
 export class SetTimezoneCommand extends MemberCommand{
     constructor(plugin){
@@ -32,8 +33,17 @@ export class SetTimezoneCommand extends MemberCommand{
         else{
             if(member.Corp.corpId === message.guild.id.toString()) 
                 return this.modifyTimeZone(target, timezone, message)    
-            else 
-                return message.channel.send("You aren't on your Corporation's server!")
+            else {
+                let Corp = await CorpDAO.find(message.guild.id.toString())
+                let rankedCorp = await CorpDAO.populateRanks(Corp)
+                if(rankedCorp.rankRoles.Mercenary) {
+                    if (target.roles.cache.has(Corp.rankRoles.Mercenary))
+                        return this.modifyTimeZone(target, timezone, message) 
+                    else
+                        return message.channel.send("You aren't on your Corporation's server!")
+                }
+                else return message.channel.send("You aren't on your Corporation's server!")
+            }
         }
     }
 

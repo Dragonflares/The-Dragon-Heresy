@@ -36,13 +36,15 @@ export class SetTimezoneCommand extends MemberCommand{
             else {
                 let Corp = await CorpDAO.find(message.guild.id.toString())
                 let rankedCorp = await CorpDAO.populateRanks(Corp)
-                if(rankedCorp.rankRoles.Mercenary) {
+                if(!rankedCorp.rankRoles.Mercenary) {
+                    return message.channel.send("You aren't on your Corporation's server!")
+                }
+                else {
                     if (target.roles.cache.has(Corp.rankRoles.Mercenary))
                         return this.modifyTimeZone(target, timezone, message) 
                     else
                         return message.channel.send("You aren't on your Corporation's server!")
                 }
-                else return message.channel.send("You aren't on your Corporation's server!")
             }
         }
     }

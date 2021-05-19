@@ -34,7 +34,6 @@ export class SetTimezoneCommand extends MemberCommand{
                 return this.modifyTimeZone(target, timezone, message)    
             }
         }
-    }
 
     modifyTimeZone = async (target, NewTimezone, message) => {
         Member.findOneAndUpdate({discordId: target.id.toString()}, {timezone: NewTimezone})

@@ -71,7 +71,7 @@ export class AfkCommand extends MemberCommand {
                 let awayTime = new Date();
                 if (args.length == 0) {
                     if (awayTime.getTime() < member.awayTime.getTime()) {
-                        let time = member.awayTime.getTime() - awayTime.getTime() 
+                        let time = member.awayTime.getTime() - awayTime.getTime()
                         var diffDays = Math.floor(time / 86400000); // days
                         var diffHrs = Math.floor((time % 86400000) / 3600000); // hours
                         var diffMins = Math.round(((time % 86400000) % 3600000) / 60000); // minutes
@@ -97,20 +97,22 @@ export class AfkCommand extends MemberCommand {
 }
 function calculateInMiliSeconds(timeStamp) {
     var timeInMiliSeconds = 0;
-    if (timeStamp.match(/[0-60]*d?[0-50]*h?[0-60]*m?[0-60]*s?/g).length > 0 && isNaN(timeStamp)) {
-        if(!timeStamp.match(/([0-60]+)[d|h|m|s]/g)) return "Nope"
-        timeStamp.match(/([0-60]+)[d|h|m|s]/g).forEach((match) => {
+    if (timeStamp.match(/(\d+)?[d|h|m|s]/g)) {
+        timeStamp.match(/(\d+)?[d|h|m|s]/g).forEach((match) => {
             let value = match.slice(0, -1)
-            if (match.indexOf("d") > -1) {
-                timeInMiliSeconds += value * 60 * 60 * 24;
-            } else if (match.indexOf("h") > -1) {
-                timeInMiliSeconds += value * 60 * 60;
-            } else if (match.indexOf("m") > -1) {
-                timeInMiliSeconds += value * 60;
-            } else if (match.indexOf("s") > -1) {
-                timeInMiliSeconds += value * 1;
+            if (!Number.isInteger(value)) {
+                if (match.indexOf("d") > -1) {
+                    timeInMiliSeconds += value * 60 * 60 * 24;
+                } else if (match.indexOf("h") > -1) {
+                    timeInMiliSeconds += value * 60 * 60;
+                } else if (match.indexOf("m") > -1) {
+                    timeInMiliSeconds += value * 60;
+                } else if (match.indexOf("s") > -1) {
+                    timeInMiliSeconds += value * 1;
+                }
             }
         });
+        if (timeInMiliSeconds == 0) return "Nope"
         return timeInMiliSeconds * 1000;
     } else {
         return "Nope"

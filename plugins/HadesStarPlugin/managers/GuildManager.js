@@ -70,7 +70,7 @@ export class GuildManager extends Manager{
 			// Checks if the member was removed
 			else if (oldMember.roles.cache.has(Corp.rankRoles.Member) && !newMember.roles.cache.has(Corp.rankRoles.Member)) {
 				let theMember = await MemberDAO.find(oldMember) 
-				CorpDAO.removeFromCorp(theMember)				
+				CorpDAO.removeFromCorp(theMember, Corp)				
 			}
 		}
 	}

@@ -55,6 +55,7 @@ export class PlayerProfileCommand extends MemberCommand {
         if(playertimezone == '+0') 
             playertimezone = "Timezone not Setup"
         else
+            if(playertimezone > 0) playertimezone = `+${playertimezone}`
             playertimezone = `GMT ${playertimezone}`
         let playerrslevel = CorpMember.rslevel
         let playerwhitestaron = CorpMember.wsStatus

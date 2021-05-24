@@ -7054,7 +7054,7 @@
         "Image": "https://i.imgur.com/YjBzucr.png",
 		"Category": "Economy"
 },
-    "Remote Bomb": {
+    "RemoteBomb": {
         "Level": [
             "1",
             "2",
@@ -7209,7 +7209,7 @@
             "64,000"
         ],
         "Description": "Leaves a stationary Bomb at the ship's current location. The bomb will start triggering once an enemy ship enters the blast range. All enemy ships within the blast range will take area damage after the trigger period is over. The bomb can be targeted by enemy ships using regular targeting rules. If neutralized before the trigger period expires, it will apply less area damage across a smaller range.",
-        "Image": "https://imgur.com/a/tyfg3fy",
+        "Image": "https://i.imgur.com/tyfg3fy.png",
         "Category": "Support"
     }
 }

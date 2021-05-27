@@ -281,9 +281,9 @@ export const RefreshRecruitMessage = async (client, ws, interval) => {
     if (intWs) {
 
     //Fetch old message
-    let statusChannel = await client.channels.cache.get(intWs.statuschannel)
-    if (statusChannel) {
-        msgStatus = await statusChannel.messages.fetch(intWs.statusmessage.toString())
+    let recruitChannel = await client.channels.cache.get(intWs.recruitchannel)
+    if (recruitChannel) {
+        msgRecruit = await recruitChannel.messages.fetch(intWs.recruitmessage.toString())
     }
     
     //Create new message

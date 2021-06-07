@@ -1,5 +1,5 @@
 import { Manager } from '../../../lib';
-import { randomInt } from './randomInt';
+import { randomInt } from './../../HadesStarPlugin/utils/randomInt';
 
 const replies = [
     "I'm terribly sorry, but I can't really give you a proper response as of now.",

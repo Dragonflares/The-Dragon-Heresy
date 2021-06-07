@@ -16,7 +16,8 @@ export class RedStarRolesMessageManager extends Manager {
     reactListener = async (messageReaction, user) => {
         if (user.bot) return;
         const corp = await Corp.findOne({ corpId: messageReaction.message.guild.id.toString() }).populate('redStarMessage').exec()
-        if (messageReaction.message.id == corp.redStarMessage.rolesMessage) {
+        if(!corp.redStarMessage){}
+        else if (messageReaction.message.id == corp.redStarMessage.rolesMessage) {
             let message = messageReaction.message;
             messageReaction.users.remove(user); // Remove it
 

@@ -20,14 +20,15 @@ export class SetTimezoneCommand extends MemberCommand{
         }
         else if(message.author.id === client.creator)
             target = user
-        else return message.channel.send("You cannot set another Member's timezone!")
+        else return message.channel.send("You cannot set another Member's time zone!")
 
         const ActualTimezone = args[0]
+        if(!ActualTimezone) return message.channel.send("You must enter a valid Time Zone")
         if(!(ActualTimezone.startsWith("+") || ActualTimezone.startsWith("-"))) return message.channel.send("Invalid time zone.")
 
         let timezone = parseFloat(args[0]);
         if(isNaN(timezone)) return message.channel.send("Invalid time zone.")
-        if(timezone >= 14 || timezone <=-12) return message.channel.send("Timezone not in range.")
+        if(timezone >= 14 || timezone <=-12) return message.channel.send("Time zone not in range.")
         let member = await Member.findOne({discordId: target.id.toString()}).populate('Corp').exec();
         if(!member)
             return message.channel.send("You aren't part of any Corporation. Join a Corporation first.")

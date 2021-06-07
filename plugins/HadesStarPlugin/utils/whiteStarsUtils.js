@@ -280,17 +280,16 @@ export const RefreshRecruitMessage = async (client, ws, interval) => {
     let msgRecruit;
     if (intWs) {
 
-    //Fetch old message
-    let recruitChannel = await client.channels.cache.get(intWs.recruitchannel)
-    if (recruitChannel) {
-        msgRecruit = await recruitChannel.messages.fetch(intWs.recruitmessage.toString())
-    }
-    
-    //Create new message
-    const recruitEmbed = await whiteStarRecruitMessage(intWs);
+        //Fetch old message
+        let recruitChannel = await client.channels.cache.get(intWs.retruitchannel)
+        if (recruitChannel) {
+            msgRecruit = await recruitChannel.messages.fetch(intWs.recruitmessage.toString())
+        }
+        //Create new message
+        const recruitEmbed = await whiteStarRecruitMessage(intWs);
 
-    //Remove Reactions
-    await msgRecruit.edit(recruitEmbed)
+        //Remove Reactions
+        await msgRecruit.edit(recruitEmbed)
     }
     
     return msgRecruit;

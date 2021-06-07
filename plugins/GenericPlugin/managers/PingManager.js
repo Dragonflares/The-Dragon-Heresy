@@ -1,4 +1,15 @@
 import { Manager } from '../../../lib';
+import { randomInt } from './randomInt';
+
+const replies = [
+    "I'm terribly sorry, but I can't really give you a proper response as of now.",
+    "Could you please try and avoid tagging me?",
+    "Nice, another message ping I need to get rid of.",
+    "If you got any questions, please ask my devs, I can't really help you.",
+    "Come on, do it one more time.",
+    "Keep poking and I'll have some dinner, now take a guess on who that might be.",
+    "'Be a discord bot' they said, 'they won't bother you too much' they said."
+];
 
 export class PingManager extends Manager{
     constructor(plugin){
@@ -16,7 +27,7 @@ export class PingManager extends Manager{
         if(message.author.bot) return;
         if(message.mentions.has( this.client.user))
 		{	
-			message.channel.send("Please, refrain from pinging me. I am busy!")
+			message.channel.send(replies[randomInt(0, replies.length - 1)])
 	
         }
         //Me and Boom

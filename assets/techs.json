@@ -402,34 +402,7 @@
 			"0",
 			"0"
 		],
-		"WS Score" : [
-			"0",
-			"0",
-			"0",
-			"0",
-			"0",
-			"0",
-			"0",
-			"0",
-			"0",
-			"0",
-			"0",
-			"0"
-		],
-		"BS Score" : [
-			"0",
-			"0",
-			"0",
-			"0",
-			"0",
-			"0",
-			"0",
-			"0",
-			"0",
-			"0",
-			"0",
-			"0"
-		],		"Description": "While active, increases payout on shipment delivery.\nBlueprints are obtained by researching level 3+ Blue Crystals.\nCooldown: 23h\n",
+		"Description": "While active, increases payout on shipment delivery.\nBlueprints are obtained by researching level 3+ Blue Crystals.\nCooldown: 23h\n",
         "Image": "https://i.imgur.com/v13skEx.png",
         "Category": "Economy"
 },
@@ -691,6 +664,34 @@
             "27,500",
             "30,000"
         ],
+		"WS Score" : [
+			"0",
+			"0",
+			"0",
+			"0",
+			"0",
+			"0",
+			"0",
+			"0",
+			"0",
+			"0",
+			"0",
+			"0"
+		],
+		"BS Score" : [
+			"0",
+			"0",
+			"0",
+			"0",
+			"0",
+			"0",
+			"0",
+			"0",
+			"0",
+			"0",
+			"0",
+			"0"
+		],
         "Description": "Counts shipments delivered during the activation period. After a minimum threshold is met, every new credits shipment delivered by the owner ship while the module is active will yield a bonus reward.\nTrade Burst is similar to Trade Boost, but it requires the delivering of a set amount of shipments before it activates. It lasts for twice as long and has the same cool-down, while providing larger rewards after the threshold, which makes this module a good competitor to Trade Boost.\nBlueprints are obtained by researching level 4+ Blue Crystals.\nCooldown: 23h\n"
 ,
         "Image": "https://i.imgur.com/mE7337W.png",

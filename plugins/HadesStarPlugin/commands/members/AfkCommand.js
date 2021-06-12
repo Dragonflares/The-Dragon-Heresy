@@ -57,6 +57,11 @@ export class AfkCommand extends MemberCommand {
                     //Save
                     let timeatm = new Date()
                     let awayTime = new Date(timeatm.getTime() + time);
+                    if (awayTime.toString() == "Invalid Date") {
+                        return message.channel.send(`Too long or invalid time.`)
+                    }else if (diffDays > 30) {
+                        return message.channel.send(`Too long away time, contact an officer.`)
+                    }
                     member.awayTime = awayTime;
                     member.awayDesc = reason;
                     await member.save();

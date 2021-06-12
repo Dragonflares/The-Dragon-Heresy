@@ -1,5 +1,7 @@
 import { randomInt } from './randomInt';
 import { findBestMatch } from 'string-similarity';
+import { GuildAuditLogsEntry } from 'discord.js';
+const { MessageButton, MessageActionRow } = require("discord-buttons")
 
 const replies = [
     "Allright, just retry without dyslexia.",
@@ -11,23 +13,42 @@ const replies = [
 
 export const confirmTech = async (message, query, tech) => {
     if (tech.name.toLowerCase() != query.toLowerCase()) {
-        message.channel.send(`Did you mean *${tech.name}* ?`);
+
+        let yesButton = new MessageButton()
+            .setStyle('green')
+            .setLabel('Yes')
+            .setID('yes')
+
+        let noButton = new MessageButton()
+            .setStyle('red')
+            .setLabel('No')
+            .setID('no')
+        let buttonRow = new MessageActionRow()
+            .addComponent(yesButton)
+            .addComponent(noButton)
+        let textMsg = `Did you mean *${tech.name}* ?`
+        let messageReaction = await message.channel.send(textMsg, { component: buttonRow });
+
         try {
-            const response = await message.channel.awaitMessages(
-                m => m.author.id === message.author.id, {
+            const response = await messageReaction.awaitButtons(
+                m => m.clicker.user.id === message.author.id, {
                 max: 1,
                 time: 10000,
                 errors: ['time']
             });
-
-            const possitiveList = ["y", "yes", "yeah", "yea", "yup", "yep", "ye", "sure", "absolutly", "of course", "right", "true"]
-            const rate = await findBestMatch(response.first().content.toLowerCase(), Array.from(possitiveList));
-            if (rate.bestMatch.rating < 0.5 && !possitiveList.some(v => response.first().content.toLowerCase().includes(v))) {
+            let m = await response.first()
+            if (m.id == "yes") {
+                messageReaction.edit(textMsg, { component: null })
+                m.defer()
+                return true
+            }
+            else if (m.id == "no") {
                 throw new Error();
             }
+            return true;
         } catch (err) {
+            messageReaction.edit(textMsg, { component: null })
             message.channel.send(replies[randomInt(0, replies.length - 1)]);
-
             return false;
         }
     }

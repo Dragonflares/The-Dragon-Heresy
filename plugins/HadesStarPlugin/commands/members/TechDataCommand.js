@@ -4,6 +4,8 @@ import { confirmTech } from '../../utils';
 import { Member } from '../../database';
 import { MessageEmbed } from 'discord.js';
 
+const { MessageButton, MessageActionRow } = require("discord-buttons")
+
 export class TechDataCommand extends MemberCommand {
     constructor(plugin) {
         super(plugin, {
@@ -47,51 +49,48 @@ export class TechDataCommand extends MemberCommand {
             if (1 > level || tech.levels < level)
                 return message.channel.send(`The level you requested is invalid for that tech!`)
 
-           /* embed.setTitle(`**${tech.name}**`);
-            embed.addField('*Level*', level);
-            embed.addField('*Category*', tech.category);
-            embed.addField('*Description*', tech.description);
-            embed.setThumbnail(tech.image);
 
-            tech.properties.forEach((levels, propery) => {
-                embed.addField(`*${propery}*`, `${levels[level - 1]}`)
-            });
-            console.log(level)*/
+            let msgEmbed = await this.GetTechMessage(tech, level)
 
-            //return message.channel.send(embed)
 
-            let msgEmbed = await this.GetTechMessage(tech,level)
 
-            const messageReaction = await message.channel.send(msgEmbed);
-            if (level > 1) await messageReaction.react('◀️') //Send Initial Reaction
-            if (level < tech.levels) await messageReaction.react('▶️') //Send Initial Reaction
 
-            let reactionFilter = (reaction, user) => !user.bot
-            let collector = messageReaction.createReactionCollector(reactionFilter, { dispose: true ,time: 2 * 60 *1000 });
-            collector.on('collect', async (reaction, user) => {
-                if (reaction.emoji.name != '◀️' && reaction.emoji.name != '▶️') {
-                reaction.remove() // Remove the Reaction
+            let previousButton = new MessageButton()
+                .setStyle('blurple')
+                .setLabel('Previous')
+                .setID('prev')
+
+            let nextButton = new MessageButton()
+                .setStyle('blurple')
+                .setLabel('Next')
+                .setID('next')
+            let buttonRow = new MessageActionRow()
+
+            if (level > 1) buttonRow.addComponent(previousButton)
+            if (level < tech.levels) buttonRow.addComponent(nextButton)
+            let messageReaction
+            if (buttonRow.components.length > 0)
+                messageReaction = await message.channel.send({ component: buttonRow, embed: msgEmbed });
+            else
+                messageReaction = await message.channel.send({ embed: msgEmbed });
+            const filter = (button) => button.clicker.user.bot == false;
+            const collector = messageReaction.createButtonCollector(filter, { time: 2 * 60 * 1000, dispose: true });
+            collector.on('collect', async b => {
+                if (b.id == "prev") level--;
+                if (b.id == "next") level++;
+                if (b.id == "prev" || b.id == "next") {
+                    let msgEmbed = await this.GetTechMessage(tech, level)
+                    let buttonRow = new MessageActionRow()
+                    if (level > 1) buttonRow.addComponent(previousButton)
+                    if (level < tech.levels) buttonRow.addComponent(nextButton)
+                    messageReaction.edit({ component: buttonRow, embed: msgEmbed })
                 }
-                if (reaction.emoji.name == '◀️') {
-                    level--;
-                    let msgEmbed = await this.GetTechMessage(tech,level)
-                    messageReaction.edit(msgEmbed)
-                    messageReaction.reactions.removeAll()
-                    if (level > 1) await messageReaction.react('◀️') //Send Initial Reaction
-                    if (level < tech.levels) await messageReaction.react('▶️') //Send Initial Reaction
-        
-                } else if (reaction.emoji.name == '▶️') {
-                    level++;
-                    let msgEmbed = await this.GetTechMessage(tech,level)
-                    messageReaction.edit(msgEmbed)
-                    messageReaction.reactions.removeAll()
-                    if (level > 1) await messageReaction.react('◀️') //Send Initial Reaction
-                    if (level < tech.levels) await messageReaction.react('▶️') //Send Initial Reaction
-        
-                }
+                b.defer()
             });
-            collector.on('end', collected => {
-                messageReaction.reactions.removeAll()
+
+            collector.on('end', async collected => {
+                let msgEmbed = await this.GetTechMessage(tech, level)
+                messageReaction.edit({ component: null ,embed: msgEmbed});
             });
         }
     }
@@ -103,7 +102,6 @@ export class TechDataCommand extends MemberCommand {
         embed.addField('*Category*', tech.category);
         embed.addField('*Description*', tech.description);
         embed.setThumbnail(tech.image);
-
         tech.properties.forEach((levels, propery) => {
             embed.addField(`*${propery}*`, `${levels[level - 1]}`)
         });

@@ -14,3 +14,4 @@ export * from './GetCroidCommand';
 export * from './SlateCommand';
 export * from './GetResearchTimeCommand';
 export * from './AfkCommand';
+export * from './WSScoreCommand';

@@ -1,6 +1,9 @@
 import { MemberCommand } from './MemberCommand';
 import { Command } from '../../../../lib';
 import { RedStarRoles } from '../../database'
+import { id } from 'common-tags';
+
+const { MessageButton, MessageActionRow } = require("discord-buttons")
 const Discord = require('discord.js');
 
 export class RecruitRedStarCommand extends MemberCommand {
@@ -33,17 +36,12 @@ export class RecruitRedStarCommand extends MemberCommand {
     }
   }
 
-  async failed(message, rsLevel) {
+  async failed(message, registeredPlayers, rsLevel) {
+
     //Add Reactions to a dictionary
+    //If no people write None
     let testString = ""
-    message.reactions.cache.forEach(reaction =>
-      reaction.users.cache.forEach(user => {
-        if (!user.bot) {
-          if (reaction.emoji.name == "✅" || reaction.emoji.name == "❎") {
-            testString += `${user} ${reaction.emoji.name}`
-          }
-        }
-      }))
+    registeredPlayers.forEach((value, key) => testString += ` ${key} ${value} \n`)
     if (testString == "") testString = "None";
 
     //If no people write None
@@ -52,24 +50,14 @@ export class RecruitRedStarCommand extends MemberCommand {
     newEmbed.fields[1].value = `${testString}` //"Members"
     newEmbed.setColor("RED")
     newEmbed.setFooter("Closed")
-    message.edit(newEmbed)
+    message.edit({ component: null, embed: newEmbed });
+
   }
 
-  async updateEmbed(message, rsLevel) {
+  async updateEmbed(message, rsLevel, registeredPlayers, button) {
     //Variables
-    const reacted = new Map();
-
-    //Add Reactions to a dictionary
-    message.reactions.cache.forEach(reaction =>
-      reaction.users.cache.forEach(user => {
-        if (!user.bot) {
-          if (reaction.emoji.name == "✅" || reaction.emoji.name == "❎") {
-            reacted.set(user, reaction.emoji.name);
-          }
-        }
-      }
-      ))
-
+    const reacted = registeredPlayers
+    let done = false
     //If no people write None
     let testString = ""
     reacted.forEach((value, key) => testString += ` ${key} ${value} \n`)
@@ -84,12 +72,16 @@ export class RecruitRedStarCommand extends MemberCommand {
       let testString = ""
       reacted.forEach((value, key) => testString += ` ${key} ${value} ,`)
       testString += `Full Team for RS${rsLevel}!`
-      message.reactions.removeAll()
       message.channel.send(testString);
+      done = true
     } else {
       newEmbed.setColor("ORANGE");
     }
-    message.edit(newEmbed) // Send Edit
+    if(!done)
+      message.edit("-",{embed: newEmbed });
+    else
+      message.edit("-",{embed: newEmbed,component:null });
+
     var link = "http://discordapp.com/channels/" + message.guild.id + "/" + message.channel.id + "/" + message.id;
     let sent = await message.channel.send(`There is currently a RS${rsLevel} going with ${reacted.size}/4!: ${link}`)
     return sent;
@@ -105,9 +97,10 @@ export class RecruitRedStarCommand extends MemberCommand {
     }
     let reactionFilter = (reaction, user) => !user.bot
     var done = false
-    msgObject.channel.send(`<@&${role}>`);
+    var authorName = msgObject.guild.member(msgObject.author).nickname
+    if (!authorName) authorName = msgObject.author.username
     let pollEmbed = new Discord.MessageEmbed()
-      .setTitle(`RS ${rsLevel} Recruitment invitation by ${msgObject.guild.member(msgObject.author).nickname}:`)
+      .setTitle(`RS ${rsLevel} Recruitment invitation by ${authorName}:`)
       .setThumbnail("https://i.imgur.com/hedXFRd.png")
       .setDescription(`Do you want to be part of this Red Star? <@&${role}> \n React below if you have croid or not`)
       .addField("Current People", "0/4")
@@ -115,52 +108,71 @@ export class RecruitRedStarCommand extends MemberCommand {
       .setColor("ORANGE")
       .setFooter(`This invitation will be on for ${timeout / 60000} minutes`)
 
-    const messageReaction = await msgObject.channel.send(pollEmbed);
-    await messageReaction.react('✅') //Send Initial Reaction
-    await messageReaction.react('❎') //Send Initial Reaction
-    await messageReaction.react('🚮') //Send Initial Reaction
+    let gotCroidButton = new MessageButton()
+      .setStyle('green')
+      .setLabel('Croid')
+      .setID('has_croid')
 
-    let collector = messageReaction.createReactionCollector(reactionFilter, { time: timeout, dispose: true });
+    let noCroidButton = new MessageButton()
+      .setStyle('red')
+      .setLabel('No Croid')
+      .setID('no_croid')
+
+    let clearButton = new MessageButton()
+      .setStyle('grey')
+      .setLabel('Out')
+      .setID('clear')
+
+    let deleteButton = new MessageButton()
+      .setStyle('blurple')
+      .setLabel('Delete')
+      .setID('delete')
+      .setEmoji('🚮')
+
+    let buttonRow = new MessageActionRow()
+      .addComponent(gotCroidButton)
+      .addComponent(noCroidButton)
+      .addComponent(clearButton)
+      .addComponent(deleteButton)
+    msgObject.channel.send(`<@&${role}>`)
+    const messageReaction = await msgObject.channel.send({ component: buttonRow, embed: pollEmbed });
+    const filter = (button) => button.clicker.user.bot == false;
+    const collector = messageReaction.createButtonCollector(filter, { time: timeout, dispose: true }); //collector for 5 seconds
+
     let oldMessage
-    collector.on('collect', async (reaction, user) => {
-      if (done == true) reaction.remove();
-      else
-        if (reaction.emoji.name == "🚮") { //When Trash
-          if (user.id == msgObject.author.id) {
-            done = true
-            messageReaction.reactions.removeAll()
-            this.failed(messageReaction, rsLevel);
-          }
+    let registeredPlayers = new Map() // User + Croid or not
+
+    collector.on('collect', async b => {
+
+      if (b.id == "delete") { //When Trash
+        if (b.clicker.user.id == msgObject.author.id) {
+          done = true
+          this.failed(messageReaction, registeredPlayers, rsLevel);
+          await b.reply.send('Invitation Deleted', true);
         } else {
-          if (reaction.emoji.name != '✅' && reaction.emoji.name != '❎') { // If its not V or X
-            reaction.remove() // Remove the Reaction
-          } else {
-            var reacted = {}
-            messageReaction.reactions.cache.forEach(reaction =>
-              reaction.users.cache.forEach(user =>
-                (user in reacted) ? reacted[user]++ : reacted[user] = 0
-              )) // Get Every Reaction
-
-            if (reacted[user] > 0) { // If User has already a reacion
-              reaction.users.remove(user); // Remove it
-            } else {
-              if (oldMessage) oldMessage.delete({ timeout: 1 });
-              oldMessage = await this.updateEmbed(messageReaction, rsLevel) //Update the Embeed to show the new reaction
-            }
-          }
+          await b.reply.send('You are not the owner of this invitation', true);
         }
-    });
-
-    collector.on('remove', async (reaction, reactionCollector) => { // When a reaction is removed
-      if (done == false) {
+      } else if (b.id == "has_croid" || b.id == "no_croid") {
+        b.defer()
+        if (b.id == "has_croid")
+          registeredPlayers.set(b.clicker.user, '✅')
+        else
+          registeredPlayers.set(b.clicker.user, '❎')
         if (oldMessage) oldMessage.delete({ timeout: 1 });
-        oldMessage = await this.updateEmbed(messageReaction, rsLevel)
+        oldMessage = await this.updateEmbed(messageReaction, rsLevel, registeredPlayers, b) //Update the Embeed to show the new reaction   
+      } else if (b.id == "clear") {
+        if (registeredPlayers.has(b.clicker.user)) {
+          registeredPlayers.delete(b.clicker.user)
+          if (oldMessage) oldMessage.delete({ timeout: 1 });
+          oldMessage = await this.updateEmbed(messageReaction, rsLevel, registeredPlayers, b) //Update the Embeed to show the new reaction   
+        }
+     
       }
+
     });
 
-    collector.on('end', (reaction, reactionCollector) => { // When timeout done
-      messageReaction.reactions.removeAll()
-      this.failed(messageReaction, rsLevel);
+    collector.on('end', collected => {
+      this.failed(messageReaction, registeredPlayers, rsLevel);
     });
   }
 }

@@ -212,12 +212,12 @@ export const killWS = async (client, ws, message) => {
 
     if (ws.retruitchannel) {
         let msg = await client.channels.cache.get(ws.retruitchannel).messages.fetch(ws.recruitmessage.toString());
-        msg.edit(await whiteStarCancelMessage(ws))
+        msg.edit("-",{embed:await whiteStarCancelMessage(ws)})
         msg.reactions.removeAll()
     }
     if (ws.statuschannel) {
         let statusmsg = await client.channels.cache.get(ws.statuschannel).messages.fetch(ws.statusmessage.toString());
-        statusmsg.edit(await whiteStarCancelMessage(ws))
+        statusmsg.edit("-",{embed:await whiteStarCancelMessage(ws)})
         statusmsg.reactions.removeAll()
     }
     ws.members.forEach(async t => {
@@ -249,28 +249,29 @@ export const RefreshStatusMessage = async (client, ws, interval) => {
         }
 
         //Fetch old message
-        msgStatus = await client.channels.cache.get(intWs.statuschannel).messages.fetch(intWs.statusmessage.toString());
+        if(!intWs.statuschannel || !intWs.statusmessage){}
+        else {
+            msgStatus = await client.channels.cache.get(intWs.statuschannel).messages.fetch(intWs.statusmessage.toString());
 
-        //Create new message
-        const statusEmbed = await whiteStarStatusMessage(msgStatus, intWs); 
+            //Create new message
+            const statusEmbed = await whiteStarStatusMessage(msgStatus, intWs); 
+            //Remove Reactions
+            msgStatus.edit("-",{embed:statusEmbed})
 
-        //Remove Reactions
-        msgStatus.edit(statusEmbed)
+            if(intWs.status == "Running")
+            {
+                //Check if to kill WS
+                let today = new Date()
+                let diffMs = 432000000 - (today - intWs.matchtime)
+                var diffDays = Math.floor(diffMs / 86400000); // days
+                var diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours
+                var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
 
-        if(intWs.status == "Running")
-        {
-            //Check if to kill WS
-            let today = new Date()
-            let diffMs = 432000000 - (today - intWs.matchtime)
-            var diffDays = Math.floor(diffMs / 86400000); // days
-            var diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours
-            var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
-
-            if(diffMs <= 0) {
-                await killWS(client, intWs, msgStatus)
+                if(diffMs <= 0) {
+                    await killWS(client, intWs, msgStatus)
+                }
             }
         }
-
     }
     return msgStatus;
 }
@@ -289,7 +290,7 @@ export const RefreshRecruitMessage = async (client, ws, interval) => {
         const recruitEmbed = await whiteStarRecruitMessage(intWs);
 
         //Remove Reactions
-        await msgRecruit.edit(recruitEmbed)
+        await msgRecruit.edit("-",{embed: recruitEmbed})
     }
     
     return msgRecruit;

@@ -2,11 +2,12 @@ import { randomInt } from './randomInt';
 import { findBestMatch } from 'string-similarity';
 
 const replies = [
-    "Allright, just retry without dyslexia.",
+    "Alright, just retry without dyslexia.",
     "Jesus.. try again.",
-    "Seriously ? Do it again.",
+    "Seriously? Do it again.",
     "lol",
-    "> https://learnenglish.britishcouncil.org/"
+    "Just a little bit more faith in yourself.",
+    "I believe you need this \n > https://learnenglish.britishcouncil.org/"
 ];
 
 export const confirmResult = async (message, query, result) => {
@@ -19,7 +20,7 @@ export const confirmResult = async (message, query, result) => {
                 time: 10000,
                 errors: ['time']
             });
-            const possitiveList = ["y", "yes", "yeah", "yea", "yup", "yep", "ye", "sure", "absolutly", "of course", "right", "true"]
+            const possitiveList = ["y", "yes", "yeah", "yea", "yup", "yep", "ye", "sure", "absolutely", "of course", "right", "true"]
             const rate = findBestMatch(response.first().content.toLowerCase(), Array.from(possitiveList));
             if (rate.bestMatch.rating < 0.5 && !possitiveList.some(v => response.first().content.toLowerCase().includes(v))) {
                 throw new Error();

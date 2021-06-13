@@ -177,7 +177,7 @@ export class WhiteStarsManager extends Manager {
                     WsUtils.whiteStarStatusReactions.get(ws.status).forEach(async react => msgStatus.react(react))
 
                     //Edit old message
-                    msgStatus.edit(statusEmbed)
+                    msgStatus.edit("-", {embed:statusEmbed})
                 }
             }
         } else if (WsUtils.whiteStarPrefEmojiGroup.has(messageReaction.emoji.name)) { //If Valid Emoji
@@ -208,7 +208,7 @@ export class WhiteStarsManager extends Manager {
         const rolesEmbed = await WsUtils.whiteStarRecruitMessage(ws);
 
         //Edit old message
-        messageReaction.message.edit(rolesEmbed)
+        messageReaction.message.edit("-", {embed: rolesEmbed})
     }
 
     disable() {

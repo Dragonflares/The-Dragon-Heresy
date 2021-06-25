@@ -1,6 +1,6 @@
 import { MemberCommand } from './MemberCommand';
 import { TechTree } from '../../techs';
-import { confirmTech } from '../../utils';
+import { confirmResultButtons } from '../../utils';
 import { Corp, Member, Tech } from '../../database';
 import { MessageEmbed } from 'discord.js';
 
@@ -38,10 +38,19 @@ export class FindTechCommand extends MemberCommand {
             const techName = isNaN(level) ? args.join('') : args.slice(0, -1).join('');
 
             //const techName = args[0];
-            const tech = TechTree.find(techName);
+            //const tech = TechTree.find(techName);
 
-            if (!await confirmTech(message, techName, tech))
-                return;
+            //if (!await confirmTech(message, techName, tech))
+            //
+            let techs = []
+            for (const [key, value] of TechTree.technologies.entries()) {
+                techs.push(value._name)
+            }
+
+            let techActualName = await confirmResultButtons(message, techName, techs)
+            if (!techActualName) return;
+            const tech = TechTree.find(techActualName);
+                //return;
 
             let requester = message.guild.member(message.author)
             let error = false

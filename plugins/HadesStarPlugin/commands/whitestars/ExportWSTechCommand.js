@@ -8,13 +8,13 @@ const Discord = require('discord.js');
 
 
 
-export class SummaryWhiteStarCommand extends WhitestarsCommand {
+export class ExportWSTechCommand extends WhitestarsCommand {
     constructor(plugin) {
         super(plugin, {
-            name: 'summaryws',
-            aliases: ['sumws'],
-            description: "Summary of Whitestar Members",
-            usage: "&summaryws <wsrole>"
+            name: 'exportwstech',
+            aliases: ['ewstech'],
+            description: "CSV Formatted WS Techs",
+            usage: "&ewstech <wsrole>"
         });
     }
 
@@ -43,7 +43,7 @@ export class SummaryWhiteStarCommand extends WhitestarsCommand {
     summaryAll = async (message, role) => {
         message.delete({ timeout: 1 });    //Delete User message
         const ws = await WhiteStar.findOne({ wsrole: role.id }).populate('author').populate('members').populate('members/techs').exec()
-        if(!ws) return;
+        if (!ws) return;
         this.summaryMessage(message, ws, "Weapons And Shields")
         this.summaryMessage(message, ws, "Support")
         this.summaryMessage(message, ws, "Mining")
@@ -52,42 +52,48 @@ export class SummaryWhiteStarCommand extends WhitestarsCommand {
 
     summaryMessage = async (message, ws, cat) => {
         let techsCategories = new Map([
-            ["Weapons And Shields", ['Battery','Laser','MassBattery','DualLaser','Barrage','DeltaShield','OmegaShield','BlastShield']],
-            ["Support", ['EMP','Teleport','RemoteRepair','TimeWarp','Unity',
-                         'Fortify','AlphaRocket','Suppress','Destiny','Barrier',
-                         'DeltaRocket','Leap','OmegaRocket']],
-            ["Mining", ['MiningBoost','Enrich','RemoteMining','MiningUnity','Crunch']],
-            ["Economics", ['Dispatch','RelicDrone']]
+            ["Weapons And Shields", ['Battery', 'Laser', 'MassBattery', 'DualLaser', 'Barrage', 'DeltaShield', 'OmegaShield', 'BlastShield', 'AreaShield']],
+            ["Support", ['EMP', 'Teleport', 'RemoteRepair', 'TimeWarp', 'Unity',
+                'Fortify', 'AlphaRocket', 'Suppress', 'Destiny', 'Barrier',
+                'DeltaRocket', 'Leap', 'OmegaRocket', 'RemoteBomb']],
+            ["Mining", ['MiningBoost', 'Enrich', 'RemoteMining', 'MiningUnity', 'Crunch']],
+            ["Economics", ['Dispatch', 'RelicDrone']]
         ])
         //Create Message
-        let summaryEmbed = new Discord.MessageEmbed()
-            .setTitle(`Summary of whitestar members ${cat} techs:`)
-            .setThumbnail("https://i.imgur.com/fNtJDNz.png")
-            .addField("Group:", `<@&${ws.wsrole}>`, true)
+        /* let summaryEmbed = new Discord.MessageEmbed()
+             .setTitle(`Export of whitestar members ${cat} techs:`)
+             .setThumbnail("https://i.imgur.com/fNtJDNz.png")
+             .addField("Group:", `<@&${ws.wsrole}>`, true)
+         */
+        let mesText = techsCategories.get(cat).join(',')
+        mesText = mesText + '\n'
 
-        //await Promise.all(Array.from(TechTree.technologies.values()).map(async tech => {
+        //let asyncTech = new Map()
+        var memberTechs = {};
+        await Promise.all(Array.from(ws.members).map(async member => {
+            await Promise.all(Array.from(techsCategories.get(cat)).map(async t => {
+                let tech = await this.GetModule(member, t)
 
-        await Promise.all(techsCategories.get(cat).map( async tech => {
-            let members = ws.members
-            let memListSorted = await Promise.all(
-                members.map(async t => [t, await this.GetModule(t, tech)])
-            )
+                if (!(member in memberTechs)) memberTechs[member] = new Map()
+                if (tech)
+                    memberTechs[member].set(t, tech.level)
+                else
+                    memberTechs[member].set(t, '0')
+            }))
+        }))
 
-            // console.log(memListSorted)
-            memListSorted = memListSorted
-                .filter(([key, value]) => value != null)
-                .map(([key, value]) => [value.level, key.name])
-                .filter(([key, value]) => key > 0)
-                .sort(([keya, valuea], [keyb, valueb]) => keya < keyb ? 1 : -1)
-                .map(([key, value]) => `${value} ${key}`)
-                .join('\n');
-                //.slice(0, 5)
-                
+        ws.members.forEach(async member => {
+            let line = []
+            line.push(member.name)
+            techsCategories.get(cat).forEach(async t => {
+                line.push(memberTechs[member].get(t))
+            })
 
-            if (memListSorted)
-                summaryEmbed.addField(tech.replace(/([A-Z])/g, ' $1').trim(), memListSorted, true)
-        }));
-        return message.channel.send(summaryEmbed)
+            mesText = mesText + line.join(',') + '\n'
+        })
+
+        let finalTxt = `__${cat}__\n\`\`\`${mesText}\n\`\`\``
+        return message.channel.send(finalTxt)
     }
     async GetModule(member, techName) {
         let techFound;

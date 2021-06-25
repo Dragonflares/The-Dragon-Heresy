@@ -1,8 +1,7 @@
 import { MemberCommand } from './MemberCommand';
 import { Member, Corp } from '../../database';
 import { TechTree } from '../../techs';
-import { findBestMatch } from 'string-similarity';
-import { confirmResult } from '../../utils';
+import { confirmResultButtons } from '../../utils';
 
 export class GetResearchTimeCommand extends MemberCommand{
     constructor(plugin){
@@ -25,10 +24,9 @@ export class GetResearchTimeCommand extends MemberCommand{
             } else {
                 let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate('members').populate("members.techs").exec();
                 let memberslist = new Map(corp.members.map(t => [t.name, t]))
-                const rate = findBestMatch(args[0], [...memberslist.keys()]);
-                if (!await confirmResult(message, args[0], rate.bestMatch.target))
-                    return;
-                CorpMember = (await Member.findOne({ discordId: memberslist.get(rate.bestMatch.target).discordId.toString() }).populate("Corp").populate("techs").exec().catch(err => console.logg(err)))
+                let member = await confirmResultButtons(message,args.join(' '), [...memberslist.keys()])
+                if (!member) return;
+                CorpMember = (await Member.findOne({ discordId: memberslist.get(member).discordId.toString() }).populate("Corp").populate("techs").exec().catch(err => console.logg(err)))
             }
         }
         else {

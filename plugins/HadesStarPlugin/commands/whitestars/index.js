@@ -8,3 +8,4 @@ export * from './NotePlayerWhiteStarCommand';
 export * from './AddPlayerWhiteStarCommand';
 export * from './RemovePlayerWhiteStarCommand';
 export * from './SummaryWhiteStarCommand';
+export * from './ExportWSTechCommand';

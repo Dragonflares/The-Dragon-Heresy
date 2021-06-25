@@ -1,7 +1,6 @@
 import { OfficerCommand } from './OfficerCommand';
 import { Member, Corp } from '../../database';
-import { findBestMatch } from 'string-similarity';
-import { confirmResult } from '../../utils';
+import { confirmResultButtons } from '../../utils';
 
 export class LastSeenCommand extends OfficerCommand {
     constructor(plugin) {
@@ -76,10 +75,9 @@ export class LastSeenCommand extends OfficerCommand {
         else {
             let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate('members').exec();
             let memberslist = new Map(corp.members.map(t => [t.name, t]))
-            const rate = findBestMatch(args[0], [...memberslist.keys()]);
-            if (!await confirmResult(message, args[0], rate.bestMatch.target))
-                return;
-            return this.TeamTimeZoneSituation([memberslist.get(rate.bestMatch.target)], message)
+            let member = await confirmResultButtons(message,args.join(' '), [...memberslist.keys()])
+            if (!member) return;
+            return this.TeamTimeZoneSituation([memberslist.get(member)], message)
         }
     }
 

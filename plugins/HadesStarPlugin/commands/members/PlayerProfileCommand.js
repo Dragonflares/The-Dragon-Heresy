@@ -1,8 +1,7 @@
 import { MemberCommand } from './MemberCommand';
 import { Member, Corp } from '../../database';
 import { MessageEmbed } from 'discord.js';
-import { findBestMatch } from 'string-similarity';
-import { confirmResult } from '../../utils';
+import { confirmResultButtons } from '../../utils';
 
 export class PlayerProfileCommand extends MemberCommand {
     constructor(plugin) {
@@ -25,10 +24,9 @@ export class PlayerProfileCommand extends MemberCommand {
             } else {
                 let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate('members').exec();
                 let memberslist = new Map(corp.members.map(t => [t.name, t]))
-                const rate = findBestMatch(args[0], [...memberslist.keys()]);
-                if (!await confirmResult(message, args[0], rate.bestMatch.target))
-                    return;
-                CorpMember = (await Member.findOne({ discordId: memberslist.get(rate.bestMatch.target).discordId.toString() }).populate("Corp").populate("techs").catch(err => console.logg(err)))
+                let member = await confirmResultButtons(message,args.join(' '), [...memberslist.keys()])
+                if (!member) return;
+                CorpMember = (await Member.findOne({ discordId: memberslist.get(member).discordId.toString() }).populate("Corp").populate("techs").catch(err => console.logg(err)))
             }
         }
         else {
@@ -63,8 +61,8 @@ export class PlayerProfileCommand extends MemberCommand {
         ProfileEmbed.addField(`*Corporation*`, `${playercorp}`)
         ProfileEmbed.addField(`*Rank*`, playerrank)
         ProfileEmbed.addField(`*Time Zone*`, `${playertimezone}`)
-        ProfileEmbed.addField(`*Red Star level*`, `${playerrslevel}`)
-        ProfileEmbed.addField(`*Avaible for White Stars*`, `${playerwhitestaron}`)
+        //ProfileEmbed.addField(`*Red Star level*`, `${playerrslevel}`)
+        //ProfileEmbed.addField(`*Avaible for White Stars*`, `${playerwhitestaron}`)
         ProfileEmbed.setFooter("For the techs this player has, use &playertech, for their white star battleship, use &playerbattleship")
 
         return message.channel.send(ProfileEmbed)

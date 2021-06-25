@@ -1,6 +1,6 @@
 import { MemberCommand } from './MemberCommand';
 import { TechTree } from '../../techs';
-import { confirmTech } from '../../utils';
+import { confirmResultButtons } from '../../utils';
 import { Member } from '../../database';
 import { MessageEmbed } from 'discord.js';
 
@@ -32,11 +32,14 @@ export class TechDataCommand extends MemberCommand {
 
             let level = parseInt(args[args.length - 1]);
             const techName = isNaN(level) ? args.join('') : args.slice(0, -1).join('');
+            let techs = []
+            for (const [key, value] of TechTree.technologies.entries()) {
+                techs.push(value._name)
+            }
 
-            const tech = TechTree.find(techName);
-
-            if (!await confirmTech(message, techName, tech))
-                return;
+            let techActualName = await confirmResultButtons(message, techName, techs)
+            if (!techActualName) return;
+            const tech = TechTree.find(techActualName);
 
             if (isNaN(level)) {
                 embed.setTitle(`**Tech: ${tech.name}**`)
@@ -90,7 +93,7 @@ export class TechDataCommand extends MemberCommand {
 
             collector.on('end', async collected => {
                 let msgEmbed = await this.GetTechMessage(tech, level)
-                messageReaction.edit({ component: null ,embed: msgEmbed});
+                messageReaction.edit({ component: null, embed: msgEmbed });
             });
         }
     }

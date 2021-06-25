@@ -149,6 +149,11 @@ export class WhiteStarsManager extends Manager {
         //Get reacted member
         let member = await Member.findOne({ discordId: user.id.toString() }).exec();
         if (!WsUtils.whiteStarRecruitReactions.includes(messageReaction.emoji.name) && !WsUtils.whiteStarPrefEmojiGroup.has(messageReaction.emoji.name)) return;
+        
+        if(messageReaction.emoji.name == '🆘') { //invalid users
+            WsUtils.NormalShow = !WsUtils.NormalShow
+        }
+        
         if (messageReaction.emoji.name == '🚮') {  //If Trash
 
             if (user.id == ws.author.discordId) { //If Author

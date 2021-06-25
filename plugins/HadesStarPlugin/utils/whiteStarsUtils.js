@@ -1,7 +1,9 @@
 const Discord = require('discord.js');
-import { WhiteStar } from '../database';
+import { Member, WhiteStar } from '../database';
 
-export const whiteStarRecruitReactions = ['🤚', '🚮', '✅']
+export let NormalShow = true
+
+export const whiteStarRecruitReactions = ['🤚','🆘', '🚮', '✅']
 
 export const whiteStarStatusReactions = new Map([
     ["Recruiting", ['🚮']],
@@ -54,10 +56,17 @@ export const whiteStarRecruitMessage = async (ws) => {
             let command = ws.leadPreferences.has(t.discordId) ? ' 🤚' : ''
 
             //Add him to the string
-            if (prefCatStrings.get(cat) == "None")
-                prefCatStrings.set(cat, `<@${t.discordId}>${command}`)
-            else
-                prefCatStrings.set(cat, `${prefCatStrings.get(cat)}\n<@${t.discordId}>${command}`)
+            if(this.NormalShow) {
+                if (prefCatStrings.get(cat) == "None")
+                    prefCatStrings.set(cat, `<@${t.discordId}>${command}`)
+                else
+                    prefCatStrings.set(cat, `${prefCatStrings.get(cat)}\n<@${t.discordId}>${command}`)
+            }else{
+                if (prefCatStrings.get(cat) == "None")
+                    prefCatStrings.set(cat, `${t.name}${command}`)
+                else
+                    prefCatStrings.set(cat, `${prefCatStrings.get(cat)}\n${t.name}>${command}`)
+            }
         })
     }
 
@@ -76,7 +85,7 @@ export const whiteStarRecruitMessage = async (ws) => {
     //Footers
     if (ws.status == "Recruiting") {
         rolesEmbed.setColor("ORANGE")
-            .setFooter(`🤚 - Commander 🚮 - Stop Recruit ✅ - Finish Recruit`)
+            .setFooter(`🤚 - Commander  🆘 - Switch to text mode 🚮 - Stop Recruit ✅ - Finish Recruit`)
     }
     else {
         rolesEmbed.setColor("GREEN")
@@ -119,6 +128,23 @@ export const whiteStarStatusMessage = async (message, ws) => {
         let assignedSp = new Array();
         let bsGroupMembers = new Map()
         let spGroupMembers = new Map()
+        let afkMembers = new Map()
+
+        //Check AFKs
+        await Promise.all(Array.from(ws.members).map(async player => {
+            let member = await Member.findOne({ discordId: player.discordId.toString() }).populate('Corp').populate('techs').exec();
+            if (!member) afkMembers.set(chMember,"")
+            if (member.awayTime) {
+                let awayTime = new Date();
+                if (awayTime.getTime() < member.awayTime.getTime()) {
+                    afkMembers.set(player.discordId,"🅰️")
+                }else{
+                    afkMembers.set(player.discordId,"")
+                }
+            }else{
+                afkMembers.set(player.discordId,"")
+            }
+        }))
 
         //Fill groups
         await Promise.all(ws.bsGroupsRoles.map(async role => {
@@ -180,7 +206,7 @@ export const whiteStarStatusMessage = async (message, ws) => {
                 let today = new Date()
                 today = new Date(today.getTime() + today.getTimezoneOffset() * 60 * 1000);
                 today = new Date(today.getTime() + t.timezone * 60 * 60 * 1000);
-                return `-<@${t.discordId}> (TOD: ${today.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })})`
+                return `-${afkMembers.get(t.discordId)}<@${t.discordId}> (TOD: ${today.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })})`
             })
             .join('\n')
         playersString == "" ? playersString = "None" : playersString

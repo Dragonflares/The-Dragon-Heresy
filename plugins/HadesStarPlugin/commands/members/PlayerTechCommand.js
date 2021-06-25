@@ -2,9 +2,7 @@ import { MemberCommand } from './MemberCommand';
 import { Member, Tech, Corp } from '../../database';
 import { MessageEmbed } from 'discord.js';
 import { TechTree } from '../../techs';
-import { confirmTech } from '../../utils';
-import { findBestMatch } from 'string-similarity';
-import { confirmResult } from '../../utils';
+import { confirmResultButtons } from '../../utils';
 
 export class PlayerTechCommand extends MemberCommand {
     constructor(plugin) {
@@ -32,16 +30,13 @@ export class PlayerTechCommand extends MemberCommand {
                 let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate('members').exec();
                 let members = Array.from(corp.members).map(t => t.name)
                 let joined = members.concat(Array.from(TechTree.categories.keys()))
-                const rate = findBestMatch(techorMemberName, joined);
-
-                if (!await confirmResult(message, techorMemberName, rate.bestMatch.target))
-                    return;
-
-                if (Array.from(members).includes(rate.bestMatch.target)) {
-                    playername = rate.bestMatch.target
+                let result = await confirmResultButtons(message,args.join(' '), joined)
+                if (!result) return;
+                if (Array.from(members).includes(result)) {
+                    playername = result
                 } else {
                     playername = member.name
-                    category = rate.bestMatch.target
+                    category = result
                 }
 
                 if (member.Corp.corpId != message.guild.id.toString())
@@ -100,10 +95,9 @@ export class PlayerTechCommand extends MemberCommand {
     }
 
     displayCategory = async (message, member, categoryName) => {
-        const category = TechTree.findCategory(categoryName);
-        if (!await confirmTech(message, categoryName, category))
-            return;
-
+        let categorySelName = await confirmResultButtons(message,categoryName, [...TechTree.categories.keys()])
+        if (!categorySelName) return;
+        const category = TechTree.findCategory(categorySelName);
         let embed = new MessageEmbed().setColor("RANDOM");
         embed.setTitle(`**Player: ${member.name} **`);
 

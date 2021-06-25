@@ -9,8 +9,6 @@ export * from './SetTimezoneCommand';
 export * from './TechDataCommand';
 export * from './ResignCommand';
 export * from './RecruitRedStarCommand';
-export * from './SetCroidCommand';
-export * from './GetCroidCommand';
 export * from './SlateCommand';
 export * from './GetResearchTimeCommand';
 export * from './AfkCommand';

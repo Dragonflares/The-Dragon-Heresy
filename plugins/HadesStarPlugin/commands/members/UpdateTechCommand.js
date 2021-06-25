@@ -1,6 +1,6 @@
 import { MemberCommand } from './MemberCommand';
 import { TechTree } from '../../techs';
-import { confirmTech } from '../../utils';
+import { confirmResultButtons } from '../../utils';
 import { Member, Tech } from '../../database';
 import Mongoose from 'mongoose';
 
@@ -29,10 +29,14 @@ export class UpdateTechCommand extends MemberCommand{
 
         if(!techName) return message.channel.send(`Please specify the tech you want to update.`)
 
-        const tech = TechTree.find(techName);
+        let techs = []
+        for (const [key, value] of TechTree.technologies.entries()) {
+            techs.push(value._name)
+        }
 
-        if(!await confirmTech(message, techName, tech))
-            return;
+        let techActualName = await confirmResultButtons(message, techName, techs)
+        if (!techActualName) return;
+        const tech = TechTree.find(techActualName);
 
         if(isNaN(level)) return message.channel.send(`Please specify the level of the tech you want to update.`)
 

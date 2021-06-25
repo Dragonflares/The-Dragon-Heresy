@@ -52,10 +52,10 @@ export class ExportWSTechCommand extends WhitestarsCommand {
 
     summaryMessage = async (message, ws, cat) => {
         let techsCategories = new Map([
-            ["Weapons And Shields", ['Battery', 'Laser', 'MassBattery', 'DualLaser', 'Barrage', 'DeltaShield', 'OmegaShield', 'BlastShield']],
+            ["Weapons And Shields", ['Battery', 'Laser', 'MassBattery', 'DualLaser', 'Barrage', 'DeltaShield', 'OmegaShield', 'BlastShield', 'AreaShield']],
             ["Support", ['EMP', 'Teleport', 'RemoteRepair', 'TimeWarp', 'Unity',
                 'Fortify', 'AlphaRocket', 'Suppress', 'Destiny', 'Barrier',
-                'DeltaRocket', 'Leap', 'OmegaRocket']],
+                'DeltaRocket', 'Leap', 'OmegaRocket', 'RemoteBomb']],
             ["Mining", ['MiningBoost', 'Enrich', 'RemoteMining', 'MiningUnity', 'Crunch']],
             ["Economics", ['Dispatch', 'RelicDrone']]
         ])
@@ -68,46 +68,30 @@ export class ExportWSTechCommand extends WhitestarsCommand {
         let mesText = techsCategories.get(cat).join(',')
         mesText = mesText + '\n'
 
+        //let asyncTech = new Map()
+        var memberTechs = {};
         await Promise.all(Array.from(ws.members).map(async member => {
-            let line = []
-            line.push(member.name)
             await Promise.all(Array.from(techsCategories.get(cat)).map(async t => {
-                //console.log(t)
                 let tech = await this.GetModule(member, t)
-                //console.log(tech)
+
+                if (!(member in memberTechs)) memberTechs[member] = new Map()
                 if (tech)
-                    line.push(tech.level)
+                    memberTechs[member].set(t, tech.level)
                 else
-                    line.push('0')
+                    memberTechs[member].set(t, '0')
             }))
-            //console.log(line)
-            mesText = mesText + line.join(',') + '\n'
         }))
 
-        //await Promise.all(Array.from(TechTree.technologies.values()).map(async tech => {
+        ws.members.forEach(async member => {
+            let line = []
+            line.push(member.name)
+            techsCategories.get(cat).forEach(async t => {
+                line.push(memberTechs[member].get(t))
+            })
 
-        /*await Promise.all(techsCategories.get(cat).map( async tech => {
-            let members = ws.members
-            let memListSorted = await Promise.all(
-                members.map(async t => [t, await this.GetModule(t, tech)])
-            )
+            mesText = mesText + line.join(',') + '\n'
+        })
 
-            // console.log(memListSorted)
-            memListSorted = memListSorted
-                .filter(([key, value]) => value != null)
-                .map(([key, value]) => [value.level, key.name])
-                .filter(([key, value]) => key > 0)
-                .sort(([keya, valuea], [keyb, valueb]) => keya < keyb ? 1 : -1)
-                .map(([key, value]) => `${value} ${key}`)
-                .join('\n');
-                //.slice(0, 5)
-                
-
-            if (memListSorted)
-                summaryEmbed.addField(tech.replace(/([A-Z])/g, ' $1').trim(), memListSorted, true)
-        
-            }));*/
-        //summaryEmbed.addField("CSV:",mesText)
         let finalTxt = `__${cat}__\n\`\`\`${mesText}\n\`\`\``
         return message.channel.send(finalTxt)
     }

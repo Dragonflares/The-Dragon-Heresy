@@ -26,7 +26,12 @@ export class ExportWSTechCommand extends WhitestarsCommand {
             return message.channel.send("You aren't part of any Corporation. Join a Corporation first.")
         else {
             if (!roles) {
-                let roleName = await confirmResultButtons(message, args.join(' '), message.guild.roles.cache.map(a => a.name))
+                let allRoles = message.guild.roles.cache.map(a => a.name)
+                allRoles = allRoles.filter(function(item) {
+                    return item !== "@everyone"
+                })
+                
+                let roleName = await confirmResultButtons(message, args.join(' '), allRoles)
                 if (!roleName) return;
                 roles = message.guild.roles.cache.find(r => r.name === roleName);
             }
@@ -60,12 +65,9 @@ export class ExportWSTechCommand extends WhitestarsCommand {
             ["Economics", ['Dispatch', 'RelicDrone']]
         ])
         //Create Message
-        /* let summaryEmbed = new Discord.MessageEmbed()
-             .setTitle(`Export of whitestar members ${cat} techs:`)
-             .setThumbnail("https://i.imgur.com/fNtJDNz.png")
-             .addField("Group:", `<@&${ws.wsrole}>`, true)
-         */
-        let mesText = techsCategories.get(cat).join(',')
+
+        let mesText = "Name,"
+        mesText = mesText + techsCategories.get(cat).join(',')
         mesText = mesText + '\n'
 
         //let asyncTech = new Map()

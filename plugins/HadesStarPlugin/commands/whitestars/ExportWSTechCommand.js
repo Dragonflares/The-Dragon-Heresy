@@ -60,12 +60,9 @@ export class ExportWSTechCommand extends WhitestarsCommand {
             ["Economics", ['Dispatch', 'RelicDrone']]
         ])
         //Create Message
-        /* let summaryEmbed = new Discord.MessageEmbed()
-             .setTitle(`Export of whitestar members ${cat} techs:`)
-             .setThumbnail("https://i.imgur.com/fNtJDNz.png")
-             .addField("Group:", `<@&${ws.wsrole}>`, true)
-         */
-        let mesText = techsCategories.get(cat).join(',')
+
+        let mesText = "Name,"
+        mesText = mesText + techsCategories.get(cat).join(',')
         mesText = mesText + '\n'
 
         //let asyncTech = new Map()

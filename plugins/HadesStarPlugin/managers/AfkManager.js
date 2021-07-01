@@ -23,23 +23,20 @@ export class AfkManager extends Manager {
         message.mentions.members.forEach(async m => {
             let member = await Member.findOne({ discordId: m.id.toString() }).populate('Corp').populate('techs').exec();
             if (!member) return;
-            if (member.Corp.corpId === message.guild.id.toString()) {
+            if (member.awayTime) {
+                let awayTime = new Date();
+                if (awayTime.getTime() < member.awayTime.getTime()) {
+                    let time = member.awayTime.getTime() - awayTime.getTime()
+                    var diffDays = Math.floor(time / 86400000); // days
+                    var diffHrs = Math.floor((time % 86400000) / 3600000); // hours
+                    var diffMins = Math.round(((time % 86400000) % 3600000) / 60000); // minutes
 
-                if (member.awayTime) {
-                    let awayTime = new Date();
-                    if (awayTime.getTime() < member.awayTime.getTime()) {
-                        let time = member.awayTime.getTime() - awayTime.getTime()
-                        var diffDays = Math.floor(time / 86400000); // days
-                        var diffHrs = Math.floor((time % 86400000) / 3600000); // hours
-                        var diffMins = Math.round(((time % 86400000) % 3600000) / 60000); // minutes
-
-                        if (member.awayDesc == "") {
-                            return message.channel.send(`${member.name} is away for ${diffDays} Days , ${diffHrs} Hours and ${diffMins} Minutes`)
-                        }
-                        else {
-                            return message.channel.send(`${member.name} is away for ${diffDays} Days , ${diffHrs} Hours and ${diffMins} Minutes\
+                    if (member.awayDesc == "") {
+                        return message.channel.send(`${member.name} is away for ${diffDays} Days , ${diffHrs} Hours and ${diffMins} Minutes`)
+                    }
+                    else {
+                        return message.channel.send(`${member.name} is away for ${diffDays} Days , ${diffHrs} Hours and ${diffMins} Minutes\
                                 \nReason: ${member.awayDesc}`)
-                        }
                     }
                 }
             }

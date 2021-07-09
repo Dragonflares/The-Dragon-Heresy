@@ -39,7 +39,7 @@ export const confirmTech = async (message, query, tech) => {
             let m = await response.first()
             if (m.id == "yes") {
                 messageReaction.edit(textMsg, { component: null })
-                m.defer()
+                m.reply.defer()
                 return true
             }
             else if (m.id == "no") {

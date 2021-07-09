@@ -49,7 +49,7 @@ export const confirmResultButtons = async (message, query, list) => {
                 throw new Error();
             } else {
                 messageReaction.edit(`Your choice: ${m.id}`, { component: null })
-                m.defer()
+                m.reply.defer()
                 return m.id
             }
         } catch (err) {

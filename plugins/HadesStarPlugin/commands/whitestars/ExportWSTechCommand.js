@@ -5,9 +5,6 @@ import * as WsUtils from '../../utils/whiteStarsUtils.js';
 import { confirmResultButtons } from '../../utils';
 const Discord = require('discord.js');
 
-
-
-
 export class ExportWSTechCommand extends WhitestarsCommand {
     constructor(plugin) {
         super(plugin, {

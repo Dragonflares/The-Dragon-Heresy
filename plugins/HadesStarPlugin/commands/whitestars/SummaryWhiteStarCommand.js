@@ -56,7 +56,7 @@ export class SummaryWhiteStarCommand extends WhitestarsCommand {
             ["Support", ['EMP','Teleport','RemoteRepair','TimeWarp','Unity',
                          'Fortify','AlphaRocket','Suppress','Destiny','Barrier',
                          'DeltaRocket','Leap','OmegaRocket']],
-            ["Mining", ['MiningBoost','Enrich','RemoteMining','MiningUnity','Crunch']],
+            ["Mining", ['MiningBoost','Enrich','RemoteMining','MiningUnity','Crunch','Genesis']],
             ["Economics", ['Dispatch','RelicDrone']]
         ])
         //Create Message

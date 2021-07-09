@@ -88,7 +88,7 @@ export class TechDataCommand extends MemberCommand {
                     if (level < tech.levels) buttonRow.addComponent(nextButton)
                     messageReaction.edit({ component: buttonRow, embed: msgEmbed })
                 }
-                b.defer()
+                b.reply.defer()
             });
 
             collector.on('end', async collected => {

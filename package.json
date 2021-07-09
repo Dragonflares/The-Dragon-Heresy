@@ -20,7 +20,7 @@
     "camelize": "^1.0.0",
     "canvas": "^2.6.1",
     "common-tags": "^1.8.0",
-    "discord-buttons": "^3.2.1",
+    "discord-buttons": "^4.0.0",
     "discord-paginationembed": "^2.1.0",
     "discord.js": "^12.5.3",
     "dotenv": "^8.2.0",

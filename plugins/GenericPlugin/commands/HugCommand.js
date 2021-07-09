@@ -32,7 +32,8 @@ export class HugCommand extends GenericCommand {
 
         const embed = new MessageEmbed();
         embed.setTitle("HUGS!");
-        embed.addField("You got a hug from:", message.guild.member(message.author))
+        embed.addField(`Hug reciever:`, user)
+        embed.addField(`You got a hug from:`, message.guild.member(message.author))
         embed.setImage(stringsArray[randomnumber])
         embed.setColor("PURPLE");
         message.channel.send(embed);

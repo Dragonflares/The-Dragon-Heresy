@@ -1,6 +1,7 @@
 import { WhitestarsCommand } from './WhitestarsCommand';
 import { Member, WhiteStar, Corp } from '../../database';
 import * as WsUtils from '../../utils/whiteStarsUtils.js';
+import { confirmResultButtons } from '../../utils';
 
 export class StatusWhiteStarCommand extends WhitestarsCommand {
   constructor(plugin) {
@@ -19,7 +20,16 @@ export class StatusWhiteStarCommand extends WhitestarsCommand {
     if (!member)
       return message.channel.send("You aren't part of any Corporation. Join a Corporation first.")
     else {
-      if (!roles) return message.channel.send("Please input a discord role for the WS!")
+      if (!roles) {
+        let allRoles = message.guild.roles.cache.map(a => a.name)
+        allRoles = allRoles.filter(function (item) {
+          return item !== "@everyone"
+        })
+
+        let roleName = await confirmResultButtons(message, args.join(' '), allRoles)
+        if (!roleName) return;
+        roles = message.guild.roles.cache.find(r => r.name === roleName);
+      }
       if (member.Corp.corpId === message.guild.id.toString())
         return this.statusMessage(message, roles, member)
       else

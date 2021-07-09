@@ -24,7 +24,7 @@ export class RemovePlayerWhiteStarCommand extends WhitestarsCommand {
       if (user.roles.cache.find(r=> r == corp.rankRoles.Officer))
         return this.removePlayerWS(message, member)
       else
-        return message.channel.send("You are not an Officer!")
+        return message.channel.send("You are not an Officer of this Corp!")
     }
   }
 

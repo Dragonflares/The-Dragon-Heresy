@@ -20,11 +20,11 @@ export class RecruitWhiteStarCommand extends WhitestarsCommand {
     if (!member)
       return message.channel.send("You aren't part of any Corporation. Join a Corporation first.")
     else {
-      if (!roles) return message.channel.send("Please input a discord role for the WS!")
-      if (member.Corp.corpId === message.guild.id.toString())
+      let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate('rankRoles').exec();
+      if (user.roles.cache.find(r=> r == corp.rankRoles.Officer))
         return this.roleMessage(message, roles, args.join(' '), member)
       else
-        return message.channel.send("You aren't on your Corporation's server!")
+        return message.channel.send("You are not an Officer of this Corp!")
     }
   }
 

@@ -73,8 +73,8 @@ export class RemovePlayerWhiteStarCommand extends WhitestarsCommand {
             .setMinValues(1)
           ws.members.forEach(m => {
             let optionmem = new MessageMenuOption()
-              .setLabel(m.name)
-              .setValue(m.name)
+              .setLabel(m.name.substring(0,24))
+              .setValue(m.name.substring(0,24))
             selectMember.addOption(optionmem)
           });
 
@@ -104,9 +104,9 @@ export class RemovePlayerWhiteStarCommand extends WhitestarsCommand {
     collectorBtn.on('collect', async b => {
       b.reply.defer()
       if (b.id == "Accept") {
-        let player = await ws.members.filter(m => m.name == name)[0]
+        let player = await ws.members.filter(m => m.name.substring(0,24) == name.substring(0,24))[0]
         if (ws.preferences.has(player.discordId)) {
-          let remainingMembers = await ws.members.filter(m => m.name != name)
+          let remainingMembers = await ws.members.filter(m => m.name.substring(0,24) != name.substring(0,24))
           ws.members = remainingMembers
           ws.preferences.delete(player.discordId)
           ws.leadPreferences.delete(player.discordId)

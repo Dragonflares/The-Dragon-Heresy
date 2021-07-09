@@ -3,13 +3,13 @@ import { Member, WhiteStar } from '../database';
 
 export let NormalShow = true
 
-export const whiteStarRecruitReactions = ['🤚','🆘', '🚮', '✅']
+export const whiteStarRecruitReactions = ['🤚', '🆘', '🚮', '✅']
 
 export const whiteStarStatusReactions = new Map([
     ["Recruiting", ['🚮']],
-    ["WaitForScan", ['🚮', '⬅️', '✅', '🔄']],
-    ["Scanning", ['🚮', '🛑', '✅', '🔄']],
-    ["Running", ['🚮', '⬅️', '🔄', '🕙', '🕚', '🕐', '🕑']]
+    ["WaitForScan", ['🚮', '🆘', '⬅️', '✅', '🔄']],
+    ["Scanning", ['🚮', '🆘', '🛑', '✅', '🔄']],
+    ["Running", ['🚮', '🆘', '⬅️', '🔄', '🕙', '🕚', '🕐', '🕑']]
 ])
 
 export const whiteStarPrefEmojiGroup = new Map([
@@ -35,9 +35,9 @@ export const embedColors = new Map([
 
 export const embedFooters = new Map([
     ["Recruiting", `🚮 - Delete White Star`],
-    ["WaitForScan", `🚮 - Delete White Star ⬅️ - Back to recruit ✅ - Start Scan  🔄 - Refresh`],
-    ["Scanning", `🚮 - Delete White Star 🛑 - Stop Scan ✅ - Found Match! 🔄 - Refresh`],
-    ["Running", `🚮 - Delete White Star ⬅️ - Back to scan 🔄 - Refresh\n 🕙: -10 Min 🕚: -1 Min 🕐: +1 Min 🕑: +10 Min`]
+    ["WaitForScan", `🚮 - Delete White Star 🆘 - Switch to text mode ⬅️ - Back to recruit ✅ - Start Scan  🔄 - Refresh`],
+    ["Scanning", `🚮 - Delete White Star 🆘 - Switch to text mode 🛑 - Stop Scan ✅ - Found Match! 🔄 - Refresh`],
+    ["Running", `🚮 - Delete White Star 🆘 - Switch to text mode ⬅️ - Back to scan 🔄 - Refresh\n 🕙: -10 Min 🕚: -1 Min 🕐: +1 Min 🕑: +10 Min`]
 ])
 
 export const whiteStarRecruitMessage = async (ws) => {
@@ -56,12 +56,12 @@ export const whiteStarRecruitMessage = async (ws) => {
             let command = ws.leadPreferences.has(t.discordId) ? ' 🤚' : ''
 
             //Add him to the string
-            if(this.NormalShow) {
+            if (this.NormalShow) {
                 if (prefCatStrings.get(cat) == "None")
                     prefCatStrings.set(cat, `<@${t.discordId}>${command}`)
                 else
                     prefCatStrings.set(cat, `${prefCatStrings.get(cat)}\n<@${t.discordId}>${command}`)
-            }else{
+            } else {
                 if (prefCatStrings.get(cat) == "None")
                     prefCatStrings.set(cat, `${t.name}${command}`)
                 else
@@ -133,16 +133,16 @@ export const whiteStarStatusMessage = async (message, ws) => {
         //Check AFKs
         await Promise.all(Array.from(ws.members).map(async player => {
             let member = await Member.findOne({ discordId: player.discordId.toString() }).populate('Corp').populate('techs').exec();
-            if (!member) afkMembers.set(chMember,"")
+            if (!member) afkMembers.set(chMember, "")
             if (member.awayTime) {
                 let awayTime = new Date();
                 if (awayTime.getTime() < member.awayTime.getTime()) {
-                    afkMembers.set(player.discordId,"🅰️")
-                }else{
-                    afkMembers.set(player.discordId,"")
+                    afkMembers.set(player.discordId, "🅰️")
+                } else {
+                    afkMembers.set(player.discordId, "")
                 }
-            }else{
-                afkMembers.set(player.discordId,"")
+            } else {
+                afkMembers.set(player.discordId, "")
             }
         }))
 
@@ -172,45 +172,88 @@ export const whiteStarStatusMessage = async (message, ws) => {
                 }
             }))
         }))
+        let unassignedBsString
+        let bsString
+        let unassignedSpString
+        let spString
+        let playersString
+        if (this.NormalShow) {
+            //Generate Battleships string
+            unassignedBsString = Array.from(ws.members)
+                .filter(t => !assignedBs.includes(t))
+                .map(t => `-<@${t.discordId}> ${ws.preferences.get(t.discordId)}${ws.leadPreferences.has(t.discordId) ? ' 🤚' : ''}${ws.playerBsNotes.has(t.discordId) ? ` ${ws.playerBsNotes.get(t.discordId)}` : ''}`)
+                .join('\n')
 
-        //Generate Battleships string
-        let unassignedBsString = Array.from(ws.members)
-            .filter(t => !assignedBs.includes(t))
-            .map(t => `-<@${t.discordId}> ${ws.preferences.get(t.discordId)}${ws.leadPreferences.has(t.discordId) ? ' 🤚' : ''}${ws.playerBsNotes.has(t.discordId) ? ` ${ws.playerBsNotes.get(t.discordId)}` : ''}`)
-            .join('\n')
+            bsString = Array.from(bsGroupMembers)
+                .map(([groupName, players]) => `**<@&${groupName}> ${ws.groupNotes.has(groupName) ? ` ${ws.groupNotes.get(groupName)}` : ''}:**\n --${Array.from(players)
+                    .map(p => `${p} ${ws.playerBsNotes.has(p.id) ? ` ${ws.playerBsNotes.get(p.id)}` : ''}`).join('\n--')}\n`)
+                .join('\n')
+            if (unassignedBsString != "") bsString = bsString + "\n**Unassigned:**\n" + unassignedBsString
+            bsString == "" ? bsString = "None" : bsString
 
-        let bsString = Array.from(bsGroupMembers)
-            .map(([groupName, players]) => `**<@&${groupName}> ${ws.groupNotes.has(groupName) ? ` ${ws.groupNotes.get(groupName)}` : ''}:**\n --${Array.from(players)
-                .map(p => `${p} ${ws.playerBsNotes.has(p.id) ? ` ${ws.playerBsNotes.get(p.id)}` : ''}`).join('\n--')}\n`)
-            .join('\n')
-        if (unassignedBsString != "") bsString = bsString + "\n**Unassigned:**\n" + unassignedBsString
-        bsString == "" ? bsString = "None" : bsString
+            //Generate Support string
+            unassignedSpString = Array.from(ws.members)
+                .filter(t => !assignedSp.includes(t))
+                .map(t => `-<@${t.discordId}> ${ws.preferences.get(t.discordId)}${ws.leadPreferences.has(t.discordId) ? ' 🤚' : ''}${ws.playerSpNotes.has(t.discordId) ? ` ${ws.playerSpNotes.get(t.discordId)}` : ''}`)
+                .join('\n')
+            spString = Array.from(spGroupMembers)
+                .map(([groupName, players]) => `**<@&${groupName}> ${ws.groupNotes.has(groupName) ? ` ${ws.groupNotes.get(groupName)}` : ''}:**\n --${Array.from(players)
+                    .map(p => `${p} ${ws.playerSpNotes.has(p.id) ? ` ${ws.playerSpNotes.get(p.id)}` : ''}`).join('\n--')}\n`)
+                .join('\n')
+            if (unassignedSpString != "") spString = spString + "\n**Unassigned:**\n" + unassignedSpString
+            spString == "" ? spString = "None" : spString
 
-        //Generate Support string
-        let unassignedSpString = Array.from(ws.members)
-            .filter(t => !assignedSp.includes(t))
-            .map(t => `-<@${t.discordId}> ${ws.preferences.get(t.discordId)}${ws.leadPreferences.has(t.discordId) ? ' 🤚' : ''}${ws.playerSpNotes.has(t.discordId) ? ` ${ws.playerSpNotes.get(t.discordId)}` : ''}`)
-            .join('\n')
-        let spString = Array.from(spGroupMembers)
-            .map(([groupName, players]) => `**<@&${groupName}> ${ws.groupNotes.has(groupName) ? ` ${ws.groupNotes.get(groupName)}` : ''}:**\n --${Array.from(players)
-                .map(p => `${p} ${ws.playerSpNotes.has(p.id) ? ` ${ws.playerSpNotes.get(p.id)}` : ''}`).join('\n--')}\n`)
-            .join('\n')
-        if (unassignedSpString != "") spString = spString + "\n**Unassigned:**\n" + unassignedSpString
-        spString == "" ? spString = "None" : spString
+            //Generate Players string
+            playersString = Array.from(ws.members)
+                .map(t => {
+                    if (t.timezone == "+0")
+                        return `-<@${t.discordId}> (TOD: Not  set up)`
+                    let today = new Date()
+                    today = new Date(today.getTime() + today.getTimezoneOffset() * 60 * 1000);
+                    today = new Date(today.getTime() + t.timezone * 60 * 60 * 1000);
+                    return `-${afkMembers.get(t.discordId)}<@${t.discordId}> (TOD: ${today.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })})`
+                })
+                .join('\n')
+            playersString == "" ? playersString = "None" : playersString
+        } else {
+            //Generate Battleships string
+            unassignedBsString = Array.from(ws.members)
+                .filter(t => !assignedBs.includes(t))
+                .map(t => `-${t.name} ${ws.preferences.get(t.discordId)}${ws.leadPreferences.has(t.discordId) ? ' 🤚' : ''}${ws.playerBsNotes.has(t.discordId) ? ` ${ws.playerBsNotes.get(t.discordId)}` : ''}`)
+                .join('\n')
 
-        //Generate Players string
-        let playersString = Array.from(ws.members)
-            .map(t => {
-                if( t.timezone == "+0")
-                    return `-<@${t.discordId}> (TOD: Not  set up)`
-                let today = new Date()
-                today = new Date(today.getTime() + today.getTimezoneOffset() * 60 * 1000);
-                today = new Date(today.getTime() + t.timezone * 60 * 60 * 1000);
-                return `-${afkMembers.get(t.discordId)}<@${t.discordId}> (TOD: ${today.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })})`
-            })
-            .join('\n')
-        playersString == "" ? playersString = "None" : playersString
+            bsString = Array.from(bsGroupMembers)
+                .map(([groupName, players]) => `**<@&${groupName}> ${ws.groupNotes.has(groupName) ? ` ${ws.groupNotes.get(groupName)}` : ''}:**\n --${Array.from(players)
+                    .map(p => `${ws.members.filter(t=> t.discordId == p.id)[0].name} ${ws.playerBsNotes.has(p.id) ? ` ${ws.playerBsNotes.get(p.id)}` : ''}`).join('\n--')}\n`)
+                .join('\n')
+            if (unassignedBsString != "") bsString = bsString + "\n**Unassigned:**\n" + unassignedBsString
+            bsString == "" ? bsString = "None" : bsString
 
+            //Generate Support string
+            unassignedSpString = Array.from(ws.members)
+                .filter(t => !assignedSp.includes(t))
+                .map(t => `-${t.name} ${ws.preferences.get(t.discordId)}${ws.leadPreferences.has(t.discordId) ? ' 🤚' : ''}${ws.playerSpNotes.has(t.discordId) ? ` ${ws.playerSpNotes.get(t.discordId)}` : ''}`)
+                .join('\n')
+            spString = Array.from(spGroupMembers)
+                .map(([groupName, players]) => `**<@&${groupName}> ${ws.groupNotes.has(groupName) ? ` ${ws.groupNotes.get(groupName)}` : ''}:**\n --${Array.from(players)
+                 .map(p => `${ws.members.filter(t=> t.discordId == p.id)[0].name} ${ws.playerSpNotes.has(p.id) ? ` ${ws.playerSpNotes.get(p.id)}` : ''}`).join('\n--')}\n`)
+                .join('\n')
+            if (unassignedSpString != "") spString = spString + "\n**Unassigned:**\n" + unassignedSpString
+            spString == "" ? spString = "None" : spString
+
+            //Generate Players string
+            playersString = Array.from(ws.members)
+                .map(t => {
+                    if (t.timezone == "+0")
+                        return `-${t.name} (TOD: Not  set up)`
+                    let today = new Date()
+                    today = new Date(today.getTime() + today.getTimezoneOffset() * 60 * 1000);
+                    today = new Date(today.getTime() + t.timezone * 60 * 60 * 1000);
+                    return `-${afkMembers.get(t.discordId)}${t.name} (TOD: ${today.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })})`
+                })
+                .join('\n')
+            playersString == "" ? playersString = "None" : playersString
+        }
         //Add members to embed
         statusEmbed.addField("Battleships:", bsString, true)
         statusEmbed.addField("Support:", spString, true)
@@ -238,12 +281,12 @@ export const killWS = async (client, ws, message) => {
 
     if (ws.retruitchannel) {
         let msg = await client.channels.cache.get(ws.retruitchannel).messages.fetch(ws.recruitmessage.toString());
-        msg.edit("-",{embed:await whiteStarCancelMessage(ws)})
+        msg.edit("-", { embed: await whiteStarCancelMessage(ws) })
         msg.reactions.removeAll()
     }
     if (ws.statuschannel) {
         let statusmsg = await client.channels.cache.get(ws.statuschannel).messages.fetch(ws.statusmessage.toString());
-        statusmsg.edit("-",{embed:await whiteStarCancelMessage(ws)})
+        statusmsg.edit("-", { embed: await whiteStarCancelMessage(ws) })
         statusmsg.reactions.removeAll()
     }
     ws.members.forEach(async t => {
@@ -259,7 +302,7 @@ export const killWS = async (client, ws, message) => {
             roleMember.roles.remove(spGroupsRoles)
         })
     })
-   
+
 
     ws.remove();
 }
@@ -275,28 +318,28 @@ export const RefreshStatusMessage = async (client, ws, interval) => {
         }
 
         //Fetch old message
-        if(!intWs.statuschannel || !intWs.statusmessage){}
+        if (!intWs.statuschannel || !intWs.statusmessage) { }
         else {
             msgStatus = await client.channels.cache.get(intWs.statuschannel).messages.fetch(intWs.statusmessage.toString());
 
             //Create new message
-            const statusEmbed = await whiteStarStatusMessage(msgStatus, intWs); 
+            const statusEmbed = await whiteStarStatusMessage(msgStatus, intWs);
             //Remove Reactions
-            msgStatus.edit("-",{embed:statusEmbed})
+            msgStatus.edit("-", { embed: statusEmbed })
 
-            if(intWs.status == "Running")
-            {
-                //Check if to kill WS
-                let today = new Date()
-                let diffMs = 432000000 - (today - intWs.matchtime)
-                var diffDays = Math.floor(diffMs / 86400000); // days
-                var diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours
-                var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
-
-                if(diffMs <= 0) {
-                    await killWS(client, intWs, msgStatus)
-                }
-            }
+            /*  if(intWs.status == "Running")
+              {
+                  //Check if to kill WS
+                  let today = new Date()
+                  let diffMs = 432000000 - (today - intWs.matchtime)
+                  var diffDays = Math.floor(diffMs / 86400000); // days
+                  var diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours
+                  var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
+  
+                  if(diffMs <= 0) {
+                      await killWS(client, intWs, msgStatus)
+                  }
+              }*/
         }
     }
     return msgStatus;
@@ -316,9 +359,9 @@ export const RefreshRecruitMessage = async (client, ws, interval) => {
         const recruitEmbed = await whiteStarRecruitMessage(intWs);
 
         //Remove Reactions
-        await msgRecruit.edit("-",{embed: recruitEmbed})
+        await msgRecruit.edit("-", { embed: recruitEmbed })
     }
-    
+
     return msgRecruit;
 }
 

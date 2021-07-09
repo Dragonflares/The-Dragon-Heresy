@@ -66,9 +66,13 @@ export class AfkCommand extends MemberCommand {
                 await member.save();
 
                 //Send Message
-                return message.channel.send(`You away for ${diffDays} Days , ${diffHrs} Hours and ${diffMins} Minutes \
+                if (reason != "")
+                    return message.channel.send(`You away for ${diffDays} Days , ${diffHrs} Hours and ${diffMins} Minutes \
                     \nFrom ${timeNow.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })} to ${timeThen.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}.\
                     \nReason: ${reason}`);
+                else
+                    return message.channel.send(`You away for ${diffDays} Days , ${diffHrs} Hours and ${diffMins} Minutes \
+                    \nFrom ${timeNow.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })} to ${timeThen.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}.`);
 
             }
         } else {

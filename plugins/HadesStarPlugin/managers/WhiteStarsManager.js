@@ -71,6 +71,9 @@ export class WhiteStarsManager extends Manager {
                 return;
             }
         }
+        if(messageReaction.emoji.name == '🆘') { //invalid users
+            WsUtils.NormalShow = !WsUtils.NormalShow
+        }
         if (user.id == ws.author.discordId && WsUtils.whiteStarStatusReactions.get(ws.status).includes(messageReaction.emoji.name)) {
             if (ws.status == "WaitForScan") {
 

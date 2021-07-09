@@ -13,3 +13,4 @@ export * from './SlateCommand';
 export * from './GetResearchTimeCommand';
 export * from './AfkCommand';
 export * from './WSScoreCommand';
+export * from './BackCommand';

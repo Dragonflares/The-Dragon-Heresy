@@ -82,8 +82,14 @@ export class RecruitRedStarCommand extends MemberCommand {
     else
       message.edit("-",{embed: newEmbed,component:null });
 
+
+    
     var link = "http://discordapp.com/channels/" + message.guild.id + "/" + message.channel.id + "/" + message.id;
-    let sent = await message.channel.send(`There is currently a RS${rsLevel} going with ${reacted.size}/4!: ${link}`)
+    let urlbutton = new MessageButton()
+    .setStyle('url')
+    .setURL(link) 
+    .setLabel('Jump to Recruit!'); 
+    let sent = await message.channel.send(`There is currently a RS${rsLevel} going with ${reacted.size}/4`,urlbutton)
     return sent;
   }
 
@@ -153,7 +159,7 @@ export class RecruitRedStarCommand extends MemberCommand {
           await b.reply.send('You are not the owner of this invitation', true);
         }
       } else if (b.id == "has_croid" || b.id == "no_croid") {
-        b.defer()
+        b.reply.defer()
         if (b.id == "has_croid")
           registeredPlayers.set(b.clicker.user, '✅')
         else
@@ -168,7 +174,7 @@ export class RecruitRedStarCommand extends MemberCommand {
         }
      
       }
-
+      b.reply.defer()
     });
 
     collector.on('end', collected => {

@@ -21,10 +21,10 @@ export class RemovePlayerWhiteStarCommand extends WhitestarsCommand {
       return message.channel.send("You aren't part of any Corporation. Join a Corporation first.")
     else {
       let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate('rankRoles').exec();
-      if (user.roles.cache.find(r=> r == corp.rankRoles.WhiteStarCommander))
+      if (user.roles.cache.find(r=> r == corp.rankRoles.Officer))
         return this.removePlayerWS(message, member)
       else
-        return message.channel.send("You are not the WSCO!")
+        return message.channel.send("You are not an Officer!")
     }
   }
 

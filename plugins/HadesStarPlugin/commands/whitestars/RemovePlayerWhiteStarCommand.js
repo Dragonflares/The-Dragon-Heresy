@@ -1,6 +1,7 @@
 import { WhitestarsCommand } from './WhitestarsCommand';
 import { Corp, Member, WhiteStar ,RankRoles} from '../../database';
 import * as WsUtils from '../../utils/whiteStarsUtils.js';
+import { MemberDAO, CorpDAO } from '../../../../lib/utils/DatabaseObjects'
 import { id } from 'common-tags';
 const { MessageButton, MessageActionRow, MessageMenuOption, MessageMenu } = require("discord-buttons")
 
@@ -20,17 +21,21 @@ export class RemovePlayerWhiteStarCommand extends WhitestarsCommand {
     if (!member)
       return message.channel.send("You aren't part of any Corporation. Join a Corporation first.")
     else {
-      let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate('rankRoles').exec();
-      if (user.roles.cache.find(r=> r == corp.rankRoles.Officer))
-        return this.removePlayerWS(message, member)
+      let corp = await CorpDAO.find(message.guild.id)
+      if(!corp){
+        return message.channel.send("This Corp doesn't exist.")
+      }
+      let rankcorp = await CorpDAO.populateRanks(corp)
+      if (user.roles.cache.find(r=> r == rankcorp.rankRoles.Officer))
+        return this.removePlayerWS(message, rankcorp)
       else
         return message.channel.send("You are not an Officer of this Corp!")
     }
   }
 
-  removePlayerWS = async (message, member) => {
+  removePlayerWS = async (message, rankcorp) => {
     //Get all WS going
-    let wsList = await WhiteStar.find({ Corp: member.Corp })
+    let wsList = await WhiteStar.find({ Corp: rankcorp._id })
     let wsRolesList = []
     wsList.forEach(ws => {
       wsRolesList.push(message.guild.roles.cache.find(r => r.id == ws.wsrole).name)

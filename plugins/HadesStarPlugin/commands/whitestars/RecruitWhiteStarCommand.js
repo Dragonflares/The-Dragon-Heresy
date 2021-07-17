@@ -15,14 +15,14 @@ export class RecruitWhiteStarCommand extends WhitestarsCommand {
 
   async run(message, args) {
     let user = message.guild.member(message.author)
-    let roles = message.mentions.roles.first()
+    let role = message.mentions.roles.first()
     let member = await Member.findOne({ discordId: user.id.toString() }).populate('Corp').exec();
     if (!member)
       return message.channel.send("You aren't part of any Corporation. Join a Corporation first.")
     else {
       let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate('rankRoles').exec();
-      if (user.roles.cache.find(r=> r == corp.rankRoles.Officer))
-        return this.roleMessage(message, roles, args.join(' '), member)
+      if (user.roles.cache.find(r => r == corp.rankRoles.Officer))
+        return this.roleMessage(message, role, args.join(' '), member)
       else
         return message.channel.send("You are not an Officer of this Corp!")
     }
@@ -30,7 +30,7 @@ export class RecruitWhiteStarCommand extends WhitestarsCommand {
 
   roleMessage = async (message, role, desc, member) => {
     message.delete({ timeout: 1 });    //Delete User message
-
+    if (!role) return message.channel.send("You need to input a valid role!")
     let description = 'Do you wish to partake in this White Star?';
     if (desc) description = desc
 

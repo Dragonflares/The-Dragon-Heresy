@@ -9,8 +9,8 @@ export class RemovePlayerWhiteStarCommand extends WhitestarsCommand {
   constructor(plugin) {
     super(plugin, {
       name: 'removeplayerws',
-      aliases: ['rmpws'],
-      description: "Removes a player to a White Star.",
+      aliases: ['rmpws','rpws'],
+      description: "Removes a player from a White Star.",
       usage: "&rmpws"
     });
   }
@@ -119,7 +119,7 @@ export class RemovePlayerWhiteStarCommand extends WhitestarsCommand {
           roleMember.roles.remove(ws.wsrole)
           await ws.save()
           await WsUtils.RefreshRecruitMessage(this.client, ws, null);
-          await message.channel.send(`${player.name} removed from <@&${ws.wsrole}> White Star!`)
+          await message.channel.send(`${player.name} removed from ${message.guild.roles.cache.find(r => r.id == ws.wsrole).name} White Star!`)
         }
       }
 

@@ -1,5 +1,5 @@
 import { Manager } from '../../../lib';
-import { Member, WhiteStar } from '../database';
+import { Member, WhiteStar, Corp } from '../database';
 import * as WsUtils from '../utils/whiteStarsUtils.js'
 
 export class WhiteStarsManager extends Manager {
@@ -41,7 +41,7 @@ export class WhiteStarsManager extends Manager {
     }
 
     timersStart = async () => {
-        let ws = await WhiteStar.find({ $or: [{ status: "Scanning" },{ status: "WaitForScan" }, { status: "Running" }] }).populate('author').populate('members').exec();
+        let ws = await WhiteStar.find({ $or: [{ status: "Scanning" }, { status: "WaitForScan" }, { status: "Running" }] }).populate('author').populate('members').exec();
         ws.forEach(t => WsUtils.StartTimerStatusRefresh(this.client, t))
     }
 
@@ -49,7 +49,7 @@ export class WhiteStarsManager extends Manager {
         if (user.bot) return;
 
         //Remove Reaction
-      
+
 
         //ws react
         let ws = await WhiteStar.findOne({ $or: [{ recruitmessage: messageReaction.message.id }, { statusmessage: messageReaction.message.id }] }).populate('author').populate('members').exec();
@@ -65,16 +65,20 @@ export class WhiteStarsManager extends Manager {
     }
 
     statusListener = async (ws, messageReaction, user) => {
+        let corp = await Corp.findOne({ corpId: messageReaction.message.guild.id.toString() }).populate('rankRoles').exec();
+        let userRect = messageReaction.message.guild.members.cache.get(user.id)
+        let allowed = (user.id == ws.author.discordId) || userRect.roles.cache.find(r => r == corp.rankRoles.Officer)
+
         if (messageReaction.emoji.name == '🚮') {  //If Trash
-            if (user.id == ws.author.discordId) { //If Author
+            if (allowed) { //If Author
                 await WsUtils.killWS(this.client, ws, messageReaction.message)
                 return;
             }
         }
-        if(messageReaction.emoji.name == '🆘') { //invalid users
+        if (messageReaction.emoji.name == '🆘') { //invalid users
             WsUtils.NormalShow = !WsUtils.NormalShow
         }
-        if (user.id == ws.author.discordId && WsUtils.whiteStarStatusReactions.get(ws.status).includes(messageReaction.emoji.name)) {
+        if (allowed && WsUtils.whiteStarStatusReactions.get(ws.status).includes(messageReaction.emoji.name)) {
             if (ws.status == "WaitForScan") {
 
                 if (messageReaction.emoji.name == '⬅️') { // Return to recruit
@@ -141,9 +145,9 @@ export class WhiteStarsManager extends Manager {
                     ws.matchtime = new Date(ws.matchtime.getTime() - 600000);
                     await ws.save()
                 }
-            
+
             }
-            
+
             WsUtils.RefreshStatusMessage(this.client, ws, null);
         }
     }
@@ -152,14 +156,19 @@ export class WhiteStarsManager extends Manager {
         //Get reacted member
         let member = await Member.findOne({ discordId: user.id.toString() }).exec();
         if (!WsUtils.whiteStarRecruitReactions.includes(messageReaction.emoji.name) && !WsUtils.whiteStarPrefEmojiGroup.has(messageReaction.emoji.name)) return;
-        
-        if(messageReaction.emoji.name == '🆘') { //invalid users
+
+        if (messageReaction.emoji.name == '🆘') { //invalid users
             WsUtils.NormalShow = !WsUtils.NormalShow
         }
+
+        //Let officers change stuff
         
+        let corp = await Corp.findOne({ corpId: messageReaction.message.guild.id.toString() }).populate('rankRoles').exec();
+        let userRect = messageReaction.message.guild.members.cache.get(user.id)
+        let allowed = (user.id == ws.author.discordId) || userRect.roles.cache.find(r => r == corp.rankRoles.Officer)
         if (messageReaction.emoji.name == '🚮') {  //If Trash
 
-            if (user.id == ws.author.discordId) { //If Author
+            if (allowed) { //If Author
                 await WsUtils.killWS(this.client, ws, messageReaction.message)
                 return;
             }
@@ -170,7 +179,7 @@ export class WhiteStarsManager extends Manager {
                 ws.leadPreferences.set(member.discordId, '🤚')
             }
         } else if (messageReaction.emoji.name == '✅') { //If done
-            if (user.id == ws.author.discordId) { //If Author
+            if (allowed) { //If Author
                 ws.status = "WaitForScan"
                 messageReaction.message.reactions.removeAll()
                 if (ws.statuschannel) //Update status message
@@ -185,7 +194,7 @@ export class WhiteStarsManager extends Manager {
                     WsUtils.whiteStarStatusReactions.get(ws.status).forEach(async react => msgStatus.react(react))
 
                     //Edit old message
-                    msgStatus.edit("-", {embed:statusEmbed})
+                    msgStatus.edit("-", { embed: statusEmbed })
                 }
             }
         } else if (WsUtils.whiteStarPrefEmojiGroup.has(messageReaction.emoji.name)) { //If Valid Emoji
@@ -216,7 +225,7 @@ export class WhiteStarsManager extends Manager {
         const rolesEmbed = await WsUtils.whiteStarRecruitMessage(ws);
 
         //Edit old message
-        messageReaction.message.edit("-", {embed: rolesEmbed})
+        messageReaction.message.edit("-", { embed: rolesEmbed })
     }
 
     disable() {

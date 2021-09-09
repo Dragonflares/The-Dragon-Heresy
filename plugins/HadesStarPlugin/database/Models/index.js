@@ -11,3 +11,5 @@ export * from './Tech';
 export * from './TimeTracker';
 export * from './Transport';
 export * from './WhiteStar';
+export * from './ShipyardLevels';
+export * from './RedStarLog';

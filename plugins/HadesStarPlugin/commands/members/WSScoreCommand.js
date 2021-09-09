@@ -29,13 +29,13 @@ export class WSScoreCommand extends MemberCommand {
                 let memberslist = new Map(corp.members.map(t => [t.name, t]))
                 let playername = await confirmResultButtons(message, args.join(' '), [...memberslist.keys()])
                 if (!playername) return;
-                
+
                 if (member.Corp.corpId != message.guild.id.toString())
                     return message.channel.send("You can't see a Member tech outside of your Corporation!");
 
-                target = await Member.findOne({ name: playername }).populate("Corp").populate('techs').exec();
+                target = await Member.findOne({ name: playername }).populate("Corp").populate('techs').populate("shipyardLevels").exec();
             } else {
-                target = await Member.findOne({ discordId: dMember.id.toString() }).populate("Corp").populate('techs').exec();
+                target = await Member.findOne({ discordId: dMember.id.toString() }).populate("Corp").populate('techs').populate("shipyardLevels").exec();
             }
         } else {
             if (member.Corp.corpId != message.guild.id.toString())
@@ -72,6 +72,29 @@ export class WSScoreCommand extends MemberCommand {
                         })
                 ])
                 .forEach(categoryData => embed.addField(categoryData[0], categoryData[1]));
+
+            let bslevel = 1
+            let minerlevel = 1
+            let tpslevel = 1
+            if (member.shipyardLevels) {
+                bslevel = member.shipyardLevels.battleshiplevel
+                minerlevel = member.shipyardLevels.minerlevel
+                tpslevel = member.shipyardLevels.transportlevel
+            }
+
+            //scores
+            let bsScores = [0, 1, 500, 2000, 4000, 7000, 8000]
+            let msScores = [0, 1, 500, 1000, 2000, 4000, 8000]
+            let tpsScores = [0, 1, 500, 1000, 1500, 2000, 2200]
+
+            embed.addField("Battleships Level:", `Level ${bslevel} __Score__: ${bsScores[bslevel]}`)
+            embed.addField("Miners Level: ", `Level ${minerlevel} __Score__: ${msScores[minerlevel]}`)
+            embed.addField("Transports Level: ", `Level ${tpslevel} __Score__: ${tpsScores[tpslevel]}`)
+
+            totalScore += bsScores[bslevel]
+            totalScore += msScores[minerlevel]
+            totalScore += tpsScores[tpslevel]
+
             embed.addField("__**TOTAL:**__", totalScore)
         }
         else embed.setDescription("No techs were found!");

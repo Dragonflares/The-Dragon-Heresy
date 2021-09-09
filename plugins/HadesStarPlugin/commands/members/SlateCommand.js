@@ -22,13 +22,13 @@ export class SlateCommand extends MemberCommand {
 		let target
 		if (!args[0]) {
 			dTarget = message.mentions.users.first() || message.author;
-			target = (await Member.findOne({ discordId: dTarget.id.toString() }).populate("Corp").populate("techs").catch(err => console.logg(err)))
+			target = (await Member.findOne({ discordId: dTarget.id.toString() }).populate("Corp").populate("techs").populate("shipyardLevels").catch(err => console.logg(err)))
 		} else {
 			let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate('members').exec();
 			let memberslist = new Map(corp.members.map(t => [t.name, t]))
-			let member = await confirmResultButtons(message,args.join(' '), [...memberslist.keys()])
-            if (!member) return;
-			target = (await Member.findOne({ discordId: memberslist.get(member).discordId.toString() }).populate("Corp").populate("techs").catch(err => console.logg(err)))
+			let member = await confirmResultButtons(message, args.join(' '), [...memberslist.keys()])
+			if (!member) return;
+			target = (await Member.findOne({ discordId: memberslist.get(member).discordId.toString() }).populate("Corp").populate("techs").populate("shipyardLevels").catch(err => console.logg(err)))
 		}
 
 		if (!target)
@@ -90,6 +90,30 @@ export class SlateCommand extends MemberCommand {
 		let nextHeight = 0
 		let categories = ["Economy", "Mining", "Weapons", "Shields", "Support"]
 		let separations = [0, 800, 1600, 2200, 2800]
+
+		//Ship Levels
+		let newbsLevel = 1
+		let newminerLevel = 1
+		let newtpsLevel = 1
+
+		if (CorpMember.shipyardLevels) {
+			newbsLevel = CorpMember.shipyardLevels.battleshiplevel
+			newminerLevel = CorpMember.shipyardLevels.minerlevel
+			newtpsLevel = CorpMember.shipyardLevels.transportlevel
+		}
+		const bsImage = await loadImage(`./assets/images/Battleship${newbsLevel}.png`)
+		const msImage = await loadImage(`./assets/images/Miner${newminerLevel}.png`)
+		const tpsImage = await loadImage(`./assets/images/Transport${newtpsLevel}.png`)
+		
+		let scale = 0.4
+		let leftPlace = rosterImage.width - msImage.naturalWidth * scale * 1.5
+		
+		roster.drawImage(msImage, leftPlace, initialPlaceTop + 40 - msImage.naturalHeight * scale, msImage.naturalWidth * scale, msImage.naturalHeight * scale)
+		leftPlace -= msImage.naturalWidth * scale * 1.5
+		roster.drawImage(tpsImage, leftPlace, initialPlaceTop + 40- tpsImage.naturalHeight * scale, tpsImage.naturalWidth * scale, tpsImage.naturalHeight * scale)
+		leftPlace -= tpsImage.naturalWidth * scale * 2.5
+		roster.drawImage(bsImage, leftPlace, initialPlaceTop + 40- bsImage.naturalHeight * scale, bsImage.naturalWidth * scale, bsImage.naturalHeight * scale)
+
 		await Promise.all(categories.map(async (category, index) => {
 			roster.font = `100px "Atarian"`
 			roster.fillStyle = `#44645b`

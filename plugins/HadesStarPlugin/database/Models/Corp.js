@@ -19,8 +19,8 @@ const CorpSchema = Schema ({
     rankRoles:{type: Schema.Types.ObjectId, ref: "RankRole"},
     redStarRoles: {type: Schema.Types.ObjectId, ref: "RedStarRole"},
     battlegroups: [{type: Schema.Types.ObjectId, ref: "Battlegroup"}],
-    members: [{type: Schema.Types.ObjectId, ref: "Member"}]
-    
+    members: [{type: Schema.Types.ObjectId, ref: "Member"}],
+    redStarLogs: [{type: Schema.Types.ObjectId, ref: "RedStarLog"}]    
 })
 
 export const Corp = model("Corp", CorpSchema, "Corp")

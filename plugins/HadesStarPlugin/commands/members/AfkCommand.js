@@ -83,7 +83,7 @@ export class AfkCommand extends MemberCommand {
                     var diffDays = Math.floor(time / 86400000); // days
                     var diffHrs = Math.floor((time % 86400000) / 3600000); // hours
                     var diffMins = Math.round(((time % 86400000) % 3600000) / 60000); // minutes
-                    return message.channel.send(`You still away for ${diffDays} Days , ${diffHrs} Hours and ${diffMins} Minutes in player TimeZone`)
+                    return message.channel.send(`You still away for ${diffDays} Days , ${diffHrs} Hours and ${diffMins} Minutes`)
                 } else {
                     return message.channel.send("You are not away!")
                 }

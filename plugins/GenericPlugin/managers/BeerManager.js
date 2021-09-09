@@ -17,7 +17,10 @@ export class BeerManager extends Manager{
         {
 			message.react(`🍻`);
 	
-		}
+		}else if (message.content.includes(`🧃`))
+        {
+            message.react(`🧃`);
+        }
     }
 
     disable(){

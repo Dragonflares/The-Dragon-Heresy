@@ -47,7 +47,6 @@ export class RemovePlayerWhiteStarCommand extends WhitestarsCommand {
       .setMaxValues(1)
       .setMinValues(1)
 
-    let options = []
     wsRolesList.forEach(groupname => {
       let optionstemp = new MessageMenuOption()
         .setLabel(groupname)
@@ -59,7 +58,7 @@ export class RemovePlayerWhiteStarCommand extends WhitestarsCommand {
     let secondRow = new MessageActionRow()
     firstRow.addComponent(selectLevel)
 
-    let messageReaction = await message.channel.send(`Select WS and User!`, firstRow)
+    let messageReaction = await message.channel.send(`Select WS and User to remove!`, firstRow)
     const filter = (button) => button.clicker.user.bot == false;
 
     const collector = messageReaction.createMenuCollector(filter, { time: 2 * 60 * 1000, dispose: true });
@@ -84,7 +83,7 @@ export class RemovePlayerWhiteStarCommand extends WhitestarsCommand {
           });
 
           secondRow.addComponent(selectMember)
-          messageReaction.edit({ components: [firstRow, secondRow] })
+          messageReaction.edit({ components: [secondRow] })
         }
       }
       if (b.id == "member") {
@@ -101,7 +100,7 @@ export class RemovePlayerWhiteStarCommand extends WhitestarsCommand {
         let buttonRow = new MessageActionRow()
         buttonRow.addComponent(acceptButton);
         buttonRow.addComponent(cancelButton);
-        messageReaction.edit({ components: [firstRow, secondRow, buttonRow] })
+        messageReaction.edit(`Remove ${name} from  ${message.guild.roles.cache.find(r => r.id == ws.wsrole).name} White Star?`,{ components: [ buttonRow] })
       }
       b.reply.defer()
     });

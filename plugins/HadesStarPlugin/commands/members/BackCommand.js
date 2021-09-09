@@ -1,11 +1,11 @@
 import { MemberCommand } from './MemberCommand';
-import { Member, Tech } from '../../database';
+import { Member } from '../../database';
 
 export class BackCommand extends MemberCommand {
     constructor(plugin) {
         super(plugin, {
             name: 'back',
-            aliases: ['bk'],
+            aliases: ['bk','abk'],
             description: "Sets you back from afk",
             usage: "&back"
         });
@@ -19,12 +19,11 @@ export class BackCommand extends MemberCommand {
         }
         else if (message.author.id === this.client.creator)
             target = user
-        else return message.channel.send("You cannot set another Member's tech!")
+        else return message.channel.send("You cannot set another Member's afk!")
 
         let member = await Member.findOne({ discordId: target.id.toString() }).populate('Corp').populate('techs').exec();
         if (!member)
             return message.channel.send("You aren't part of any Corporation. Join a Corporation first.")
-
 
         let awayTime = new Date();
         member.awayTime = awayTime;

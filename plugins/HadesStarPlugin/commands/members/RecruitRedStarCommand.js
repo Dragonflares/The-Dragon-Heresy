@@ -1,7 +1,8 @@
 import { MemberCommand } from './MemberCommand';
-import { RedStarRoles } from '../../database'
+import { RedStarRoles, Corp, RedStarLog } from '../../database'
 const { MessageButton, MessageActionRow } = require("discord-buttons")
 const Discord = require('discord.js');
+import Mongoose from 'mongoose'
 
 export class RecruitRedStarCommand extends MemberCommand {
   constructor(plugin) {
@@ -16,7 +17,7 @@ export class RecruitRedStarCommand extends MemberCommand {
   async run(message, args) {
     if (args[0] && (args[0] > 0 && args[0] < 12)) { //If level between 1 and 12
       if (args[1]) {
-        if (args[1] >= 5 && args[1] <= 60) {
+        if (args[1] >= 1 && args[1] <= 60) { 
           message.delete({ timeout: 1 });    //Delete User message
           this.sendInitialMessage(message, args[0], 60000 * args[1]); //Send recuit message
         } else {
@@ -54,7 +55,7 @@ export class RecruitRedStarCommand extends MemberCommand {
   }
 
 
-  async updateEmbed(message, rsLevel, registeredPlayers, extra) {
+  async updateEmbed(message, rsLevel, registeredPlayers, extra, creator) {
     //Variables
     const reacted = registeredPlayers
     //If no people write None
@@ -74,11 +75,27 @@ export class RecruitRedStarCommand extends MemberCommand {
     newEmbed.fields[0].value = `${currentPeopleAmm}/4` //"Current People"
     newEmbed.fields[1].value = `${testString}` //"Members"
 
-    if (currentPeopleAmm == 4) {  // Ping people that is done
+    if (currentPeopleAmm == 4) {  // Ping people that is done 
+      //Success!
+      let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate('members').exec();
+      
+      let newRSLog = new RedStarLog({
+        _id: new Mongoose.Types.ObjectId(),
+        corpOpened: corp,
+        level: rsLevel,
+        timeClosed: new Date(),
+        endStatus: "Succeeded",
+        creatorId: creator.id,
+        membersIds: Array.from(registeredPlayers.keys()).map(a => a.id)
+      })
+      corp.redStarLogs.push(newRSLog)
+      await newRSLog.save()
+      await corp.save()
+
       newEmbed.setColor("GREEN");
       let testString = ""
       reacted.forEach((value, key) => {
-        let tx =""
+        let tx = ""
         if (extra.has(key)) tx = `**+${extra.get(key)}**`
         testString += ` ${key} ${value} ${tx},`
       })
@@ -150,7 +167,7 @@ export class RecruitRedStarCommand extends MemberCommand {
 
     registeredPlayers.set(msgObject.author, '❎')
     if (oldMessage) oldMessage.delete({ timeout: 1 });
-    oldMessage = await this.updateEmbed(messageReaction, rsLevel, registeredPlayers, extraPlayers) //Update the Embeed to show the new reaction   
+    oldMessage = await this.updateEmbed(messageReaction, rsLevel, registeredPlayers, extraPlayers, msgObject.author) //Update the Embeed to show the new reaction   
 
 
     collector.on('collect', async b => {
@@ -174,7 +191,7 @@ export class RecruitRedStarCommand extends MemberCommand {
         registeredPlayers.delete(b.clicker.user)
         await b.reply.send('You out of the queue', true);
         if (oldMessage) oldMessage.delete({ timeout: 1 });
-        return oldMessage = await this.updateEmbed(messageReaction, rsLevel, registeredPlayers, extraPlayers) //Update the Embeed to show the new reaction   
+        return oldMessage = await this.updateEmbed(messageReaction, rsLevel, registeredPlayers, extraPlayers, msgObject.author) //Update the Embeed to show the new reaction   
       }
 
       //Get in queue
@@ -185,7 +202,7 @@ export class RecruitRedStarCommand extends MemberCommand {
           registeredPlayers.set(b.clicker.user, '❎')
 
         if (oldMessage) oldMessage.delete({ timeout: 1 });
-        oldMessage = await this.updateEmbed(messageReaction, rsLevel, registeredPlayers, extraPlayers) //Update the Embeed to show the new reaction   
+        oldMessage = await this.updateEmbed(messageReaction, rsLevel, registeredPlayers, extraPlayers, msgObject.author) //Update the Embeed to show the new reaction   
         return b.reply.defer()
       }
 
@@ -197,7 +214,7 @@ export class RecruitRedStarCommand extends MemberCommand {
         extraPlayers.delete(b.clicker.user)
         await b.reply.send('Unregistered plus player/s', true);
         if (oldMessage) oldMessage.delete({ timeout: 1 });
-        return oldMessage = await this.updateEmbed(messageReaction, rsLevel, registeredPlayers, extraPlayers) //Update the Embeed to show the new reaction   
+        return oldMessage = await this.updateEmbed(messageReaction, rsLevel, registeredPlayers, extraPlayers, msgObject.author) //Update the Embeed to show the new reaction   
       }
 
       // add plusone/two
@@ -209,19 +226,35 @@ export class RecruitRedStarCommand extends MemberCommand {
           if (currentPeopleAmm > 3) return await b.reply.send('Too many players', true);
           extraPlayers.set(b.clicker.user, 1)
           if (oldMessage) oldMessage.delete({ timeout: 1 });
-          oldMessage = await this.updateEmbed(messageReaction, rsLevel, registeredPlayers, extraPlayers) //Update the Embeed to show the new reaction   
+          oldMessage = await this.updateEmbed(messageReaction, rsLevel, registeredPlayers, extraPlayers, msgObject.author) //Update the Embeed to show the new reaction   
         } else if (b.id == "plusTwo") {
           if (currentPeopleAmm > 2) return await b.reply.send('Too many players', true);
           extraPlayers.set(b.clicker.user, 2)
           if (oldMessage) oldMessage.delete({ timeout: 1 });
-          oldMessage = await this.updateEmbed(messageReaction, rsLevel, registeredPlayers, extraPlayers) //Update the Embeed to show the new reaction   
+          oldMessage = await this.updateEmbed(messageReaction, rsLevel, registeredPlayers, extraPlayers, msgObject.author) //Update the Embeed to show the new reaction   
         }
         b.reply.defer()
       }
 
     });
 
-    collector.on('end', collected => {
+    collector.on('end', async collected => {
+      //Timeout
+      let corp = await Corp.findOne({ corpId: messageReaction.guild.id.toString() }).populate('members').exec();
+
+      let newRSLog = new RedStarLog({
+        _id: new Mongoose.Types.ObjectId(),
+        corpOpened: corp,
+        level: rsLevel,
+        timeClosed: new Date(),
+        endStatus: "Timeout",
+        creatorId: msgObject.author.id,
+        membersIds: Array.from(registeredPlayers.keys()).map(a => a.id)
+      })
+      corp.redStarLogs.push(newRSLog)
+      await newRSLog.save()
+      await corp.save()
+
       this.failed(messageReaction, registeredPlayers, extraPlayers);
     });
   }

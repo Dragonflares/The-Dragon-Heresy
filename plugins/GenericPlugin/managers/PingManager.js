@@ -11,6 +11,14 @@ const replies = [
     "'Be a discord bot' they said, 'they won't bother you too much' they said."
 ];
 
+const pencolReplies = [
+    "The ban-hammer is ready, hope it was worth it!",
+    "Let the man sleep! He is lazy right now.",
+    "The wrath of the sleeping Pencol is arriving!",
+    "Meh, You can try to ping all you want... wont help."
+];
+
+
 export class PingManager extends Manager{
     constructor(plugin){
         super(plugin);
@@ -32,12 +40,12 @@ export class PingManager extends Manager{
         }
         //Me and Boom
         else if(message.mentions.has('153558944478920704') && this.client.users.cache.find(u=> u.id == "153558944478920704").presence.status == "offline") {
-            message.channel.send("The ban-hammer is ready, hope it was worth it!")
+            message.channel.send(pencolReplies[randomInt(0, pencolReplies.length - 1)])
         }
   
         else if(message.mentions.has('236891878690258944') && this.client.users.cache.find(u=> u.id == "236891878690258944").presence.status == "offline")
 		{	
-			message.channel.send("You had better hope that ping was important... He's grumpy..")
+			message.channel.send("You had better hope that ping was important... He is a grumpy cop..")
 		}
     }
 

@@ -22,7 +22,7 @@ export class RedStarLogCommand extends MemberCommand {
         if (message.mentions.users.first()) {
             this.sendLog(message, message.mentions.users.first(), corp); //Send recuit message
         }
-        if (args[0] == "top") {
+        else if (args[0] == "top") {
             this.sendTopLog(message, corp); //Send recuit message
         }
         else if (args[0] == "last") {

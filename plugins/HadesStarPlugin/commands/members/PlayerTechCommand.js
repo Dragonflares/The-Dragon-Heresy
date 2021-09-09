@@ -30,7 +30,7 @@ export class PlayerTechCommand extends MemberCommand {
                 let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate('members').exec();
                 let members = Array.from(corp.members).map(t => t.name)
                 let joined = members.concat(Array.from(TechTree.categories.keys()))
-                let result = await confirmResultButtons(message,args.join(' '), joined)
+                let result = await confirmResultButtons(message, args.join(' '), joined)
                 if (!result) return;
                 if (Array.from(members).includes(result)) {
                     playername = result
@@ -42,9 +42,9 @@ export class PlayerTechCommand extends MemberCommand {
                 if (member.Corp.corpId != message.guild.id.toString())
                     return message.channel.send("You can't see a Member tech outside of your Corporation!");
 
-                target = await Member.findOne({ name: playername }).populate("Corp").populate('techs').exec();
+                target = await Member.findOne({ name: playername }).populate("Corp").populate('techs').populate("shipyardLevels").exec();
             } else {
-                target = await Member.findOne({ discordId: dMember.id.toString() }).populate("Corp").populate('techs').exec();
+                target = await Member.findOne({ discordId: dMember.id.toString() }).populate("Corp").populate('techs').populate("shipyardLevels").exec();
             }
         } else {
             category = args[0]
@@ -52,7 +52,7 @@ export class PlayerTechCommand extends MemberCommand {
             if (member.Corp.corpId != message.guild.id.toString())
                 return message.channel.send("You can't see a Member tech outside of your Corporation!");
 
-            target = await Member.findOne({ discordId: dTarget.id.toString() }).populate("Corp").populate('techs').exec();
+            target = await Member.findOne({ discordId: dTarget.id.toString() }).populate("Corp").populate('techs').populate("shipyardLevels").exec();
         }
 
         if (!target)
@@ -75,6 +75,19 @@ export class PlayerTechCommand extends MemberCommand {
 
         const memberTechsArray = member.techs.filter(t => t.level > 0).sort((a, b) => a.name > b.name ? 1 : -1);
 
+        let bslevel = 1
+        let minerlevel = 1
+        let tpslevel = 1
+        if (member.shipyardLevels) {
+            bslevel = member.shipyardLevels.battleshiplevel
+            minerlevel = member.shipyardLevels.minerlevel
+            tpslevel = member.shipyardLevels.transportlevel
+        }
+
+        embed.addField("Battleships", `Level ${bslevel}`)
+        embed.addField("Miners ", `Level ${minerlevel} `)
+        embed.addField("Transports", `Level ${tpslevel}`)
+
         if (memberTechsArray.length) {
             const memberTechs = new Map(memberTechsArray.map(t => [t.name, t]));
 
@@ -95,7 +108,7 @@ export class PlayerTechCommand extends MemberCommand {
     }
 
     displayCategory = async (message, member, categoryName) => {
-        let categorySelName = await confirmResultButtons(message,categoryName, [...TechTree.categories.keys()])
+        let categorySelName = await confirmResultButtons(message, categoryName, [...TechTree.categories.keys()])
         if (!categorySelName) return;
         const category = TechTree.findCategory(categorySelName);
         let embed = new MessageEmbed().setColor("RANDOM");

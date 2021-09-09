@@ -30,6 +30,7 @@ export class HelpCommand extends InfoCommand{
 
 
         // Sort commands by category, subcategory, name
+        
         const commands = Array.from(this.bot.commands.values()).sort((a,b) => {
             if(a.category != b.category){
                 if(a.category < b.category) return -1;
@@ -43,7 +44,6 @@ export class HelpCommand extends InfoCommand{
             if(a.name > b.name) return 1;
             return 0;
         });
-
         // Group by category & subcategory
         const categories = new Map();
         commands.forEach(command => {

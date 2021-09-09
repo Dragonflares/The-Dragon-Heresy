@@ -65,7 +65,7 @@ export const whiteStarRecruitMessage = async (ws) => {
                 if (prefCatStrings.get(cat) == "None")
                     prefCatStrings.set(cat, `${t.name}${command}`)
                 else
-                    prefCatStrings.set(cat, `${prefCatStrings.get(cat)}\n${t.name}>${command}`)
+                    prefCatStrings.set(cat, `${prefCatStrings.get(cat)}\n${t.name}${command}`)
             }
         })
     }

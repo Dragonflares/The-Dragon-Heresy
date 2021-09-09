@@ -12,6 +12,7 @@ const MemberSchema = Schema ({
         default: "+0"},
     techs: [{ type: Schema.Types.ObjectId, ref: 'Tech' }],
     shipyard: [{ type: Schema.Types.ObjectId, ref: 'Shipyard'}],
+    shipyardLevels: {type:Schema.Types.ObjectID,ref: 'ShipyardLevels'},
     online: {type: Boolean,
         default: false},
     lastSeen: {type: Date},

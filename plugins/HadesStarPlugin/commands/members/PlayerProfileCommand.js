@@ -1,7 +1,9 @@
 import { MemberCommand } from './MemberCommand';
-import { Member, Corp } from '../../database';
+import { Member, Corp, ShipyardLevels } from '../../database';
 import { MessageEmbed } from 'discord.js';
 import { confirmResultButtons } from '../../utils';
+import { MemberDAO, CorpDAO } from '../../../../lib/utils/DatabaseObjects'
+
 
 export class PlayerProfileCommand extends MemberCommand {
     constructor(plugin) {
@@ -20,18 +22,18 @@ export class PlayerProfileCommand extends MemberCommand {
         if (!user) {
             if (!args[0]) {
                 target = message.guild.member(message.author)
-                CorpMember = (await Member.findOne({ discordId: target.id.toString() }).populate("Corp").catch(err => console.logg(err)))
+                CorpMember = (await Member.findOne({ discordId: target.id.toString() }).populate("Corp").populate("shipyardLevels").catch(err => console.logg(err)))
             } else {
                 let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate('members').exec();
                 let memberslist = new Map(corp.members.map(t => [t.name, t]))
-                let member = await confirmResultButtons(message,args.join(' '), [...memberslist.keys()])
+                let member = await confirmResultButtons(message, args.join(' '), [...memberslist.keys()])
                 if (!member) return;
-                CorpMember = (await Member.findOne({ discordId: memberslist.get(member).discordId.toString() }).populate("Corp").populate("techs").catch(err => console.logg(err)))
+                CorpMember = (await Member.findOne({ discordId: memberslist.get(member).discordId.toString() }).populate("Corp").populate("techs").populate("shipyardLevels").catch(err => console.logg(err)))
             }
         }
         else {
             target = message.guild.member(user)
-            CorpMember = (await Member.findOne({ discordId: target.id.toString() }).populate("Corp").catch(err => console.logg(err)))
+            CorpMember = (await Member.findOne({ discordId: target.id.toString() }).populate("Corp").populate("shipyardLevels").catch(err => console.logg(err)))
         }
 
         if (!CorpMember) {
@@ -47,22 +49,32 @@ export class PlayerProfileCommand extends MemberCommand {
         let ProfileEmbed = new MessageEmbed().setColor("RANDOM")
         ProfileEmbed.setTitle(`Player: **${CorpMember.name}**`)
 
-        let playerrank = CorpMember.rank
         let playercorp = CorpMember.Corp.name
         let playertimezone = CorpMember.timezone
-        if(playertimezone == '+0') 
+        if (playertimezone == '+0')
             playertimezone = "Timezone not Setup"
         else
-            if(playertimezone > 0) playertimezone = `+${playertimezone}`
-            playertimezone = `GMT ${playertimezone}`
-        let playerrslevel = CorpMember.rslevel
-        let playerwhitestaron = CorpMember.wsStatus
+            if (playertimezone > 0) playertimezone = `+${playertimezone}`
+        playertimezone = `GMT ${playertimezone}`
+
 
         ProfileEmbed.addField(`*Corporation*`, `${playercorp}`)
-        ProfileEmbed.addField(`*Rank*`, playerrank)
         ProfileEmbed.addField(`*Time Zone*`, `${playertimezone}`)
-        //ProfileEmbed.addField(`*Red Star level*`, `${playerrslevel}`)
-        //ProfileEmbed.addField(`*Avaible for White Stars*`, `${playerwhitestaron}`)
+
+        //Shipyard
+        let bslevel = 1
+        let minerlevel = 1
+        let tpslevel = 1
+        if (CorpMember.shipyardLevels) {
+            bslevel = CorpMember.shipyardLevels.battleshiplevel
+            minerlevel = CorpMember.shipyardLevels.minerlevel
+            tpslevel = CorpMember.shipyardLevels.transportlevel
+        }
+
+        let strShipLevels = `__Battleships Level:__  ${bslevel}\n__Miners Level:__ ${minerlevel}\n \
+        __Transports Level:__ ${tpslevel}`
+        ProfileEmbed.addField(`*Ships Level*`, strShipLevels)
+
         ProfileEmbed.setFooter("For the techs this player has, use &playertech, for their white star battleship, use &playerbattleship")
 
         return message.channel.send(ProfileEmbed)

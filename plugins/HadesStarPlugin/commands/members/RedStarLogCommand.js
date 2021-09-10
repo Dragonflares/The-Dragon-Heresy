@@ -41,7 +41,7 @@ export class RedStarLogCommand extends MemberCommand {
             .setThumbnail("https://i.imgur.com/hedXFRd.png")
             .setDescription(`This information are from closed queues in the corp server. (Filled/Timeout)`)
             .setColor("GREEN")
-            .setFooter(`You can mantion a player to see his specific stats in the corp!`)
+            .setFooter(`You can mention a player to see his specific stats in the corp!`)
 
 
         //Get Last Month

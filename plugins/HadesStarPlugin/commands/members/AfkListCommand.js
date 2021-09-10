@@ -50,6 +50,7 @@ export class AfkListCommand extends MemberCommand {
                 }
             }
         }));
+        if (stringToSend == "") stringToSend = "There are no afk people on this server."
         return message.channel.send(stringToSend)
 
     }

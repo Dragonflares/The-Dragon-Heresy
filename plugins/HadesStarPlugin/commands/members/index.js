@@ -1,6 +1,6 @@
 export * from './PlayerProfileCommand';
 export * from './UpdateTechCommand';
-export * from './InteractiveUpdateTechCommand';
+//export * from './InteractiveUpdateTechCommand';
 export * from './PlayerTechCommand';
 export * from './FindTechCommand';
 export * from './SetTimezoneCommand';

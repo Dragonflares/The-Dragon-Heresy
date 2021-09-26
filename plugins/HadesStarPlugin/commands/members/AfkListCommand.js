@@ -1,5 +1,5 @@
 import { MemberCommand } from './MemberCommand';
-import { Member } from '../../database';
+import { Member, Corp } from '../../database';
 
 export class AfkListCommand extends MemberCommand {
     constructor(plugin) {
@@ -29,8 +29,12 @@ export class AfkListCommand extends MemberCommand {
         let membersInCorp = Array.from(message.guild.members.cache)
         let stringToSend = ""
 
+        let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate('members').exec();
+        let nullCorp = await Corp.findOne({ corpId: "-1"}).populate('members').exec();
         await Promise.all(membersInCorp.map(async m => {
-            let memberToCheck = await Member.findOne({ discordId: m[0].toString() }).populate('Corp').populate('techs').exec();
+            let memberToCheck = await Member.findOne({"discordId": m[0].toString(), "Corp": corp }).populate('Corp').populate('techs').exec();
+            if(!memberToCheck)
+            memberToCheck = await Member.findOne({"discordId": m[0].toString(), "Corp": nullCorp }).populate('Corp').populate('techs').exec();
             if (memberToCheck) {
                 if (memberToCheck.awayTime) {
                     let awayTime = new Date();

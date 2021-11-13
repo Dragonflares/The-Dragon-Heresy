@@ -52,14 +52,23 @@ export class PlayerProfileCommand extends MemberCommand {
         let playercorp = CorpMember.Corp.name
         let playertimezone = CorpMember.timezone
         if (playertimezone == '+0')
-            playertimezone = "Timezone not Setup"
-        else
+            playertimezone = "Timezone not setup"
+        else {
             if (playertimezone > 0) playertimezone = `+${playertimezone}`
-        playertimezone = `GMT ${playertimezone}`
+            //playertimezone = `GMT ${playertimezone}`
+        }
 
+        let playerCurrentTime = `Timezone not setup`
+        if (CorpMember.timezone != "+0") {
+            let today = new Date()
+            today = new Date(today.getTime() + today.getTimezoneOffset() * 60 * 1000);
+            today = new Date(today.getTime() + CorpMember.timezone * 60 * 60 * 1000);
+            playerCurrentTime = `${today.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })} (GMT ${playertimezone})`
+        }
 
         ProfileEmbed.addField(`*Corporation*`, `${playercorp}`)
-        ProfileEmbed.addField(`*Time Zone*`, `${playertimezone}`)
+        //ProfileEmbed.addField(`*Time Zone*`, `${playertimezone}`)
+        ProfileEmbed.addField(`*Current Time*`, `${playerCurrentTime}`)
 
         //Shipyard
         let bslevel = 1
@@ -71,8 +80,7 @@ export class PlayerProfileCommand extends MemberCommand {
             tpslevel = CorpMember.shipyardLevels.transportlevel
         }
 
-        let strShipLevels = `__Battleships Level:__  ${bslevel}\n__Miners Level:__ ${minerlevel}\n \
-        __Transports Level:__ ${tpslevel}`
+        let strShipLevels = `__Battleships Level:__  ${bslevel}\n__Miners Level:__ ${minerlevel}\n__Transports Level:__ ${tpslevel}`
         ProfileEmbed.addField(`*Ships Level*`, strShipLevels)
 
         ProfileEmbed.setFooter("For the techs this player has, use &playertech, for their white star battleship, use &playerbattleship")

@@ -21,7 +21,7 @@ export class AfkCommand extends MemberCommand {
         }
         else if (message.author.id === this.client.creator)
             target = user
-        else return message.channel.send("You cannot set another Member's tech!")
+        else return message.channel.send("You cannot set another Member's afk!")
 
         let member = await Member.findOne({ discordId: target.id.toString() }).populate('Corp').populate('techs').exec();
         if (!member)

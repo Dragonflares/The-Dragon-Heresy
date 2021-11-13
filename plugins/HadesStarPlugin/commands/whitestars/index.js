@@ -9,3 +9,4 @@ export * from './AddPlayerWhiteStarCommand';
 export * from './RemovePlayerWhiteStarCommand';
 export * from './SummaryWhiteStarCommand';
 export * from './ExportWSTechCommand';
+export * from './WSGroupScoreCommand';

@@ -101,7 +101,8 @@ export class RecruitRedStarCommand extends MemberCommand {
       })
       testString += ` Full Team for RS${rsLevel}!`
       message.channel.send(testString);
-      message.edit(newEmbed, null);
+      //message.edit(newEmbed, null);
+      message.edit({ component: null, embed: newEmbed });
     } else {
       newEmbed.setColor("ORANGE");
       message.edit(newEmbed);

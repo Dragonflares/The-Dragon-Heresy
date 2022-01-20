@@ -13,7 +13,7 @@ export class JokeCommand extends GenericCommand {
     }
 
     async run(message, args) {
-        const url = `https://official-joke-api.appspot.com/random_joke`;
+        const url = `https://v2.jokeapi.dev/joke/Any`;
 
         try {
             this.load(url).then(response => {
@@ -21,7 +21,7 @@ export class JokeCommand extends GenericCommand {
                     const data = JSON.parse(response);
                     const embed = new MessageEmbed();
                     embed.addField(`Question`,`${data.setup}`);
-                    embed.addField('Answer',`${data.punchline}`)
+                    embed.addField('Answer',`${data.delivery}`)
                     embed.setTitle("Here's a random joke");
                     embed.setColor("RANDOM");
                     message.channel.send(embed);

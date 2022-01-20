@@ -13,7 +13,7 @@ export class JokeCommand extends GenericCommand {
     }
 
     async run(message, args) {
-        const url = `https://v2.jokeapi.dev/joke/Any`;
+        const url = `https://v2.jokeapi.dev/joke/Any?blacklistFlags=nsfw,religious,racist,sexist,explicit&type=twopart`;
 
         try {
             this.load(url).then(response => {

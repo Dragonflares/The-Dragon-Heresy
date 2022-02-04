@@ -70,9 +70,7 @@ export class FindTechCommand extends MemberCommand {
     }
 
     async getFindTechInformation(message, tech, limit) {
-        let embed = new MessageEmbed().setColor("RANDOM")
-        embed.setTitle(`**Tech: ${tech.name}**`);
-        embed.setThumbnail(`${tech.image}`);
+       
 
         let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate('members').exec();
 
@@ -93,9 +91,35 @@ export class FindTechCommand extends MemberCommand {
             .sort(([keya, valuea], [keyb, valueb]) => keya < keyb ? 1 : -1)
             .map(([key, value]) => `${value} ${key}`)
             .join('\n');
-
-        if (memListSorted) embed.addField("*Players*", `${memListSorted}`)
-        return message.channel.send(embed)
+        
+        let listLines = memListSorted.split("\n").filter(el => el !== '');
+        const itemsAmm = 35
+        if (listLines.length >0){ 
+            let messAmm= parseInt(listLines.length/itemsAmm)+1;
+            for(let i =0;i<messAmm;i++ )
+            {
+                let embed = new MessageEmbed().setColor("RANDOM")
+                embed.setTitle(`**Tech: ${tech.name}**`);
+                embed.setThumbnail(`${tech.image}`);
+                let mes =""
+                for(let l =0;l<itemsAmm;l++ )
+                {
+                    if(!listLines[l+itemsAmm*i])break;
+                    mes = mes + listLines[l+itemsAmm*i] + '\n'
+                }
+                if(mes!= ""){
+                    if(messAmm>1){
+                        embed.addField(`*Players (${i+1}/${messAmm})*`, `${mes}`)
+                    }else{
+                        embed.addField("*Players*", `${mes}`)
+                    }
+                    message.channel.send(embed)
+                }
+            }
+        }else{
+            return message.channel.send('There is nobody with that tech')
+        }
+        return;
     }
     async GetModule(member, techName) {
         let techFound;

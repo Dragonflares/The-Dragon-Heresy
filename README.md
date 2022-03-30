@@ -1,4 +1,4 @@
-# Dragonflares-Bot
+# The Horus Heresy
 
 A Hades' Star aimed discord bot.
 

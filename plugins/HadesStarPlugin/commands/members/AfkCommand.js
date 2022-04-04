@@ -52,7 +52,9 @@ export class AfkCommand extends MemberCommand {
                 //Get Reason
                 let reason = ""
                 if (args[1]) reason = args.slice(1).join(' ')
-
+                if(reason.toLowerCase().includes("http")){
+                    return message.channel.send(`Adding links to afk messages is disabled.`)
+                }
                 //Save
                 let timeatm = new Date()
                 let awayTime = new Date(timeatm.getTime() + time);

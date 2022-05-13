@@ -18,7 +18,8 @@ const MemberSchema = Schema ({
     lastSeen: {type: Date},
     lastCroid:{type: Date, default: ""},
     awayTime: {type: Date, default: Date.now()},
-    awayDesc: {type: String , default: "Away"}
+    awayDesc: {type: String , default: "Away"},
+    reminders: [{type: Schema.Types.ObjectId, ref: "Reminder"}]
 })
 
 export const Member = model("Member", MemberSchema, "Member")

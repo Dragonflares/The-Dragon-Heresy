@@ -15,3 +15,6 @@ export * from './BackCommand';
 export * from './AfkListCommand';
 export * from './SetShipyardLevelsCommand';
 export * from './RedStarLogCommand';
+export * from './RemindCommand';
+export * from './RemindListCommand';
+export * from './RemindRemoveCommand';

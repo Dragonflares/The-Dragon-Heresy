@@ -27,7 +27,7 @@ export class AfkListCommand extends MemberCommand {
 
         if (!member)
             return message.channel.send("You aren't part of any Corporation. Join a Corporation first.")
-            
+
         //get array of members
         let membersInCorp = Array.from(corp.members)
 
@@ -43,15 +43,15 @@ export class AfkListCommand extends MemberCommand {
                     var diffMins = Math.round(((time % 86400000) % 3600000) / 60000); // minutes
 
                     if (memberToCheck.awayDesc == "") {
-                        stringToSend += `${memberToCheck.name} is away for ${diffDays} Days , ${diffHrs} Hours and ${diffMins} Minutes \n`
+                        stringToSend += `- ${memberToCheck.name} is away for ${diffDays} Days , ${diffHrs} Hours and ${diffMins} Minutes \n`
                     }
                     else {
-                        stringToSend += `${memberToCheck.name} is away for ${diffDays} Days , ${diffHrs} Hours and ${diffMins} Minutes, Reason: ${memberToCheck.awayDesc}\n`
+                        stringToSend += `- ${memberToCheck.name} is away for ${diffDays} Days , ${diffHrs} Hours and ${diffMins} Minutes, Reason: ${memberToCheck.awayDesc}\n`
                     }
                 }
             }
         });
         if (stringToSend == "") stringToSend = "There are no afk people on this server."
-        return message.channel.send(stringToSend)
-    }
+        return message.channel.send("`\`\`" + stringToSend + "`\`\`" )
+    }s
 }

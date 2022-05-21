@@ -55,7 +55,7 @@ export class RecruitRedStarCommand extends MemberCommand {
   }
 
 
-  async updateEmbed(message, rsLevel, registeredPlayers, extra, creator) {
+  async updateEmbed(message, rsLevel, registeredPlayers, extra, creator,closeIT) {
     //Variables
     const reacted = registeredPlayers
     //If no people write None
@@ -75,7 +75,7 @@ export class RecruitRedStarCommand extends MemberCommand {
     newEmbed.fields[0].value = `${currentPeopleAmm}/4` //"Current People"
     newEmbed.fields[1].value = `${testString}` //"Members"
 
-    if (currentPeopleAmm == 4) {  // Ping people that is done 
+    if (currentPeopleAmm == 4 || closeIT) {  // Ping people that is done 
       //Success!
       let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate('members').exec();
       
@@ -99,9 +99,16 @@ export class RecruitRedStarCommand extends MemberCommand {
         if (extra.has(key)) tx = `**+${extra.get(key)}**`
         testString += ` ${key} ${value} ${tx},`
       })
-      testString += ` Full Team for RS${rsLevel}!`
+      if(!closeIT)
+        testString += ` Full Team for RS${rsLevel}!`
+      else
+        testString += ` Partial Team for RS${rsLevel}!`
+      if(currentPeopleAmm == 2)
+        testString += ` Lets duo this!`
+        if(currentPeopleAmm == 3)
+        testString += ` Almost full!`
       message.channel.send(testString);
-      //message.edit(newEmbed, null);
+      
       message.edit({ component: null, embed: newEmbed });
     } else {
       newEmbed.setColor("ORANGE");
@@ -139,11 +146,17 @@ export class RecruitRedStarCommand extends MemberCommand {
 
 
     // Add Buttons
-    let styles = ['green', 'red', 'grey', 'grey', 'blurple']
-    let labels = ['Croid', 'No Croid', '+1', '+2', '']
-    let ids = ['has_croid', 'no_croid', 'plusOne', 'plusTwo', 'delete']
-    let emojis = ['', '', '', '', '🚮']
+    let styles = ['green', 'red', 'blurple','green']
+    let labels = ['Croid', 'No Croid', '','']
+    let ids = ['has_croid', 'no_croid', 'delete','done']
+    let emojis = ['', '', '🚮','✅']
     let buttonRow = new MessageActionRow()
+
+    let styles1 = ['grey', 'grey']
+    let labels1 = ['+1', '+2']
+    let ids1 = ['plusOne', 'plusTwo']
+    let emojis1 = ['', '']
+    let buttonRow1 = new MessageActionRow()
 
     for (let i = 0; i < styles.length; i++) {
       let button = new MessageButton()
@@ -155,20 +168,30 @@ export class RecruitRedStarCommand extends MemberCommand {
       buttonRow.addComponent(button);
     }
 
+    for (let i = 0; i < styles1.length; i++) {
+      let button = new MessageButton()
+        .setStyle(styles1[i])
+        .setLabel(labels1[i])
+        .setID(ids1[i])
+      if (emojis1[i] != '')
+        button.setEmoji(emojis1[i])
+      buttonRow1.addComponent(button);
+    }
 
     msgObject.channel.send(`<@&${role}>`)
 
-    const messageReaction = await msgObject.channel.send({ components: [buttonRow], embed: pollEmbed });
+    const messageReaction = await msgObject.channel.send({ components: [buttonRow,buttonRow1], embed: pollEmbed });
     const filter = (button) => button.clicker.user.bot == false;
     const collector = messageReaction.createButtonCollector(filter, { time: timeout, dispose: true }); //collector for 5 seconds
 
     let oldMessage
     let registeredPlayers = new Map() // User + Croid or not
     let extraPlayers = new Map()
+    let closeIT = false;
 
     registeredPlayers.set(msgObject.author, '❎')
     if (oldMessage) oldMessage.delete({ timeout: 1 });
-    oldMessage = await this.updateEmbed(messageReaction, rsLevel, registeredPlayers, extraPlayers, msgObject.author) //Update the Embeed to show the new reaction   
+    oldMessage = await this.updateEmbed(messageReaction, rsLevel, registeredPlayers, extraPlayers, msgObject.author,closeIT) //Update the Embeed to show the new reaction   
 
 
     collector.on('collect', async b => {
@@ -178,6 +201,21 @@ export class RecruitRedStarCommand extends MemberCommand {
         if (b.clicker.user.id == msgObject.author.id) {
           this.failed(messageReaction, registeredPlayers, extraPlayers);
           return await b.reply.send('Invitation Deleted', true);
+        }
+        return await b.reply.send('You are not the owner of this invitation', true);
+      }
+
+      //done
+      if(b.id== "done"){
+        if (b.clicker.user.id == msgObject.author.id) {
+          if( registeredPlayers.size > 1 ){
+            closeIT=true;
+            if (oldMessage) oldMessage.delete({ timeout: 1 });
+            oldMessage = await this.updateEmbed(messageReaction, rsLevel, registeredPlayers, extraPlayers, msgObject.author,closeIT) //Update the Embeed to show the new reaction    
+             return b.reply.defer()
+          }else{
+            return await b.reply.send('You need more than one player to finish a queue', true);
+          }
         }
         return await b.reply.send('You are not the owner of this invitation', true);
       }
@@ -192,7 +230,7 @@ export class RecruitRedStarCommand extends MemberCommand {
         registeredPlayers.delete(b.clicker.user)
         await b.reply.send('You out of the queue', true);
         if (oldMessage) oldMessage.delete({ timeout: 1 });
-        return oldMessage = await this.updateEmbed(messageReaction, rsLevel, registeredPlayers, extraPlayers, msgObject.author) //Update the Embeed to show the new reaction   
+        return oldMessage = await this.updateEmbed(messageReaction, rsLevel, registeredPlayers, extraPlayers, msgObject.author,closeIT) //Update the Embeed to show the new reaction   
       }
 
       //Get in queue
@@ -203,7 +241,7 @@ export class RecruitRedStarCommand extends MemberCommand {
           registeredPlayers.set(b.clicker.user, '❎')
 
         if (oldMessage) oldMessage.delete({ timeout: 1 });
-        oldMessage = await this.updateEmbed(messageReaction, rsLevel, registeredPlayers, extraPlayers, msgObject.author) //Update the Embeed to show the new reaction   
+        oldMessage = await this.updateEmbed(messageReaction, rsLevel, registeredPlayers, extraPlayers, msgObject.author,closeIT) //Update the Embeed to show the new reaction   
         return b.reply.defer()
       }
 
@@ -215,7 +253,7 @@ export class RecruitRedStarCommand extends MemberCommand {
         extraPlayers.delete(b.clicker.user)
         await b.reply.send('Unregistered plus player/s', true);
         if (oldMessage) oldMessage.delete({ timeout: 1 });
-        return oldMessage = await this.updateEmbed(messageReaction, rsLevel, registeredPlayers, extraPlayers, msgObject.author) //Update the Embeed to show the new reaction   
+        return oldMessage = await this.updateEmbed(messageReaction, rsLevel, registeredPlayers, extraPlayers, msgObject.author,closeIT) //Update the Embeed to show the new reaction   
       }
 
       // add plusone/two
@@ -227,12 +265,12 @@ export class RecruitRedStarCommand extends MemberCommand {
           if (currentPeopleAmm > 3) return await b.reply.send('Too many players', true);
           extraPlayers.set(b.clicker.user, 1)
           if (oldMessage) oldMessage.delete({ timeout: 1 });
-          oldMessage = await this.updateEmbed(messageReaction, rsLevel, registeredPlayers, extraPlayers, msgObject.author) //Update the Embeed to show the new reaction   
+          oldMessage = await this.updateEmbed(messageReaction, rsLevel, registeredPlayers, extraPlayers, msgObject.author,closeIT) //Update the Embeed to show the new reaction   
         } else if (b.id == "plusTwo") {
           if (currentPeopleAmm > 2) return await b.reply.send('Too many players', true);
           extraPlayers.set(b.clicker.user, 2)
           if (oldMessage) oldMessage.delete({ timeout: 1 });
-          oldMessage = await this.updateEmbed(messageReaction, rsLevel, registeredPlayers, extraPlayers, msgObject.author) //Update the Embeed to show the new reaction   
+          oldMessage = await this.updateEmbed(messageReaction, rsLevel, registeredPlayers, extraPlayers, msgObject.author,closeIT) //Update the Embeed to show the new reaction   
         }
         b.reply.defer()
       }

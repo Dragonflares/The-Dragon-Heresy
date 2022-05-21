@@ -64,19 +64,19 @@ export class RecruitWhiteStarCommand extends WhitestarsCommand {
 
       //Debug
       if (description == "debug") {
-        let member = await Member.findOne({ discordId: "624387466907877376" }).exec();
+        let member = await Member.findOne({ discordId: "333191213576486922" }).exec();
         newWhiteStar.members.push(member)
         newWhiteStar.preferences.set(member.discordId, '🗡️',)
         let roleMember = await message.guild.members.fetch(member.discordId)
         roleMember.roles.add(newWhiteStar.wsrole)
 
-        member = await Member.findOne({ discordId: "741855907129983040" }).exec();
+        member = await Member.findOne({ discordId: "692163705877561344" }).exec();
         newWhiteStar.members.push(member)
         newWhiteStar.preferences.set(member.discordId, '❓',)
         roleMember = await message.guild.members.fetch(member.discordId)
         roleMember.roles.add(newWhiteStar.wsrole)
 
-        member = await Member.findOne({ discordId: "626878307203284994" }).exec();
+        member = await Member.findOne({ discordId: "712596390097977395" }).exec();
         newWhiteStar.members.push(member)
         newWhiteStar.preferences.set(member.discordId, '❓',)
         roleMember = await message.guild.members.fetch(member.discordId)

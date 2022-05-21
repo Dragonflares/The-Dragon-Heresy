@@ -96,7 +96,7 @@ export class SetTimezoneCommand extends MemberCommand{
         // Timezones 0 to 14
         let timezonesMenu2 = new MessageMenu()
             .setID('gmt1')
-            .setPlaceholder('GMT 0 to +14')
+            .setPlaceholder('GMT 1 to +14')
             .setMaxValues(1)
             .setMinValues(1)
 

@@ -47,7 +47,7 @@ export const timezones = new Map([
     ["(GMT +14:00) Line Islands, Tokelau", "+14.00"]
 ])
 
-export class SetTimeZoneCommand extends MemberCommand{
+export class SetTimezoneCommand extends MemberCommand{
     constructor(plugin){
         super(plugin, {
             name: 'settimezone',

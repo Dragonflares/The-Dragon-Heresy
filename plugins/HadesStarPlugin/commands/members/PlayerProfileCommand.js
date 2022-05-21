@@ -54,7 +54,7 @@ export class PlayerProfileCommand extends MemberCommand {
         if (playertimezone == '+0')
             playertimezone = "Timezone not setup"
         else {
-            if (playertimezone > 0) playertimezone = `+${playertimezone}`
+            if (playertimezone > 0) playertimezone = `${playertimezone}`
             //playertimezone = `GMT ${playertimezone}`
         }
 

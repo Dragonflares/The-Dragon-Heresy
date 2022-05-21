@@ -10,4 +10,4 @@ export * from './RemovePlayerWhiteStarCommand';
 export * from './SummaryWhiteStarCommand';
 export * from './ExportWSTechCommand';
 export * from './WSGroupScoreCommand';
-export * from './DeadShipWhiteStarCommand';
+//export * from './DeadShipWhiteStarCommand';

@@ -17,4 +17,4 @@ export * from './RedStarLogCommand';
 export * from './RemindCommand';
 export * from './RemindListCommand';
 export * from './RemindRemoveCommand';
-export * from './SetTimeZoneCommand';
+export * from './SetTimezoneCommand';

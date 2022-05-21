@@ -28,8 +28,11 @@ export class AfkListCommand extends MemberCommand {
         if (!member)
             return message.channel.send("You aren't part of any Corporation. Join a Corporation first.")
 
+        if (member.Corp.corpId != message.guild.id.toString())
+        return message.channel.send("This aint your corporation!.")
         //get array of members
         let membersInCorp = Array.from(corp.members)
+        
 
         //Loop all channel members
         let stringToSend = ""

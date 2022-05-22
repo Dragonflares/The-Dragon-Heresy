@@ -113,15 +113,17 @@ export class RecruitRedStarCommand extends MemberCommand {
     } else {
       newEmbed.setColor("ORANGE");
       message.edit(newEmbed);
+
+      var link = "http://discordapp.com/channels/" + message.guild.id + "/" + message.channel.id + "/" + message.id;
+      let urlbutton = new MessageButton()
+        .setStyle('url')
+        .setURL(link)
+        .setLabel('Jump to Recruit!');
+      let sent = await message.channel.send(`There is currently a RS${rsLevel} going with ${currentPeopleAmm}/4`, urlbutton)
+      return sent;
     }
 
-    var link = "http://discordapp.com/channels/" + message.guild.id + "/" + message.channel.id + "/" + message.id;
-    let urlbutton = new MessageButton()
-      .setStyle('url')
-      .setURL(link)
-      .setLabel('Jump to Recruit!');
-    let sent = await message.channel.send(`There is currently a RS${rsLevel} going with ${currentPeopleAmm}/4`, urlbutton)
-    return sent;
+
   }
 
   async sendInitialMessage(msgObject, rsLevel, timeout) {

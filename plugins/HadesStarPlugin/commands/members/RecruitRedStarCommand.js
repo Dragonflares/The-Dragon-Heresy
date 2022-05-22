@@ -201,6 +201,7 @@ export class RecruitRedStarCommand extends MemberCommand {
       //Delete queue
       if (b.id == "delete") { //When Trash
         if (b.clicker.user.id == msgObject.author.id) {
+          if (oldMessage) oldMessage.delete({ timeout: 1 });
           this.failed(messageReaction, registeredPlayers, extraPlayers);
           return await b.reply.send('Invitation Deleted', true);
         }
@@ -295,7 +296,7 @@ export class RecruitRedStarCommand extends MemberCommand {
       corp.redStarLogs.push(newRSLog)
       await newRSLog.save()
       await corp.save()
-
+      if (oldMessage) oldMessage.delete({ timeout: 1 });
       this.failed(messageReaction, registeredPlayers, extraPlayers);
     });
   }

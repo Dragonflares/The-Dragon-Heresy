@@ -1,5 +1,4 @@
 import {Schema, model} from 'mongoose';
-import { Member } from './Member';
 
 const ReminderSchema = Schema ({
     author: { type: Schema.Types.ObjectId, ref: "Member" },

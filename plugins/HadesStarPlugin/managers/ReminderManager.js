@@ -1,5 +1,5 @@
 import { Manager } from '../../../lib';
-import { Member, WhiteStar, Reminder } from '../database';
+import { Member, Reminder } from '../database';
 
 
 export class ReminderManager extends Manager {
@@ -16,16 +16,14 @@ export class ReminderManager extends Manager {
     }
 
     CheckReminders = async (client) => {
-        let reminders = await Reminder.find().populate("author").exec();
-        reminders.forEach(async r => {
-            let awayTime = new Date();
-            if (awayTime.getTime() > r.time.getTime()) {
-                this.client.users.fetch(r.author.discordId, false).then((user) => {
-                    user.send(`Reminder: ${r.what}`);
-                });
-                r.remove();
-            }
-        });
+        await Reminder.find({"time":{"$lte": new Date()}}).populate("author").exec().then(async reminders => {
+            reminders.forEach( async remind => {
+                this.client.users.fetch(remind.author.discordId, false)
+                    .then((user) => user.send(`Reminder: ${remind.what}`));
+                await Member.findOneAndUpdate({discordId: remind.author.discordId.toString()}, {$pull: {reminders: remind._id} }).catch(err => console.log(err))
+                remind.remove();
+        })})
+        .catch(err => console.log(err))
     }
     
 

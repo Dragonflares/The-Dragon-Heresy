@@ -1,7 +1,8 @@
 import { MemberCommand } from './MemberCommand';
 import { Member, Tech, Reminder } from '../../database';
 import Mongoose from 'mongoose';
-import { id } from 'common-tags';
+import * as timeUtils from '../../utils/timeUtils.js'
+
 
 export class RemindCommand extends MemberCommand {
     constructor(plugin) {
@@ -38,9 +39,8 @@ export class RemindCommand extends MemberCommand {
             } else {
                 if(member.reminders.length>=8)
                 return message.channel.send("Too many reminders. (8 max)");
-                var diffDays = Math.floor(time / 86400000); // days
-                var diffHrs = Math.floor((time % 86400000) / 3600000); // hours
-                var diffMins = Math.round(((time % 86400000) % 3600000) / 60000); // minutes
+
+                let {diffDays, diffHrs, diffMins } = timeUtils.getTime(time);
 
                 //Calculte Current Time
                 let timeNow = new Date()

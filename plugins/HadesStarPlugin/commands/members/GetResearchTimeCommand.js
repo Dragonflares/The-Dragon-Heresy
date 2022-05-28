@@ -2,6 +2,7 @@ import { MemberCommand } from './MemberCommand';
 import { Member, Corp } from '../../database';
 import { TechTree } from '../../techs';
 import { confirmResultButtons } from '../../utils';
+import * as timeUtils from '../../utils/timeUtils.js'
 
 export class GetResearchTimeCommand extends MemberCommand{
     constructor(plugin){
@@ -73,9 +74,9 @@ export class GetResearchTimeCommand extends MemberCommand{
             }  
         });
         time *= 1000;
-        var diffDays = Math.floor(time / 86400000); // days
-        var diffHrs = Math.floor((time % 86400000) / 3600000); // hours
-        var diffMins = Math.round(((time % 86400000) % 3600000) / 60000); // minutes
+
+        let {diffDays, diffHrs, diffMins } = timeUtils.getTime(time);
+
         let messageConcat = `${diffDays} days, ${diffHrs} hours and ${diffMins} minutes of research! It costed ${cost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} credits!`
         return message.channel.send(messageConcat)
     }

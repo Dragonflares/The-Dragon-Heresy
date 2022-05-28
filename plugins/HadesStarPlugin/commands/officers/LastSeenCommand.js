@@ -1,11 +1,12 @@
 import { OfficerCommand } from './OfficerCommand';
 import { Member, Corp } from '../../database';
 import { confirmResultButtons } from '../../utils';
+import * as timeUtils from '../../utils/timeUtils.js'
 
 export class LastSeenCommand extends OfficerCommand {
     constructor(plugin) {
         super(plugin, {
-            name: 'lastSeen',
+            name: 'lastseen',
             aliases: ['ls'],
             description: "Shows you the last time a server member was seen.",
             usage: "ls (member/s)"
@@ -90,10 +91,7 @@ export class LastSeenCommand extends OfficerCommand {
             }
             else {
                 let today = new Date()
-                let diffMs = today - element.lastSeen
-                var diffDays = Math.floor(diffMs / 86400000); // days
-                var diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours
-                var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
+                let {diffDays, diffHrs, diffMins } = timeUtils.timeDiff(today, element.lastSeen);
                 messageConcat = `- ${element.name} was last seen ${diffDays} days, ${diffHrs} hours and ${diffMins} minutes ago. \n`
             }
             if (response.length + messageConcat.length + 3 >= 2000) {

@@ -1,8 +1,9 @@
 import { MemberCommand } from './MemberCommand';
-import { RedStarRoles, Corp, RedStarLog } from '../../database'
+import { RedStarRoles, RedStarQueue, Corp, RedStarLog} from '../../database'
 const { MessageButton, MessageActionRow } = require("discord-buttons")
 const Discord = require('discord.js');
 import Mongoose from 'mongoose'
+import * as RsQueuesUtils from '../../utils/redStarsQueuesUtils'
 
 export class RecruitRedStarCommand extends MemberCommand {
   constructor(plugin) {
@@ -15,290 +16,127 @@ export class RecruitRedStarCommand extends MemberCommand {
   }
 
   async run(message, args) {
-    if (args[0] && (args[0] > 0 && args[0] < 12)) { //If level between 1 and 12
-      if (args[1]) {
-        if (args[1] >= 1 && args[1] <= 60) { 
-          message.delete({ timeout: 1 });    //Delete User message
-          this.sendInitialMessage(message, args[0], 60000 * args[1]); //Send recuit message
-        } else {
-          return message.channel.send("Time must be between 5 and 60 minutes")
-        }
-      } else {
-        message.delete({ timeout: 1 });    //Delete User message
-        this.sendInitialMessage(message, args[0], 600000); //Send recuit message
-      }
+
+    // Delete command
+    message.delete({ timeout: 1 }); 
+
+    // Get Arguments
+    let level = args[0]
+    let time = args[1]
+
+    if (level && (level > 0 && level < 12)) {                           // If level between 1 and 12
+      if(!time || time < 1 || time > 60 || isNaN(time)) 
+        time = 600000   // If time is not a number or between 1 and 60 time is 10 min
+      else
+        time *= 60000
+      this.sendInitialMessage(message, level , time);                   // Send recuit message
     } else {
       return message.channel.send("You must specifiy a valid Red Star level (1-11)")
     }
   }
 
+async sendInitialMessage(msgObject, rsLevel, timeout) {
+        //Make sure role exists
+        let existentRedStarRoles = await RedStarRoles.findOne({ corpId: msgObject.guild.id.toString() })
+        let role = existentRedStarRoles.redStarRoles.get(`${rsLevel}`)
+        if (!role) return msgObject.channel.send(`The Role ${rsLevel} wasnt setup by server Administrator`);
 
-  async failed(message, registeredPlayers, extra) {
-    //Add Reactions to a dictionary
-    //If no people write None
-    let testString = ""
-    registeredPlayers.forEach((value, key) => {
-      let tx = ""
-      if (extra.has(key)) tx = `**+${extra.get(key)}**`
-      testString += ` ${key} ${value} ${tx} (${key.username})\n`
-    })
-    if (testString == "") testString = "None";
+        //Get Author Name
+        var authorName = msgObject.guild.member(msgObject.author).nickname
+        if (!authorName) authorName = msgObject.author.username
 
-    //If no people write None
-    let newEmbed = new Discord.MessageEmbed(message.embeds[0])
-    newEmbed.fields[0].value = `0/0` //"Current People"
-    newEmbed.fields[1].value = `${testString}` //"Members"
-    newEmbed.setColor("RED")
-    newEmbed.setFooter("Closed")
-    message.edit({ component: null, embed: newEmbed });
+        //Create Message
+        let pollEmbed = new Discord.MessageEmbed()
+        .setTitle(`RS ${rsLevel} Recruitment invitation by ${authorName}:`)
+        .setThumbnail("https://i.imgur.com/hedXFRd.png")
+        .setDescription(`Do you want to be part of this Red Star? <@&${role}> \n Click below if you need your croid or not`)
+        .addField("Current People", "0/4")
+        .addField("Members", "None")
+        .setColor("ORANGE")
+        .setFooter(`This invitation will be on for ${timeout / 60000} minutes`)
 
-  }
+        // Add Buttons
+        let styles = ['green', 'red', 'blurple','green']
+        let labels = ['Croid', 'No Croid', '','']
+        let ids = ['has_croid', 'no_croid', 'delete','done']
+        let emojis = ['', '', '🚮','✅']
+        let buttonRow = new MessageActionRow()
 
+        let styles1 = ['grey', 'grey']
+        let labels1 = ['+1', '+2']
+        let ids1 = ['plusOne', 'plusTwo']
+        let emojis1 = ['', '']
+        let buttonRow1 = new MessageActionRow()
 
-  async updateEmbed(message, rsLevel, registeredPlayers, extra, creator,closeIT) {
-    //Variables
-    const reacted = registeredPlayers
-    //If no people write None
-    let testString = ""
-    reacted.forEach((value, key) => {
-      let tx = ""
-      if (extra.has(key)) tx = `**+${extra.get(key)}**`
-      testString += ` ${key} ${value} ${tx} (${key.username})\n`
-    })
-    if (testString == "") testString = "None";
-
-    let newEmbed = new Discord.MessageEmbed(message.embeds[0])
-
-    let currentPeopleAmm = reacted.size
-    extra.forEach((value, key) => currentPeopleAmm += value)
-
-    newEmbed.fields[0].value = `${currentPeopleAmm}/4` //"Current People"
-    newEmbed.fields[1].value = `${testString}` //"Members"
-
-    if (currentPeopleAmm == 4 || closeIT) {  // Ping people that is done 
-      //Success!
-      let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate('members').exec();
-      
-      let newRSLog = new RedStarLog({
-        _id: new Mongoose.Types.ObjectId(),
-        corpOpened: corp,
-        level: rsLevel,
-        timeClosed: new Date(),
-        endStatus: "Succeeded",
-        creatorId: creator.id,
-        membersIds: Array.from(registeredPlayers.keys()).map(a => a.id)
-      })
-      corp.redStarLogs.push(newRSLog)
-      await newRSLog.save()
-      await corp.save()
-
-      newEmbed.setColor("GREEN");
-      let testString = ""
-      reacted.forEach((value, key) => {
-        let tx = ""
-        if (extra.has(key)) tx = `**+${extra.get(key)}**`
-        testString += ` ${key} ${value} ${tx},`
-      })
-      if(!closeIT)
-        testString += ` Full Team for RS${rsLevel}!`
-      else
-        testString += ` Partial Team for RS${rsLevel}!`
-      if(currentPeopleAmm == 2)
-        testString += ` Lets duo this!`
-        if(currentPeopleAmm == 3)
-        testString += ` Almost full!`
-      message.channel.send(testString);
-      
-      message.edit({ component: null, embed: newEmbed });
-    } else {
-      newEmbed.setColor("ORANGE");
-      message.edit(newEmbed);
-
-      var link = "http://discordapp.com/channels/" + message.guild.id + "/" + message.channel.id + "/" + message.id;
-      let urlbutton = new MessageButton()
-        .setStyle('url')
-        .setURL(link)
-        .setLabel('Jump to Recruit!');
-      let sent = await message.channel.send(`There is currently a RS${rsLevel} going with ${currentPeopleAmm}/4`, urlbutton)
-      return sent;
-    }
-
-
-  }
-
-  async sendInitialMessage(msgObject, rsLevel, timeout) {
-    //Make sure role exists
-    let existentRedStarRoles = await RedStarRoles.findOne({ corpId: msgObject.guild.id.toString() })
-    let role = existentRedStarRoles.redStarRoles.get(`${rsLevel}`)
-
-    if (!role) {
-      return msgObject.channel.send(`The Role ${rsLevel} wasnt setup by server Administrator`);
-    }
-    let reactionFilter = (reaction, user) => !user.bot
-    var authorName = msgObject.guild.member(msgObject.author).nickname
-    if (!authorName) authorName = msgObject.author.username
-    let pollEmbed = new Discord.MessageEmbed()
-      .setTitle(`RS ${rsLevel} Recruitment invitation by ${authorName}:`)
-      .setThumbnail("https://i.imgur.com/hedXFRd.png")
-      .setDescription(`Do you want to be part of this Red Star? <@&${role}> \n Click below if you have croid or not`)
-      .addField("Current People", "0/4")
-      .addField("Members", "None")
-      .setColor("ORANGE")
-      .setFooter(`This invitation will be on for ${timeout / 60000} minutes`)
-
-
-    // Add Buttons
-    let styles = ['green', 'red', 'blurple','green']
-    let labels = ['Croid', 'No Croid', '','']
-    let ids = ['has_croid', 'no_croid', 'delete','done']
-    let emojis = ['', '', '🚮','✅']
-    let buttonRow = new MessageActionRow()
-
-    let styles1 = ['grey', 'grey']
-    let labels1 = ['+1', '+2']
-    let ids1 = ['plusOne', 'plusTwo']
-    let emojis1 = ['', '']
-    let buttonRow1 = new MessageActionRow()
-
-    for (let i = 0; i < styles.length; i++) {
-      let button = new MessageButton()
-        .setStyle(styles[i])
-        .setLabel(labels[i])
-        .setID(ids[i])
-      if (emojis[i] != '')
-        button.setEmoji(emojis[i])
-      buttonRow.addComponent(button);
-    }
-
-    for (let i = 0; i < styles1.length; i++) {
-      let button = new MessageButton()
-        .setStyle(styles1[i])
-        .setLabel(labels1[i])
-        .setID(ids1[i])
-      if (emojis1[i] != '')
-        button.setEmoji(emojis1[i])
-      buttonRow1.addComponent(button);
-    }
-
-    msgObject.channel.send(`<@&${role}>`)
-
-    const messageReaction = await msgObject.channel.send({ components: [buttonRow,buttonRow1], embed: pollEmbed });
-    const filter = (button) => button.clicker.user.bot == false;
-    const collector = messageReaction.createButtonCollector(filter, { time: timeout, dispose: true }); //collector for 5 seconds
-
-    let oldMessage
-    let registeredPlayers = new Map() // User + Croid or not
-    let extraPlayers = new Map()
-    let closeIT = false;
-
-    registeredPlayers.set(msgObject.author, '❎')
-    if (oldMessage) oldMessage.delete({ timeout: 1 });
-    oldMessage = await this.updateEmbed(messageReaction, rsLevel, registeredPlayers, extraPlayers, msgObject.author,closeIT) //Update the Embeed to show the new reaction   
-
-
-    collector.on('collect', async b => {
-
-      //Delete queue
-      if (b.id == "delete") { //When Trash
-        if (b.clicker.user.id == msgObject.author.id) {
-          if (oldMessage) oldMessage.delete({ timeout: 1 });
-          this.failed(messageReaction, registeredPlayers, extraPlayers);
-          return await b.reply.send('Invitation Deleted', true);
+        for (let i = 0; i < styles.length; i++) {
+        let button = new MessageButton()
+            .setStyle(styles[i])
+            .setLabel(labels[i])
+            .setID(ids[i])
+        if (emojis[i] != '')
+            button.setEmoji(emojis[i])
+        buttonRow.addComponent(button);
         }
-        return await b.reply.send('You are not the owner of this invitation', true);
-      }
 
-      //done
-      if(b.id== "done"){
-        if (b.clicker.user.id == msgObject.author.id) {
-          if( registeredPlayers.size > 1 ){
-            closeIT=true;
-            if (oldMessage) oldMessage.delete({ timeout: 1 });
-            oldMessage = await this.updateEmbed(messageReaction, rsLevel, registeredPlayers, extraPlayers, msgObject.author,closeIT) //Update the Embeed to show the new reaction    
-             return b.reply.defer()
-          }else{
-            return await b.reply.send('You need more than one player to finish a queue', true);
-          }
+        for (let i = 0; i < styles1.length; i++) {
+        let button = new MessageButton()
+            .setStyle(styles1[i])
+            .setLabel(labels1[i])
+            .setID(ids1[i])
+        if (emojis1[i] != '')
+            button.setEmoji(emojis1[i])
+        buttonRow1.addComponent(button);
         }
-        return await b.reply.send('You are not the owner of this invitation', true);
-      }
 
 
-      // Get out of queue
-      let hadCroidAndClickCroid = b.id == "has_croid" && registeredPlayers.has(b.clicker.user) && registeredPlayers.get(b.clicker.user) == '✅'
-      let noCroidAndClockNoCroid = b.id == "no_croid" && registeredPlayers.has(b.clicker.user) && registeredPlayers.get(b.clicker.user) == '❎'
+        // Send message and save reaction
+        const messageReaction = await msgObject.channel.send(`<@&${role}>`, { components: [buttonRow,buttonRow1], embed: pollEmbed });
+        
+        // Create button collector for the message
+        const filter = (button) => button.clicker.user.bot == false;
+        const collector = messageReaction.createButtonCollector(filter);
 
-      if (hadCroidAndClickCroid || noCroidAndClockNoCroid) {
-        extraPlayers.delete(b.clicker.user)
-        registeredPlayers.delete(b.clicker.user)
-        await b.reply.send('You out of the queue', true);
-        if (oldMessage) oldMessage.delete({ timeout: 1 });
-        return oldMessage = await this.updateEmbed(messageReaction, rsLevel, registeredPlayers, extraPlayers, msgObject.author,closeIT) //Update the Embeed to show the new reaction   
-      }
+        //Create map of registered players and self incude
+        let registeredPlayers = new Map()
+        let extraPlayers = new Map()
+        registeredPlayers.set(msgObject.author.id, '❎')
 
-      //Get in queue
-      if (b.id == "has_croid" || b.id == "no_croid") {
-        if (b.id == "has_croid")
-          registeredPlayers.set(b.clicker.user, '✅')
-        else
-          registeredPlayers.set(b.clicker.user, '❎')
+        //Save time to timeout
+        let timeToTimeout = new Date(new Date().getTime() + timeout);
 
-        if (oldMessage) oldMessage.delete({ timeout: 1 });
-        oldMessage = await this.updateEmbed(messageReaction, rsLevel, registeredPlayers, extraPlayers, msgObject.author,closeIT) //Update the Embeed to show the new reaction   
-        return b.reply.defer()
-      }
+        // Open a new RedstarQueue
+        const corp = await Corp.findOne({ corpId: messageReaction.guild.id.toString() }).exec()
+        let newRedStarQueue = new RedStarQueue({
+            _id: new Mongoose.Types.ObjectId(),
+            author: msgObject.author.id,
+            Corp: corp,
+            timeOpened: new Date(),
+            length: timeout,
+            timeToTimeout: timeToTimeout,
+            rsLevel: rsLevel,
+            registeredPlayers: registeredPlayers,
+            extraPlayers: new Map(),
+            recruitMessage: messageReaction.id.toString(),
+            currentStatusMessage: null,
+            recruitChannel: messageReaction.channel.id.toString(),
+            text:""
+        })
 
-      //Unregister plus one/tro
-      let plusOneClickPlusOne = b.id == "plusOne" && extraPlayers.has(b.clicker.user) && extraPlayers.get(b.clicker.user) == 1
-      let plusTwoClickPlusTwo = b.id == "plusTwo" && extraPlayers.has(b.clicker.user) && extraPlayers.get(b.clicker.user) == 2
+        // CurrentStatusMessage
+        let currentStatusMessage = null
+        if(newRedStarQueue.currentStatusMessage)
+             currentStatusMessage = await this.client.channels.cache.get(newRedStarQueue.recruitChannel).messages.fetch(newRedStarQueue.currentStatusMessage.toString());    
+        if (currentStatusMessage) currentStatusMessage.delete({ timeout: 1 });
+        currentStatusMessage = await RsQueuesUtils.updateEmbed(this.client, messageReaction, newRedStarQueue, false) //Update the Embeed to show the new reaction   
 
-      if (plusOneClickPlusOne || plusTwoClickPlusTwo) {
-        extraPlayers.delete(b.clicker.user)
-        await b.reply.send('Unregistered plus player/s', true);
-        if (oldMessage) oldMessage.delete({ timeout: 1 });
-        return oldMessage = await this.updateEmbed(messageReaction, rsLevel, registeredPlayers, extraPlayers, msgObject.author,closeIT) //Update the Embeed to show the new reaction   
-      }
+        // Save
+        newRedStarQueue.currentStatusMessage=currentStatusMessage.id;
+        await newRedStarQueue.save();
 
-      // add plusone/two
-      let currentPeopleAmm = registeredPlayers.size
-      extraPlayers.forEach((value, key) => currentPeopleAmm += value)
+        // Listen to buttons
+        collector.on('collect', async b => {
+           RsQueuesUtils.collectorFunc(this.client, messageReaction, newRedStarQueue, b)
+        });
+    }
 
-      if (registeredPlayers.has(b.clicker.user)) {
-        if (b.id == "plusOne") {
-          if (currentPeopleAmm > 3) return await b.reply.send('Too many players', true);
-          extraPlayers.set(b.clicker.user, 1)
-          if (oldMessage) oldMessage.delete({ timeout: 1 });
-          oldMessage = await this.updateEmbed(messageReaction, rsLevel, registeredPlayers, extraPlayers, msgObject.author,closeIT) //Update the Embeed to show the new reaction   
-        } else if (b.id == "plusTwo") {
-          if (currentPeopleAmm > 2) return await b.reply.send('Too many players', true);
-          extraPlayers.set(b.clicker.user, 2)
-          if (oldMessage) oldMessage.delete({ timeout: 1 });
-          oldMessage = await this.updateEmbed(messageReaction, rsLevel, registeredPlayers, extraPlayers, msgObject.author,closeIT) //Update the Embeed to show the new reaction   
-        }
-        b.reply.defer()
-      }
-
-    });
-
-    collector.on('end', async collected => {
-      //Timeout
-      let corp = await Corp.findOne({ corpId: messageReaction.guild.id.toString() }).populate('members').exec();
-
-      let newRSLog = new RedStarLog({
-        _id: new Mongoose.Types.ObjectId(),
-        corpOpened: corp,
-        level: rsLevel,
-        timeClosed: new Date(),
-        endStatus: "Timeout",
-        creatorId: msgObject.author.id,
-        membersIds: Array.from(registeredPlayers.keys()).map(a => a.id)
-      })
-      corp.redStarLogs.push(newRSLog)
-      await newRSLog.save()
-      await corp.save()
-      if (oldMessage) oldMessage.delete({ timeout: 1 });
-      this.failed(messageReaction, registeredPlayers, extraPlayers);
-    });
-  }
 }
-

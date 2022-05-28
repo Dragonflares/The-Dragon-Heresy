@@ -1,5 +1,6 @@
 const Discord = require('discord.js');
 import { Member, WhiteStar } from '../database';
+import * as timeUtils from './timeUtils.js'
 
 export let NormalShow = true
 
@@ -107,10 +108,7 @@ export const whiteStarStatusMessage = async (message, ws) => {
     if (ws.status == "Scanning") {
         //calculate delta time
         let today = new Date()
-        let diffMs = today - ws.scantime
-        var diffDays = Math.floor(diffMs / 86400000); // days
-        var diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours
-        var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
+        let {diffDays, diffHrs, diffMins } = timeUtils.timeDiff(today, ws.scantime);
         diffMins = diffMins.toString().padStart(2, '0')
         statusEmbed.addField("Time Passed:", `${diffDays} Days,  ${diffHrs} Hours and ${diffMins} Minutes`)
     } else if (ws.status == "Running") {
@@ -326,20 +324,6 @@ export const RefreshStatusMessage = async (client, ws, interval) => {
             const statusEmbed = await whiteStarStatusMessage(msgStatus, intWs);
             //Remove Reactions
             msgStatus.edit("-", { embed: statusEmbed })
-
-            /*  if(intWs.status == "Running")
-              {
-                  //Check if to kill WS
-                  let today = new Date()
-                  let diffMs = 432000000 - (today - intWs.matchtime)
-                  var diffDays = Math.floor(diffMs / 86400000); // days
-                  var diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours
-                  var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
-  
-                  if(diffMs <= 0) {
-                      await killWS(client, intWs, msgStatus)
-                  }
-              }*/
         }
     }
     return msgStatus;

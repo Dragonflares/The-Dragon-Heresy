@@ -1,8 +1,6 @@
 import { MemberCommand } from './MemberCommand';
-import { RedStarRoles, Corp, RedStarLog } from '../../database'
-const { MessageButton, MessageActionRow } = require("discord-buttons")
+import { Corp, RedStarLog } from '../../database'
 const Discord = require('discord.js');
-import Mongoose from 'mongoose'
 
 export class RedStarLogCommand extends MemberCommand {
     constructor(plugin) {
@@ -17,24 +15,24 @@ export class RedStarLogCommand extends MemberCommand {
     async run(message, args) {
         message.delete({ timeout: 1 });    //Delete User message
 
-        let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate('members').populate('redStarLogs').exec();
 
         if (message.mentions.users.first()) {
-            this.sendLog(message, message.mentions.users.first(), corp); //Send recuit message
+            this.sendLog(message, message.mentions.users.first()); //Send recuit message
         }
         else if (args[0] == "top") {
-            this.sendTopLog(message, corp); //Send recuit message
+            this.sendTopLog(message); //Send top message
         }
         else if (args[0] == "last") {
-            this.sendLastLog(message, corp); //Send recuit message
+            this.sendLastLog(message); //Send last message
 
         } else {
-            this.sendGeneralLog(message, corp); //Send recuit message
+            this.sendGeneralLog(message); //Send general message
         }
     }
 
-    async sendGeneralLog(message, corp) {
+    async sendGeneralLog(message) {
 
+        let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).exec();
 
         let generalEmbed = new Discord.MessageEmbed()
             .setTitle(`${corp.name} Red Stars General Summary:`)
@@ -48,8 +46,8 @@ export class RedStarLogCommand extends MemberCommand {
         let d = new Date()
         let checkDate = new Date(d.setMonth(d.getMonth() - 1))
 
-        let totalTimeout = corp.redStarLogs.filter(log => log.endStatus == "Timeout")
-        let totalSucceeded = corp.redStarLogs.filter(log => log.endStatus == "Succeeded")
+        let totalTimeout = await RedStarLog.find({corpOpened: corp._id,endStatus: "Timeout"}).exec()
+        let totalSucceeded = await RedStarLog.find({corpOpened: corp._id,endStatus: "Succeeded"}).exec()
         let monthlyTimeout = totalTimeout.filter(log => log.timeClosed > checkDate)
         let monthySucceeded = totalSucceeded.filter(log => log.timeClosed > checkDate)
 
@@ -77,7 +75,9 @@ export class RedStarLogCommand extends MemberCommand {
         return message.channel.send(generalEmbed);
     }
 
-    async sendLog(message, target, corp) {
+    async sendLog(message, target) {
+
+        let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate('members').populate('redStarLogs').exec();
 
         let mentionedName = message.guild.member(target).nickname
         if (!mentionedName) mentionedName = target.username
@@ -94,30 +94,32 @@ export class RedStarLogCommand extends MemberCommand {
         let d = new Date()
         let checkDate = new Date(d.setMonth(d.getMonth() - 1))
 
-        let totalCreatorTimeout = corp.redStarLogs.filter(log => log.endStatus == "Timeout" && log.creatorId == target.id).length
-        let totalCreatorSucceeded = corp.redStarLogs.filter(log => log.endStatus == "Succeeded" && log.creatorId == target.id).length
-        let monthlyCreatorTimeout = corp.redStarLogs.filter(log => (log.endStatus == "Timeout" && log.creatorId == target.id && (log.timeClosed > checkDate))).length
-        let monthyCreatorSucceeded = corp.redStarLogs.filter(log => (log.endStatus == "Succeeded" && log.creatorId == target.id && (log.timeClosed > checkDate))).length
-
+        let totalCreatorTimeout = await RedStarLog.find({corpOpened: corp._id, endStatus: "Timeout", creatorId: target.id}).exec()
+        let totalCreatorSucceeded = await RedStarLog.find({corpOpened: corp._id, endStatus: "Succeeded", creatorId: target.id}).exec()
+        let monthlyCreatorTimeout = totalCreatorTimeout.filter(log => log.timeClosed > checkDate);
+        let monthyCreatorSucceeded = totalCreatorSucceeded.filter(log => log.timeClosed > checkDate);
+       
         //Total Created
-        let totalStr = `__Succeeded:__ ${totalCreatorSucceeded}    (${monthyCreatorSucceeded} this month)\n`
-        totalStr += `__Timeout:__ ${totalCreatorTimeout}   (${monthlyCreatorTimeout} this month)\n`
+        let totalStr = `__Succeeded:__ ${totalCreatorSucceeded.length}    (${monthyCreatorSucceeded.length} this month)\n`
+        totalStr += `__Timeout:__ ${totalCreatorTimeout.length}   (${monthlyCreatorTimeout.length} this month)\n`
         generalEmbed.addField("Total Created", totalStr)
 
         //Total Joined
 
-        let totalJoinedTimeout = corp.redStarLogs.filter(log => log.endStatus == "Timeout" && log.membersIds.includes(target.id)).length
-        let totalJoinedSucceeded = corp.redStarLogs.filter(log => log.endStatus == "Succeeded" && log.membersIds.includes(target.id)).length
-        let monthlyJoinedTimeout = corp.redStarLogs.filter(log => (log.endStatus == "Timeout" && log.membersIds.includes(target.id) && (log.timeClosed > checkDate))).length
-        let monthyJoinedSucceeded = corp.redStarLogs.filter(log => (log.endStatus == "Succeeded" && log.membersIds.includes(target.id) && (log.timeClosed > checkDate))).length
+        let totalJoinedTimeout = await RedStarLog.find({corpOpened: corp._id, endStatus: "Timeout", membersIds: { $in: [target.id]}}).exec()
+        let totalJoinedSucceeded = await RedStarLog.find({corpOpened: corp._id, endStatus: "Succeeded", membersIds: { $in: [target.id]}}).exec()
+        let monthlyJoinedTimeout = totalCreatorTimeout.filter(log => log.timeClosed > checkDate);
+        let monthyJoinedSucceeded = totalCreatorSucceeded.filter(log => log.timeClosed > checkDate);
 
-        let totalJoinedStr = `__Succeeded:__ ${totalJoinedSucceeded}    (${monthyJoinedSucceeded} this month)\n`
-        totalJoinedStr += `__Timeout:__ ${totalJoinedTimeout}   (${monthlyJoinedTimeout} this month)\n`
+        let totalJoinedStr = `__Succeeded:__ ${totalJoinedSucceeded.length}    (${monthyJoinedSucceeded.length} this month)\n`
+        totalJoinedStr += `__Timeout:__ ${totalJoinedTimeout.length}   (${monthlyJoinedTimeout.length} this month)\n`
 
         generalEmbed.addField("Total Joined", totalJoinedStr)
         return message.channel.send(generalEmbed);
     }
-    async sendTopLog(message, corp) {
+    async sendTopLog(message) {
+
+        let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate('members').populate('redStarLogs').exec();
 
         let generalEmbed = new Discord.MessageEmbed()
             .setTitle(`${corp.name} Red Stars Top 5 Players:`)
@@ -134,18 +136,22 @@ export class RedStarLogCommand extends MemberCommand {
         let playerMonthlyCreated = new Map()
         let playerMonthlyJoined = new Map()
  
-        corp.redStarLogs.filter(log => log.endStatus == "Succeeded" && (log.timeClosed > checkDate)).forEach(log => {
-            if (!playerMonthlyCreated.get(log.creatorId))
-                playerMonthlyCreated.set(log.creatorId, 1)
-            else
-                playerMonthlyCreated.set(log.creatorId, playerMonthlyCreated.get(log.creatorId) + 1)
-
-            log.membersIds.forEach(m => {
-                if (!playerMonthlyJoined.get(m))
-                    playerMonthlyJoined.set(m, 1)
+        await RedStarLog.find({corpOpened: corp._id,endStatus: "Succeeded",timeClosed: {"$gt": checkDate}}).exec().then( logs => {
+            logs.forEach(log => {
+                if (!playerMonthlyCreated.get(log.creatorId))
+                    playerMonthlyCreated.set(log.creatorId, 1)
                 else
-                    playerMonthlyJoined.set(m, playerMonthlyJoined.get(m) + 1)
+                    playerMonthlyCreated.set(log.creatorId, playerMonthlyCreated.get(log.creatorId) + 1)
+                
+                if(log.membersIds)
+                log.membersIds.forEach(m => {
+                    if (!playerMonthlyJoined.get(m))
+                        playerMonthlyJoined.set(m, 1)
+                    else
+                        playerMonthlyJoined.set(m, playerMonthlyJoined.get(m) + 1)
+                })
             })
+           
         })
 
         let strMonthly = "**Created Successfully**\n"
@@ -154,23 +160,25 @@ export class RedStarLogCommand extends MemberCommand {
         strMonthly += await this.getTop5StringFromMap(message, playerMonthlyJoined)
         generalEmbed.addField("This Month:", strMonthly)
 
-
         //Total
         let playerTotalCreated = new Map()
         let playerTotalJoined = new Map()
        
-        corp.redStarLogs.filter(log => log.endStatus == "Succeeded").forEach(log => {
+        await RedStarLog.find({corpOpened: corp._id,endStatus: "Succeeded"}).exec().then( logs => {
+            logs.forEach(log => {
             if (!playerTotalCreated.get(log.creatorId))
                 playerTotalCreated.set(log.creatorId, 1)
             else
                 playerTotalCreated.set(log.creatorId, playerTotalCreated.get(log.creatorId) + 1)
-            log.membersIds.forEach(m => {
-                if (!playerTotalJoined.get(m))
-                    playerTotalJoined.set(m, 1)
-                else
-                    playerTotalJoined.set(m, playerTotalJoined.get(m) + 1)
+                log.membersIds.forEach(m => {
+                    if (!playerTotalJoined.get(m))
+                        playerTotalJoined.set(m, 1)
+                    else
+                        playerTotalJoined.set(m, playerTotalJoined.get(m) + 1)
+                    })
+                })
+               
             })
-        })
 
         let strTotal = "**Created Successfully**\n"
         strTotal += await this.getTop5StringFromMap(message, playerTotalCreated)
@@ -184,7 +192,7 @@ export class RedStarLogCommand extends MemberCommand {
 
 
 
-    async sendLastLog(message, corp) {
+    async sendLastLog(message) {
         return message.channel.send("last month");
     }
 

@@ -1,5 +1,6 @@
 import { MemberCommand } from './MemberCommand';
-import { Member, Corp, Reminder } from '../../database';
+import { Member} from '../../database';
+import * as timeUtils from '../../utils/timeUtils.js'
 
 export class RemindRemoveCommand extends MemberCommand {
     constructor(plugin) {
@@ -27,24 +28,20 @@ export class RemindRemoveCommand extends MemberCommand {
 
 
         let memberReminders = Array.from(member.reminders);
-
+        let stringToSend="";
         if(!args[0])
         {
-            let stringToSend="";
             let i =1
             memberReminders.map(async m => {
                 let awayTime = new Date();
                     if (awayTime.getTime() < m.time.getTime()) {
-                        let time = m.time.getTime() - awayTime.getTime()
-                        var diffDays = Math.floor(time / 86400000); // days
-                        var diffHrs = Math.floor((time % 86400000) / 3600000); // hours
-                        var diffMins = Math.round(((time % 86400000) % 3600000) / 60000); // minutes
+                        let {diffDays, diffHrs, diffMins } = timeUtils.timeDiff(m.time,awayTime);
                         if(diffDays>0)
-                        stringToSend+= `${i}) **${m.what}** (${diffDays} Days , ${diffHrs} Hours and ${diffMins} Minutes)\n`;
+                            stringToSend+= `${i}) **${m.what}** (${diffDays} Days , ${diffHrs} Hours and ${diffMins} Minutes)\n`;
                         else if(diffMins>0)
-                        stringToSend+= `${i}) **${m.what}** (${diffHrs} Hours and ${diffMins} Minutes)\n`;
+                            stringToSend+= `${i}) **${m.what}** (${diffHrs} Hours and ${diffMins} Minutes)\n`;
                         else
-                        stringToSend+= `${i}) **${m.what}** (${diffMins} Minutes)\n`;
+                            stringToSend+= `${i}) **${m.what}** (${diffMins} Minutes)\n`;
                     }else{
                         stringToSend+= `${i}) already reminded to ${m.what}\n`;
                     }
@@ -54,7 +51,7 @@ export class RemindRemoveCommand extends MemberCommand {
 
             if (stringToSend == "") 
                 stringToSend = "You have no reminders." 
-            else
+
             return message.channel.send(stringToSend)
             
         }else{

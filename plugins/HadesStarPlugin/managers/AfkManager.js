@@ -1,5 +1,7 @@
 import { Manager } from '../../../lib';
-import { Member, WhiteStar } from '../database';
+import { Member } from '../database';
+import * as timeUtils from '../utils/timeUtils.js'
+
 export class AfkManager extends Manager {
     constructor(plugin) {
         super(plugin);
@@ -16,20 +18,18 @@ export class AfkManager extends Manager {
         if (message.author.bot) return;
 
         //check if pinger is in the corp
-        let personPinging = await Member.findOne({ discordId: message.author.id.toString() }).populate('Corp').populate('techs').exec();
+        let personPinging = await Member.findOne({ discordId: message.author.id.toString() }).populate('Corp').exec();
         if (!personPinging) return;
         if (personPinging.Corp.corpId !== message.guild.id.toString()) return;
 
         message.mentions.members.forEach(async m => {
-            let member = await Member.findOne({ discordId: m.id.toString() }).populate('Corp').populate('techs').exec();
+            let member = await Member.findOne({ discordId: m.id.toString() }).exec();
             if (!member) return;
             if (member.awayTime) {
                 let awayTime = new Date();
                 if (awayTime.getTime() < member.awayTime.getTime()) {
-                    let time = member.awayTime.getTime() - awayTime.getTime()
-                    var diffDays = Math.floor(time / 86400000); // days
-                    var diffHrs = Math.floor((time % 86400000) / 3600000); // hours
-                    var diffMins = Math.round(((time % 86400000) % 3600000) / 60000); // minutes
+
+                    let {diffDays, diffHrs, diffMins } = timeUtils.timeDiff(member.awayTime,awayTime);
 
                     if (member.awayDesc == "") {
                         return message.channel.send(`${member.name} is away for ${diffDays} Days , ${diffHrs} Hours and ${diffMins} Minutes`)

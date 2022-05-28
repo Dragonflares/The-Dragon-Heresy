@@ -4,7 +4,6 @@ export * from './UpdateTechCommand';
 export * from './PlayerTechCommand';
 export * from './FindTechCommand';
 export * from './TechDataCommand';
-//export * from './ResignCommand';
 export * from './RecruitRedStarCommand';
 export * from './SlateCommand';
 export * from './GetResearchTimeCommand';

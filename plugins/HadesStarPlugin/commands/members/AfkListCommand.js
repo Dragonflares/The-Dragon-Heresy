@@ -1,5 +1,6 @@
 import { MemberCommand } from './MemberCommand';
 import { Member, Corp } from '../../database';
+import * as timeUtils from '../../utils/timeUtils.js'
 
 export class AfkListCommand extends MemberCommand {
     constructor(plugin) {
@@ -30,30 +31,21 @@ export class AfkListCommand extends MemberCommand {
 
         if (member.Corp.corpId != message.guild.id.toString())
         return message.channel.send("This aint your corporation!.")
-        //get array of members
-        let membersInCorp = Array.from(corp.members)
         
-
-        //Loop all channel members
         let stringToSend = ""
-        membersInCorp.forEach( memberToCheck => {
-            if (memberToCheck.awayTime) {
-                let awayTime = new Date();
-                if (awayTime.getTime() < memberToCheck.awayTime.getTime()) {
-                    let time = memberToCheck.awayTime.getTime() - awayTime.getTime()
-                    var diffDays = Math.floor(time / 86400000); // days
-                    var diffHrs = Math.floor((time % 86400000) / 3600000); // hours
-                    var diffMins = Math.round(((time % 86400000) % 3600000) / 60000); // minutes
-
+        await Member.find({Corp: corp._id,awayTime: {"$gt": new Date()}}).exec().then(async awayers => {
+                awayers.forEach(memberToCheck => {
+                    let {diffDays, diffHrs, diffMins } = timeUtils.timeDiff(memberToCheck.awayTime,new Date());
                     if (memberToCheck.awayDesc == "") {
                         stringToSend += `- ${memberToCheck.name} is away for ${diffDays} Days , ${diffHrs} Hours and ${diffMins} Minutes \n`
                     }
                     else {
                         stringToSend += `- ${memberToCheck.name} is away for ${diffDays} Days , ${diffHrs} Hours and ${diffMins} Minutes, Reason: ${memberToCheck.awayDesc}\n`
                     }
-                }
+                });            
             }
-        });
+        );
+
         if (stringToSend == "") stringToSend = "There are no afk people on this server."
         return message.channel.send("`\`\`" + stringToSend + "`\`\`" )
     }s

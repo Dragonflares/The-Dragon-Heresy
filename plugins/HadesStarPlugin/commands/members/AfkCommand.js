@@ -1,7 +1,6 @@
 import { MemberCommand } from './MemberCommand';
-import { Member, Tech } from '../../database';
-import Mongoose from 'mongoose';
-import { id } from 'common-tags';
+import { Member } from '../../database';
+import * as timeUtils from '../../utils/timeUtils.js'
 
 export class AfkCommand extends MemberCommand {
     constructor(plugin) {
@@ -23,7 +22,7 @@ export class AfkCommand extends MemberCommand {
             target = user
         else return message.channel.send("You cannot set another Member's afk!")
 
-        let member = await Member.findOne({ discordId: target.id.toString() }).populate('Corp').populate('techs').exec();
+        let member = await Member.findOne({ discordId: target.id.toString() }).exec();
         if (!member)
             return message.channel.send("You aren't part of any Corporation. Join a Corporation first.")
 
@@ -34,9 +33,8 @@ export class AfkCommand extends MemberCommand {
             if (time == "Nope") {
                 return message.channel.send("Wrong Time Format");
             } else {
-                var diffDays = Math.floor(time / 86400000); // days
-                var diffHrs = Math.floor((time % 86400000) / 3600000); // hours
-                var diffMins = Math.round(((time % 86400000) % 3600000) / 60000); // minutes
+
+                let {diffDays, diffHrs, diffMins } = timeUtils.getTime(time);
 
                 //Calculte Current Time
                 let timeNow = new Date()
@@ -81,10 +79,7 @@ export class AfkCommand extends MemberCommand {
             let awayTime = new Date();
             if (args.length == 0) {
                 if (awayTime.getTime() < member.awayTime.getTime()) {
-                    let time = member.awayTime.getTime() - awayTime.getTime()
-                    var diffDays = Math.floor(time / 86400000); // days
-                    var diffHrs = Math.floor((time % 86400000) / 3600000); // hours
-                    var diffMins = Math.round(((time % 86400000) % 3600000) / 60000); // minutes
+                     let {diffDays, diffHrs, diffMins } = timeUtils.timeDiff(member.awayTime,awayTime);
                     return message.channel.send(`You still away for ${diffDays} Days , ${diffHrs} Hours and ${diffMins} Minutes`)
                 } else {
                     return message.channel.send("You are not away!")

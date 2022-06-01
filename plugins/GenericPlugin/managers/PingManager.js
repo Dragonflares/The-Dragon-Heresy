@@ -39,12 +39,12 @@ export class PingManager extends Manager {
 
         //Me and Boom
         else if (message.mentions.has('153558944478920704')) {
-            let userOn = message.guild.members.cache.filter(member => (member.id == "153558944478920704" && member.presence?.status == "online")).size
+            let userOn = message.guild.members.cache.filter(member => (member.id == "153558944478920704" && member.presence.status == "online")).size
             if (userOn == 0) message.channel.send(pencolReplies[randomInt(0, pencolReplies.length - 1)])
         }
 
         else if (message.mentions.has('236891878690258944')) {
-            let userOn = message.guild.members.cache.filter(member => (member.id == "236891878690258944" && member.presence?.status == "online")).size
+            let userOn = message.guild.members.cache.filter(member => (member.id == "236891878690258944" && member.presence.status == "online")).size
             if (userOn == 0) message.channel.send("You had better hope that ping was important... He is a grumpy cop..")
         }
     }

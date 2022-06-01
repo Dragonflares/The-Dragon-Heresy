@@ -1,9 +1,7 @@
 import { MemberCommand } from './MemberCommand';
 import { Member, ShipyardLevels } from '../../database';
-import { MessageEmbed } from 'discord.js';
 import Mongoose from 'mongoose'
-
-const { MessageButton, MessageActionRow, MessageMenuOption, MessageMenu } = require("discord-buttons")
+import { MessageEmbed, MessageButton, MessageActionRow, MessageSelectMenu} from 'discord.js';
 
 export class SetShipyardLevelCommand extends MemberCommand {
     constructor(plugin) {
@@ -19,7 +17,7 @@ export class SetShipyardLevelCommand extends MemberCommand {
         let target
         let user = message.mentions.users.first()
         if (!user) {
-            target = message.guild.member(message.author)
+            target = message.author
         }
         else if (message.author.id === this.client.creator)
             target = user
@@ -35,11 +33,8 @@ export class SetShipyardLevelCommand extends MemberCommand {
             return message.channel.send("You aren't on your Corporation's server!");
         }
     }
-    modifyLevels = async (target, message) => {
-        /* Member.findOneAndUpdate({discordId: target.id.toString()}, {rslevel: NewRSLevel})
-         .catch(err => console.log(err))
-         return message.channel.send(`Red Star level updated.`)*/
-  
+    
+    modifyLevels = async (target, message) => { 
          let newbsLevel = 1
          let newminerLevel = 1
          let newtpsLevel = 1
@@ -53,112 +48,100 @@ export class SetShipyardLevelCommand extends MemberCommand {
         let embed = await this.GetLevelsMessage(target, newbsLevel, newminerLevel, newtpsLevel, "going")
 
         //BattleShips Level
-        let selectBSLevel = new MessageMenu()
-            .setID('bslevels')
+        let selectBSLevel = new MessageSelectMenu()
+            .setCustomId('bslevels')
             .setPlaceholder('Battleships Level')
-            .setMaxValues(1)
-            .setMinValues(1)
 
         for (let i = 1; i < 7; i++) {
-            let option = new MessageMenuOption()
-                .setLabel(`Level ${i}`)
-                .setValue(i)
-            selectBSLevel.addOption(option)
+            selectBSLevel.addOptions([
+                {
+                label: `Level ${i}`,
+                value: `${i}`,
+                }
+            ])
         }
         //End Battleships level
 
         //Miners Level
-        let selectMinersLevel = new MessageMenu()
-            .setID('mslevels')
+        let selectMinersLevel = new MessageSelectMenu()
+            .setCustomId('mslevels')
             .setPlaceholder('Miners Level')
-            .setMaxValues(1)
-            .setMinValues(1)
 
         for (let i = 1; i < 7; i++) {
-            let option = new MessageMenuOption()
-                .setLabel(`Level ${i}`)
-                .setValue(i)
-            selectMinersLevel.addOption(option)
+            selectMinersLevel.addOptions([
+                {
+                label: `Level ${i}`,
+                value: `${i}`,
+                }
+            ])
         }
         //End Miner Level
 
         //Transports Level
-        let selectTransportsLevel = new MessageMenu()
-            .setID('tpslevels')
+        let selectTransportsLevel = new MessageSelectMenu()
+            .setCustomId('tpslevels')
             .setPlaceholder('Transports Level')
-            .setMaxValues(1)
-            .setMinValues(1)
 
         for (let i = 1; i < 7; i++) {
-            let option = new MessageMenuOption()
-                .setLabel(`Level ${i}`)
-                .setValue(i)
-            selectTransportsLevel.addOption(option)
+            selectTransportsLevel.addOptions([
+                {
+                label: `Level ${i}`,
+                value: `${i}`,
+                }
+            ])
         }
 
         //End Transports level
 
         //Buttons
         let acceptButton = new MessageButton()
-            .setStyle('red')
+            .setStyle(3)
             .setLabel('Accept')
-            .setID('Accept')
+            .setCustomId('Accept')
 
         let cancelButton = new MessageButton()
-            .setStyle('grey')
+            .setStyle(4)
             .setLabel('Cancel')
-            .setID('Cancel')
+            .setCustomId('Cancel')
 
         //End buttons
 
         //Rows
         let firstRow = new MessageActionRow()
-        firstRow.addComponent(selectBSLevel)
+        firstRow.addComponents(selectBSLevel)
         let secondRow = new MessageActionRow()
-        secondRow.addComponent(selectMinersLevel)
+        secondRow.addComponents(selectMinersLevel)
         let thirdRow = new MessageActionRow()
-        thirdRow.addComponent(selectTransportsLevel)
+        thirdRow.addComponents(selectTransportsLevel)
         let buttonRow = new MessageActionRow()
-        buttonRow.addComponent(acceptButton);
-        buttonRow.addComponent(cancelButton);
+        buttonRow.addComponents(acceptButton);
+        buttonRow.addComponents(cancelButton);
         //End Rows
 
 
-        let messageReaction = await message.channel.send(embed, { components: [firstRow, secondRow, thirdRow, buttonRow] });
+        let messageReaction = await message.channel.send({embeds:[embed], components: [firstRow, secondRow, thirdRow, buttonRow] });
 
-        const filter = (button) => button.clicker.user.bot == false;
-        const collector = messageReaction.createMenuCollector(filter, { time: 2 * 60 * 1000, dispose: true });
-        const collectorBtn = messageReaction.createButtonCollector(filter, { time: 2 * 60 * 1000, dispose: true });
+        const filter = (button) => button.user.bot == false;
+        const collector = messageReaction.createMessageComponentCollector({filter, time: 2 * 60 * 1000});
 
         //Menu Collector
         collector.on('collect', async b => {
-            b.reply.defer()
-            if (b.clicker.id == message.author.id) {
-                if (b.id == "bslevels") {
+            b.deferUpdate()
+            if (b.user.id == message.author.id) {
+                if (b.customId == "bslevels") {
                     newbsLevel = b.values[0]
-                } else if (b.id == "mslevels") {
+                } else if (b.customId == "mslevels") {
                     newminerLevel = b.values[0]
                 }
-                else if (b.id == "tpslevels") {
+                else if (b.customId == "tpslevels") {
                     newtpsLevel = b.values[0]
                 }
                 //console.log(b)
-
-                let embed = await this.GetLevelsMessage(target, newbsLevel, newminerLevel, newtpsLevel, "going")
-                messageReaction.edit(embed)
-            }
-
-        });
-        collector.on('end', async collected => {
-            let embed = await this.GetLevelsMessage(target, newbsLevel, newminerLevel, newtpsLevel, "cancel")
-            messageReaction.edit({ component: null, embed: embed });
-        });
-
-        //Button Collector
-        collectorBtn.on('collect', async b => {
-            b.reply.defer()
-            if (b.clicker.id == message.author.id) {
-                if (b.id == "Accept") {
+                if (b.customId == "tpslevels" || b.customId == "mslevels" || b.customId == "bslevels"){
+                    let embed = await this.GetLevelsMessage(target, newbsLevel, newminerLevel, newtpsLevel, "going")
+                    messageReaction.edit({embeds:[embed]})
+                }
+                if (b.customId == "Accept") {
 
                     if (!target.shipyardLevels) {
                         let newShipyardLevels = new ShipyardLevels({
@@ -178,19 +161,20 @@ export class SetShipyardLevelCommand extends MemberCommand {
                     await target.save();
 
                     let embed = await this.GetLevelsMessage(target, newbsLevel, newminerLevel, newtpsLevel, "done")
-                    messageReaction.edit({ component: null, embed: embed });
-                }
-
-                if (b.id == "Cancel") {
+                    messageReaction.edit({ components: [], embeds: [embed] });
+                }else if (b.customId == "Cancel") {
                     let embed = await this.GetLevelsMessage(target, newbsLevel, newminerLevel, newtpsLevel, "cancel")
-                    messageReaction.edit({ component: null, embed: embed });
+                    embed.setColor("RED")
+                    messageReaction.edit({ components: [], embeds: [embed] });
                 }
             }
-        })
+
+        });
 
         collector.on('end', async collected => {
             let embed = await this.GetLevelsMessage(target, newbsLevel, newminerLevel, newtpsLevel, "cancel")
-            messageReaction.edit({ component: null, embed: embed });
+            embed.setColor("RED")
+            messageReaction.edit({ components: [], embeds: [embed] });
         });
 
     }

@@ -58,11 +58,11 @@ export class GuildManager extends Manager{
 					let postArrival = await MemberDAO.PopulateMember(arrival, "Corp")
 					if(postArrival.Corp.corpId === '-1') 
 						await CorpDAO.addToCorporation(postArrival, newMember.guild)
-					else if(!oldMember.guild.me.hasPermission("ADMINISTRATOR") || !oldMember.guild.me.hasPermission("MANAGE_GUILD")){
-						oldMember.guild.systemChannel.send(`Excuse me, but ${oldMember} is already part of ${postArrival.Corp.name}, I don't have the power to remove his member role, so please, DO SO.`)
+					else if(!oldMember.guild.me.permissions.has("ADMINISTRATOR") || !oldMember.guild.me.permissions.has("MANAGE_GUILD")){
+						//oldMember.guild.systemChannel.send(`Excuse me, but ${oldMember} is already part of ${postArrival.Corp.name}, I don't have the power to remove his member role, so please, DO SO.`)
 					}
 					else {
-						oldMember.guild.systemChannel.send(`Excuse me, but ${oldMember} is already part of ${postArrival.Corp.name}, I've removed his role, so he should probably resign his Corp before.`)
+						//oldMember.guild.systemChannel.send(`Excuse me, but ${oldMember} is already part of ${postArrival.Corp.name}, I've removed his role, so he should probably resign his Corp before.`)
 						newMember.roles.remove(newMember.guild.roles.cache.get(Corp.rankRoles.Member))
 					}
 				}

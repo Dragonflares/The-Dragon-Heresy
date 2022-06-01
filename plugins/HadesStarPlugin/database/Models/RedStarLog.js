@@ -1,4 +1,5 @@
-import {Schema, model} from 'mongoose';
+import pkg from 'mongoose';
+const {Schema, model} = pkg;
 
 const RedStarLogSchema = Schema ({
     corpOpened: {type: Schema.Types.ObjectId, ref: "Corp"},

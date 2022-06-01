@@ -1,6 +1,6 @@
 import { MemberCommand } from './MemberCommand';
 import { Corp, RedStarLog } from '../../database'
-const Discord = require('discord.js');
+import { MessageEmbed } from 'discord.js';
 
 export class RedStarLogCommand extends MemberCommand {
     constructor(plugin) {
@@ -34,12 +34,12 @@ export class RedStarLogCommand extends MemberCommand {
 
         let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).exec();
 
-        let generalEmbed = new Discord.MessageEmbed()
+        let generalEmbed = new MessageEmbed()
             .setTitle(`${corp.name} Red Stars General Summary:`)
             .setThumbnail("https://i.imgur.com/hedXFRd.png")
             .setDescription(`This information are from closed queues in the corp server. (Filled/Timeout)`)
             .setColor("GREEN")
-            .setFooter(`You can mention a player to see his specific stats in the corp!`)
+            .setFooter({text: `You can mention a player to see his specific stats in the corp!`})
 
 
         //Get Last Month
@@ -72,22 +72,22 @@ export class RedStarLogCommand extends MemberCommand {
             }
         }
 
-        return message.channel.send(generalEmbed);
+        return message.channel.send({embeds:[generalEmbed]});
     }
 
     async sendLog(message, target) {
 
         let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate('members').populate('redStarLogs').exec();
 
-        let mentionedName = message.guild.member(target).nickname
+        let mentionedName = message.guild.members.fetch(target).nickname
         if (!mentionedName) mentionedName = target.username
 
-        let generalEmbed = new Discord.MessageEmbed()
+        let generalEmbed = new MessageEmbed()
             .setTitle(`${mentionedName} Red Stars General Summary in ${corp.name}:`)
             .setThumbnail("https://i.imgur.com/hedXFRd.png")
             .setDescription(`This information are from closed queues in the corp server, Joined includes Created. (Filled/Timeout)`)
             .setColor("GREEN")
-            .setFooter(`You can see top players by doing &rslog top !`)
+            .setFooter({text: `You can see top players by doing &rslog top !`})
 
 
         //Get info
@@ -115,18 +115,18 @@ export class RedStarLogCommand extends MemberCommand {
         totalJoinedStr += `__Timeout:__ ${totalJoinedTimeout.length}   (${monthlyJoinedTimeout.length} this month)\n`
 
         generalEmbed.addField("Total Joined", totalJoinedStr)
-        return message.channel.send(generalEmbed);
+        return message.channel.send({embeds: [generalEmbed]});
     }
     async sendTopLog(message) {
 
         let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate('members').populate('redStarLogs').exec();
 
-        let generalEmbed = new Discord.MessageEmbed()
+        let generalEmbed = new MessageEmbed()
             .setTitle(`${corp.name} Red Stars Top 5 Players:`)
             .setThumbnail("https://i.imgur.com/hedXFRd.png")
             .setDescription(`This information are from closed queues in the corp server, Joined includes Created.`)
             .setColor("GREEN")
-            .setFooter(`You can see general information with &rslog or &rslog total`)
+            .setFooter({text:`You can see general information with &rslog or &rslog total`})
 
         //Get last month
         let d = new Date()
@@ -186,7 +186,7 @@ export class RedStarLogCommand extends MemberCommand {
         strTotal += await this.getTop5StringFromMap(message, playerTotalJoined)
         generalEmbed.addField("Total:", strTotal)
 
-        return message.channel.send(generalEmbed);
+        return message.channel.send({embeds: [generalEmbed]});
     }
 
 

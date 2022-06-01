@@ -13,7 +13,7 @@ export class KillWhiteStarCommand extends WhitestarsCommand {
   }
 
   async run(message, args) {
-    let user = message.guild.member(message.author)
+    let user = message.author
     let roles = message.mentions.roles.first()
     let member = await Member.findOne({ discordId: user.id.toString() }).populate('Corp').exec();
     if (!member)

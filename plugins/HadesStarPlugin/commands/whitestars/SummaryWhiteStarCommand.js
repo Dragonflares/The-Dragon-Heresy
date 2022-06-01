@@ -3,10 +3,7 @@ import { Member, WhiteStar, Tech, Corp } from '../../database';
 import { TechTree } from '../../techs';
 import * as WsUtils from '../../utils/whiteStarsUtils.js';
 import { confirmResultButtons } from '../../utils';
-const Discord = require('discord.js');
-
-
-
+import { MessageEmbed } from 'discord.js';
 
 export class SummaryWhiteStarCommand extends WhitestarsCommand {
     constructor(plugin) {
@@ -19,7 +16,7 @@ export class SummaryWhiteStarCommand extends WhitestarsCommand {
     }
 
     async run(message, args) {
-        let user = message.guild.member(message.author)
+        let user = message.author
         let roles = message.mentions.roles.first()
         let member = await Member.findOne({ discordId: user.id.toString() }).populate('Corp').exec();
         if (!member)
@@ -42,7 +39,13 @@ export class SummaryWhiteStarCommand extends WhitestarsCommand {
 
     summaryAll = async (message, role) => {
         message.delete({ timeout: 1 });    //Delete User message
-        const ws = await WhiteStar.findOne({ wsrole: role.id }).populate('author').populate('members').populate('members/techs').exec()
+        const ws = await WhiteStar.findOne({ wsrole: role.id }).populate('author').populate({ 
+            path: 'members',
+            populate: [{
+             path: 'techs',
+             model: 'Tech'
+            }] 
+         }).exec()
         if(!ws) return;
         this.summaryMessage(message, ws, "Weapons And Shields")
         this.summaryMessage(message, ws, "Support")
@@ -60,7 +63,7 @@ export class SummaryWhiteStarCommand extends WhitestarsCommand {
             ["Economics", ['Dispatch','RelicDrone']]
         ])
         //Create Message
-        let summaryEmbed = new Discord.MessageEmbed()
+        let summaryEmbed = new MessageEmbed()
             .setTitle(`Summary of whitestar members ${cat} techs:`)
             .setThumbnail("https://i.imgur.com/fNtJDNz.png")
             .addField("Group:", `<@&${ws.wsrole}>`, true)
@@ -87,7 +90,7 @@ export class SummaryWhiteStarCommand extends WhitestarsCommand {
             if (memListSorted)
                 summaryEmbed.addField(tech.replace(/([A-Z])/g, ' $1').trim(), memListSorted, true)
         }));
-        return message.channel.send(summaryEmbed)
+        return message.channel.send({embeds:[summaryEmbed]})
     }
     async GetModule(member, techName) {
         let techFound;

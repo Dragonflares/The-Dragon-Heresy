@@ -9,7 +9,7 @@ export class AfkManager extends Manager {
 
     enable() {
         if (!this.enabled) {
-            this.client.on('message', async message => this.myListener(message))
+            this.client.on('messageCreate', async message => this.myListener(message))
         }
         super.enable();
     }

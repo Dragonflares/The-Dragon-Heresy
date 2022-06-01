@@ -1,9 +1,6 @@
 import { MemberCommand } from './MemberCommand';
 import { Member } from '../../database';
-import { MemberDAO, CorpDAO } from '../../../../lib/utils/DatabaseObjects'
-import { MessageEmbed } from 'discord.js';
-const { MessageButton, MessageActionRow, MessageMenuOption, MessageMenu } = require("discord-buttons")
-
+import { MessageEmbed, MessageButton, MessageActionRow, MessageSelectMenu} from 'discord.js';
 
 export class SetTimezoneCommand extends MemberCommand{
     constructor(plugin){
@@ -19,7 +16,7 @@ export class SetTimezoneCommand extends MemberCommand{
         let target
         let user = message.mentions.users.first()
         if (!user) {
-            target = message.guild.member(message.author)
+            target = message.author
         }
         else if (message.author.id === this.client.creator)
             target = user
@@ -77,128 +74,100 @@ export class SetTimezoneCommand extends MemberCommand{
         let embed = await this.SendMessage(member.timezone)
 
         //Create Menus
-        let options = []
+        //let options = []
 
         // Timezones -12 to 0
-        let timezonesMenu1 = new MessageMenu()
-            .setID('gmt')
+        let timezonesMenu1 = new MessageSelectMenu()
+            .setCustomId('gmt')
             .setPlaceholder('GMT -12 to 0')
-            .setMaxValues(1)
-            .setMinValues(1)
 
         for (let i = 0; i < 16; i++) {
-            options[i] = new MessageMenuOption()
-                .setLabel(`${[...timezones][i][0]}`)
-                .setValue(`${[...timezones][i][1]}`)
-                timezonesMenu1.addOption(options[i])
+                timezonesMenu1.addOptions([
+                    {
+                    label: `${[...timezones][i][0]}`,
+					value: `${[...timezones][i][1]}`,
+                    }
+                ])
         }
 
         // Timezones 0 to 14
-        let timezonesMenu2 = new MessageMenu()
-            .setID('gmt1')
+        let timezonesMenu2 = new MessageSelectMenu()
+            .setCustomId('gmt1')
             .setPlaceholder('GMT 1 to +14')
-            .setMaxValues(1)
-            .setMinValues(1)
 
-        let options1 = []
+        //let options1 = []
         for (let i = 16; i < 40; i++) {
-            options1[i-16] = new MessageMenuOption()
-                .setLabel(`${[...timezones][i][0]}`)
-                .setValue(`${[...timezones][i][1]}`)
-                timezonesMenu2.addOption(options1[i-16])
+             timezonesMenu2.addOptions([
+                {
+                label: `${[...timezones][i][0]}`,
+                value: `${[...timezones][i][1]}`,
+                }
+            ])
         }
 
         //Saving daylight option
-        let noOption = new MessageMenuOption().setLabel("No").setValue(0).setDefault()
-        let yesOption = new MessageMenuOption().setLabel("Yes").setValue(1)
-
-        let timezonesMenu3 = new MessageMenu()
-        .setID('summer')
+        let timezonesMenu3 = new MessageSelectMenu()
+        .setCustomId('summer')
         .setPlaceholder('Daylight Saving Time?')
-        .setMaxValues(1)
-        .setMinValues(1)
-        timezonesMenu3.addOption(noOption)
-        timezonesMenu3.addOption(yesOption)
+        timezonesMenu3.addOptions([
+            {
+                label: `Yes`,
+                value: `1`,
+            },
+            {
+                label: `No`,
+                value: `0`,
+            },
+        ])
 
         let thirdRow = new MessageActionRow()
-        thirdRow.addComponent(timezonesMenu3)
+        thirdRow.addComponents(timezonesMenu3)
           
 
         //Add Rows
         let firstRow = new MessageActionRow()
-        firstRow.addComponent(timezonesMenu1)
+        firstRow.addComponents(timezonesMenu1)
 
         let secondRow = new MessageActionRow()
-        secondRow.addComponent(timezonesMenu2)
+        secondRow.addComponents(timezonesMenu2)
 
         //Add cancel and save
         let forthRow = new MessageActionRow()
         let buttonCancel = new MessageButton()
-            .setStyle("grey")
+            .setStyle(4)
             .setLabel("Cancel")
-            .setID("cancel")
+            .setCustomId("cancel")
 
         let buttonSave = new MessageButton()
-        .setStyle("green")
-        .setLabel("Save")
-        .setID("save")
+            .setStyle(3)
+            .setLabel("Save")
+            .setCustomId("save")
 
-        forthRow.addComponent(buttonCancel);
-        forthRow.addComponent(buttonSave);
+        forthRow.addComponents(buttonCancel);
+        forthRow.addComponents(buttonSave);
      
 
         //Send message
-        let messageReaction = await message.channel.send(embed, { components: [firstRow,secondRow,thirdRow,forthRow] });
+        let messageReaction = await message.channel.send({embeds: [embed],  components: [firstRow,secondRow,thirdRow,forthRow] });
         
         const filter = (button) => button.clicker.user.bot == false;
 
         //Open buttn and menu collectors
-        const collector = messageReaction.createMenuCollector(filter, { time: 2 * 60 * 1000, dispose: true });
-        const btncollector = messageReaction.createButtonCollector(filter, { time: 2 * 60 * 1000, dispose: true }); //collector for 5 seconds
+        const collector = messageReaction.createMessageComponentCollector({filter,  time: 2*60* 1000});
 
         let tz =0;
         let currSumm = 0
 
         //Menu selected
-        collector.on('collect', async b => {          
-            if (b.clicker.user.id == member.discordId) {
-                if (b.id == "gmt") {
-                    tz = b.values[0]
-                } else if (b.id == "gmt1") {
-                    tz = b.values[0]
-                } else if (b.id == "summer") {
-                    currSumm = b.values[0]
-                }
-                let fin = tz
-                if (currSumm != 0)
-                {
-                    fin = (parseFloat(tz) + parseInt(currSumm));
-                    if (fin >0) {
-                        fin = "+" + (parseFloat(tz) + parseInt(currSumm)).toFixed(2);
-                    }else {
-                        fin =(parseFloat(tz) + parseInt(currSumm)).toFixed(2);
-                    }
-                }
-                b.reply.defer()
-                let embed = await this.SendMessage(fin)
-                messageReaction.edit(embed)
-            }else{
-                await b.reply.send('Not your setup.', true);
-            }
-        });
-        collector.on('end', async collected => {
-            let msgEmbed = await this.SendMessage(member.timezone)
-            messageReaction.edit({ component: null, embed: msgEmbed });
-        });
-
-        // Button clicked
-        btncollector.on('collect', async b => {
-            if (b.clicker.user.id == member.discordId) {
-                if (b.id == "cancel") {
+        collector.on('collect', async b => {        
+            if (b.user.id == member.discordId) {
+                if (b.customId == "cancel") {
                     let msgEmbed = await this.SendMessage(member.timezone)
-                    messageReaction.edit({ component: null, embed: msgEmbed });
-                    await b.reply.send('Canceled.', true);
-                } else if (b.id == "save") {
+                    msgEmbed.setColor("RED")
+                    messageReaction.edit({ components: [], embeds: [msgEmbed] });
+                    await b.reply({ content: 'Canceled', ephemeral: true})
+
+                } else if (b.customId == "save") {
                     let fin = tz
                     if (currSumm != 0)
                     {
@@ -213,22 +182,49 @@ export class SetTimezoneCommand extends MemberCommand{
                     .catch(err => console.log(err))
 
                     let msgEmbed = await this.SendMessage(fin);
-                    messageReaction.edit({ component: null, embed: msgEmbed });
-                    await b.reply.send('Saved.', true);
+                    messageReaction.edit({ components: [], embeds: [msgEmbed] });
+                    await b.reply({ content: 'Saved', ephemeral: true})
+                }
+                else if (b.customId == "gmt") {
+                    tz = b.values[0]
+                } else if (b.customId == "gmt1") {
+                    tz = b.values[0]
+                } else if (b.customId == "summer") {
+                    currSumm = b.values[0]
+                }else{
+                    await b.deferUpdate()
+                    return;
+                }
+
+                if(b.customId == "gmt" || b.customId == "gmt1" || b.customId == "summer")
+                {
+                    let fin = tz
+                    if (currSumm != 0)
+                    {
+                        fin = (parseFloat(tz) + parseInt(currSumm));
+                        if (fin >0) {
+                            fin = "+" + (parseFloat(tz) + parseInt(currSumm)).toFixed(2);
+                        }else {
+                            fin =(parseFloat(tz) + parseInt(currSumm)).toFixed(2);
+                        }
+                    }
+                    b.deferUpdate().catch(e=>console.log(e));
+                    let embed = await this.SendMessage(fin)
+                    messageReaction.edit({embeds:[embed]})
                 }
             }else{
                 await b.reply.send('Not your setup.', true);
             }
         });
-
-        btncollector.on('end', async collected => {
+        collector.on('end', async collected => {
             let msgEmbed = await this.SendMessage(member.timezone)
-            messageReaction.edit({ component: null, embed: msgEmbed });
+            msgEmbed.setColor("RED")
+            messageReaction.edit({ components: [], embeds: [msgEmbed] })
         });
+
     }
 
     async SendMessage(timezone) {
-
         let embed = new MessageEmbed().setColor("GREEN")
         embed.setTitle(`**Set Timezone**`);
         embed.setThumbnail("https://i.imgur.com/4x0nZeS.png")
@@ -242,7 +238,7 @@ export class SetTimezoneCommand extends MemberCommand{
             playerCurrentTime = `${today.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })} (GMT ${timezone})`
         }
 
-        embed.addField('*Selected Timezone:*', timezone);
+        embed.addField('*Selected Timezone:*', timezone.toString());
         embed.addField('*Your current time:*', playerCurrentTime);
         return embed
     }

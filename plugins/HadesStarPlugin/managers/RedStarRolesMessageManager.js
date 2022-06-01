@@ -1,5 +1,5 @@
 import { Manager } from '../../../lib';
-import { Member, RedStarMessage, RedStarRoles, Corp } from '../database';
+import { RedStarRoles, Corp } from '../database';
 
 export class RedStarRolesMessageManager extends Manager {
     constructor(plugin) {
@@ -27,12 +27,17 @@ export class RedStarRolesMessageManager extends Manager {
 
             if (level != 99) {
                 let existentRedStarRoles = await RedStarRoles.findOne({ corpId: message.guild.id.toString() })
-                let role = existentRedStarRoles.redStarRoles.get(`${level}`)
-                let roleMember = await message.guild.members.fetch(user.id)
-                if (roleMember.roles.cache.find(r => r.id === role))
-                    roleMember.roles.remove(role)
-                else
-                    roleMember.roles.add(role)
+                if(existentRedStarRoles)
+                {
+                    let role = existentRedStarRoles.redStarRoles.get(`${level}`)
+                    if(role){
+                        let roleMember = await message.guild.members.fetch(user.id)
+                        if (roleMember.roles.cache.find(r => r.id === role))
+                        roleMember.roles.remove(role)
+                        else
+                        roleMember.roles.add(role)
+                    }
+            }
             }
         }
     }

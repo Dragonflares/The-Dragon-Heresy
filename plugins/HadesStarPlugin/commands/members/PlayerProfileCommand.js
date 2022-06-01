@@ -2,8 +2,6 @@ import { MemberCommand } from './MemberCommand';
 import { Member, Corp, ShipyardLevels } from '../../database';
 import { MessageEmbed } from 'discord.js';
 import { confirmResultButtons } from '../../utils';
-import { MemberDAO, CorpDAO } from '../../../../lib/utils/DatabaseObjects'
-
 
 export class PlayerProfileCommand extends MemberCommand {
     constructor(plugin) {
@@ -20,8 +18,8 @@ export class PlayerProfileCommand extends MemberCommand {
         let CorpMember
         const user = message.mentions.users.first()
         if (!user) {
-            if (!args[0]) {
-                target = message.guild.member(message.author)
+            if (!args[0]) {     
+                target = message.author
                 CorpMember = (await Member.findOne({ discordId: target.id.toString() }).populate("Corp").populate("shipyardLevels").catch(err => console.logg(err)))
             } else {
                 let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate('members').exec();
@@ -83,8 +81,8 @@ export class PlayerProfileCommand extends MemberCommand {
         let strShipLevels = `__Battleships Level:__  ${bslevel}\n__Miners Level:__ ${minerlevel}\n__Transports Level:__ ${tpslevel}`
         ProfileEmbed.addField(`*Ships Level*`, strShipLevels)
 
-        ProfileEmbed.setFooter("For the techs this player has, use &playertech, for their white star battleship, use &playerbattleship")
+        ProfileEmbed.setFooter({text: "For the techs this player has, use &playertech, for their white star battleship, use &playerbattleship"})
 
-        return message.channel.send(ProfileEmbed)
+        return message.channel.send({embeds: [ProfileEmbed]})
     }
 }

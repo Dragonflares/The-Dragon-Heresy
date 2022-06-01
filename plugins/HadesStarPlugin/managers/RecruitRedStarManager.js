@@ -1,6 +1,5 @@
 import { Manager } from '../../../lib';
 import { Corp, RedStarQueue, RedStarLog} from '../database';
-const Discord = require('discord.js');
 import Mongoose from 'mongoose'
 import * as RsQueuesUtils from '../utils/redStarsQueuesUtils'
 
@@ -34,14 +33,8 @@ export class RecruitRedStarManager extends Manager {
                 }catch(r){}
 
                 //Create collector
-                        // Create button collector for the message
                 const filter = (button) => button.clicker.user.bot == false;
-                const collector = messageReaction.createButtonCollector(filter);
 
-                // Listen to buttons
-                collector.on('collect', async b => {
-                    RsQueuesUtils.collectorFunc(this.client, messageReaction, newRedStarQueue, b)
-                });
             })
         })
     }

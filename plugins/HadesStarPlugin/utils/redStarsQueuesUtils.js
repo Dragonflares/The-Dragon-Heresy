@@ -1,5 +1,4 @@
-const Discord = require('discord.js');
-const { MessageButton, MessageActionRow } = require("discord-buttons")
+import { MessageEmbed, MessageButton, MessageActionRow} from 'discord.js';
 import { RedStarRoles, RedStarQueue, Corp, RedStarLog} from '../database'
 import Mongoose from 'mongoose'
 
@@ -18,112 +17,112 @@ export const collectorFunc = async(client, messageReaction, newRedStarQueue, b) 
     let extraPlayers = newRedStarQueue.extraPlayers
 
 
-    if (b.id == "delete") {     //When Trash
-        if (b.clicker.user.id == newRedStarQueue.author) {
-            this.failed(client, messageReaction, newRedStarQueue, false);
-            return await b.reply.send('Invitation Deleted', true);
+    if (b.customId == "delete") {     //When Trash
+        if (b.user.id == newRedStarQueue.author) {
+            failed(client, messageReaction, newRedStarQueue, false);
+            return await b.reply('Invitation Deleted', true);
         }
         return await b.reply.send('You are not the owner of this invitation', true);
-    } else if (b.id== "done") { //Done
-        if( b.clicker.user.id == newRedStarQueue.author ) {
+    } else if (b.customId== "done") { //Done
+        if( b.user.id == newRedStarQueue.author ) {
             if ( registeredPlayers.size > 1 ){
-                currentStatusMessage = await this.updateEmbed(client, messageReaction, newRedStarQueue, true) //Update the Embeed to show the new reaction    
-                return await b.reply.defer()
+                currentStatusMessage = await updateEmbed(client, messageReaction, newRedStarQueue, true) //Update the Embeed to show the new reaction    
+                return await b.deferUpdate()
             }else{
-                return await b.reply.send('You need more than one player to finish a queue', true);
+                return await b.reply('You need more than one player to finish a queue', true);
             }
         }
-        return await b.reply.send('You are not the owner of this invitation', true);
+        return await b.reply('You are not the owner of this invitation', true);
     }
     
     // When other buttons
     // Check if already in the queue
-    let hadCroidAndClickCroid = b.id == "has_croid" && registeredPlayers.has(b.clicker.user.id) && registeredPlayers.get(b.clicker.user.id) == '✅'
-    let noCroidAndClockNoCroid = b.id == "no_croid" && registeredPlayers.has(b.clicker.user.id) && registeredPlayers.get(b.clicker.user.id) == '❎'
+    let hadCroidAndClickCroid = b.customId == "has_croid" && registeredPlayers.has(b.user.id) && registeredPlayers.get(b.user.id) == '✅'
+    let noCroidAndClockNoCroid = b.customId == "no_croid" && registeredPlayers.has(b.user.id) && registeredPlayers.get(b.user.id) == '❎'
 
     //Get out of queue
     if (hadCroidAndClickCroid || noCroidAndClockNoCroid) {
 
         //Remove player
-        registeredPlayers.delete(b.clicker.user.id)
-        extraPlayers.delete(b.clicker.user.id)
+        registeredPlayers.delete(b.user.id)
+        extraPlayers.delete(b.user.id)
 
         //Update db
         newRedStarQueue.registeredPlayers =registeredPlayers
         newRedStarQueue.extraPlayers = extraPlayers
 
         //Update Message
-        currentStatusMessage = await this.updateEmbed(client, messageReaction, newRedStarQueue, false) //Update the Embeed to show the new reaction   
+        currentStatusMessage = await updateEmbed(client, messageReaction, newRedStarQueue, false) //Update the Embeed to show the new reaction   
 
         // Save database changes
         newRedStarQueue.currentStatusMessage=currentStatusMessage.id;
         await newRedStarQueue.save()
 
-    return await b.reply.send('You out of the queue', true);
+    return await b.reply('You out of the queue', true);
     }
 
     //Get in queue
-    if (b.id == "has_croid" || b.id == "no_croid") {
-        if (b.id == "has_croid")
-            registeredPlayers.set(b.clicker.user.id, '✅')
+    if (b.customId == "has_croid" || b.customId == "no_croid") {
+        if (b.customId == "has_croid")
+            registeredPlayers.set(b.user.id, '✅')
         else
-            registeredPlayers.set(b.clicker.user.id, '❎')
+            registeredPlayers.set(b.user.id, '❎')
 
         //Update db
         newRedStarQueue.registeredPlayers =registeredPlayers
 
         //Update Message
-        currentStatusMessage = await this.updateEmbed(client, messageReaction, newRedStarQueue, false) //Update the Embeed to show the new reaction   
+        currentStatusMessage = await updateEmbed(client, messageReaction, newRedStarQueue, false) //Update the Embeed to show the new reaction   
         
         // Save database changes
         newRedStarQueue.currentStatusMessage=currentStatusMessage.id;
         await newRedStarQueue.save()
         
-        return await b.reply.defer()
+        return await b.deferUpdate()
     }
 
     //Unregister plus one/tro
-    let plusOneClickPlusOne = b.id == "plusOne" && extraPlayers.has(b.clicker.user.id) && extraPlayers.get(b.clicker.user.id) == 1
-    let plusTwoClickPlusTwo = b.id == "plusTwo" && extraPlayers.has(b.clicker.user.id) && extraPlayers.get(b.clicker.user.id) == 2
+    let plusOneClickPlusOne = b.customId == "plusOne" && extraPlayers.has(b.user.id) && extraPlayers.get(b.user.id) == 1
+    let plusTwoClickPlusTwo = b.customId == "plusTwo" && extraPlayers.has(b.user.id) && extraPlayers.get(b.user.id) == 2
 
     if (plusOneClickPlusOne || plusTwoClickPlusTwo) {
 
         // Remove  the +1/2
-        extraPlayers.delete(b.clicker.user.id)
+        extraPlayers.delete(b.user.id)
 
         //Update db
         newRedStarQueue.extraPlayers = extraPlayers
 
         // Update Message
-        currentStatusMessage = await this.updateEmbed(client, messageReaction, newRedStarQueue, false) //Update the Embeed to show the new reaction   
+        currentStatusMessage = await updateEmbed(client, messageReaction, newRedStarQueue, false) //Update the Embeed to show the new reaction   
 
         // Save database changes
         newRedStarQueue.currentStatusMessage=currentStatusMessage.id;
         await newRedStarQueue.save()
 
-        return await b.reply.send('Unregistered plus player/s', true);
+        return await b.reply('Unregistered plus player/s', true);
     }
 
     // add plusone/two
     let currentPeopleAmm = newRedStarQueue.registeredPlayers.size
     newRedStarQueue.extraPlayers.forEach((value, key) => currentPeopleAmm += parseInt(value))
 
-    if (registeredPlayers.has(b.clicker.user.id)) {
+    if (registeredPlayers.has(b.user.id)) {
 
         // When plus one
-        if (b.id == "plusOne") {
+        if (b.customId == "plusOne") {
             if (currentPeopleAmm > 3) return await b.reply.send('Too many players', true); // If more than 3, too many players (4)
-            extraPlayers.set(b.clicker.user.id, 1)
-        } else if (b.id == "plusTwo") {
+            extraPlayers.set(b.user.id, 1)
+        } else if (b.customId == "plusTwo") {
             if (currentPeopleAmm > 2) return await b.reply.send('Too many players', true); //if more than 2 too many players (3)
-            extraPlayers.set(b.clicker.user.id, 2)
+            extraPlayers.set(b.user.id, 2)
         }
 
         //Update db
         newRedStarQueue.extraPlayers = extraPlayers
 
         // Update Message
-        currentStatusMessage = await this.updateEmbed(client, messageReaction, newRedStarQueue, false) //Update the Embeed to show the new reaction   
+        currentStatusMessage = await updateEmbed(client, messageReaction, newRedStarQueue, false) //Update the Embeed to show the new reaction   
         
         // Save database changes
         if(currentStatusMessage){
@@ -131,7 +130,7 @@ export const collectorFunc = async(client, messageReaction, newRedStarQueue, b) 
             await newRedStarQueue.save()
         }
 
-        return await b.reply.defer()
+        return await b.deferUpdate()
     }
 }
 
@@ -153,7 +152,7 @@ export const  updateEmbed = async (client, message, newRedStarQueue, close) => {
     if (membersString == "") membersString = "None";
 
     //Get Embed
-    let newEmbed = new Discord.MessageEmbed(message.embeds[0])
+    let newEmbed = new MessageEmbed(message.embeds[0])
 
     //Update Embed
     newEmbed.fields[0].value = `${currentPeopleAmm}/4` //"Current People"
@@ -202,7 +201,7 @@ export const  updateEmbed = async (client, message, newRedStarQueue, close) => {
         message.channel.send(pingString);
         
         // Remove buttons
-        message.edit({ component: null, embed: newEmbed });
+        message.edit({ components: [], embeds: [newEmbed] });
 
         //Remove queue from db
         await newRedStarQueue.remove()
@@ -210,12 +209,12 @@ export const  updateEmbed = async (client, message, newRedStarQueue, close) => {
 
         // Set color and send the embed
         newEmbed.setColor("ORANGE");
-        message.edit("",newEmbed); 
+        message.edit({embeds: [newEmbed]}); 
 
         //Send jump botton message
         var link = "http://discordapp.com/channels/" + message.guild.id + "/" + message.channel.id + "/" + message.id;
         let urlbutton = new MessageButton()
-          .setStyle('url')
+          .setStyle(5)
           .setURL(link)
           .setLabel('Jump to Recruit!');
         let sent = await message.channel.send(`There is currently a RS${newRedStarQueue.rsLevel} going with ${currentPeopleAmm}/4`, urlbutton)
@@ -225,14 +224,14 @@ export const  updateEmbed = async (client, message, newRedStarQueue, close) => {
 }
 
 export const failed = async (client, message, newRedStarQueue,timedout) => { 
-    let newEmbed = new Discord.MessageEmbed(message.embeds[0])
+    let newEmbed = new MessageEmbed(message.embeds[0])
     newEmbed.fields[0].value = `0/0` 
     newEmbed.setColor("RED")
     if(!timedout)
-        newEmbed.setFooter("Closed")
+        newEmbed.setFooter({text: "Closed"})
     else
-        newEmbed.setFooter("Timed Out")
-    message.edit({ component: null, embed: newEmbed });
+        newEmbed.setFooter({text: "Timed Out"})
+    message.edit({ components: [], embeds: [newEmbed] });
 
     //Create ping message
     let pingString = ""

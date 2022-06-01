@@ -3,6 +3,7 @@ import { Member, WhiteStar, Corp } from '../../database';
 import { confirmResultButtons } from '../../utils';
 import { MessageEmbed } from 'discord.js';
 import { TechTree } from '../../techs';
+
 export class WSGroupScoreCommand extends WhitestarsCommand {
     constructor(plugin) {
         super(plugin, {
@@ -13,7 +14,7 @@ export class WSGroupScoreCommand extends WhitestarsCommand {
         });
     }
     async run(message, args) {
-        let user = message.guild.member(message.author)
+        let user = message.author
         let roles = message.mentions.roles.first()
         let member = await Member.findOne({ discordId: user.id.toString() }).populate('Corp').populate('techs').populate("shipyardLevels").exec();
         if (!member)
@@ -40,7 +41,13 @@ export class WSGroupScoreCommand extends WhitestarsCommand {
         message.delete({ timeout: 1 });    //Delete User message
 
         //Get Whitestart with role
-        const ws = await WhiteStar.findOne({ wsrole: role.id }).populate('author').populate('members').populate('members/techs').populate('members/shipyardLevels').exec()
+        const ws = await WhiteStar.findOne({ wsrole: role.id }).populate('author').populate('members').populate({ 
+            path: 'members',
+            populate: [{
+             path: 'techs',
+             model: 'Tech'
+            }] 
+         }).exec()
         if (ws) {
             let embed = new MessageEmbed().setColor("RANDOM");
             embed.setTitle(`**WS Group Score**`);
@@ -98,7 +105,7 @@ export class WSGroupScoreCommand extends WhitestarsCommand {
             embed.addField("Members", `${membersArr}`)
             embed.addField("Total", `Score: ${total}`)
 
-            return message.channel.send(embed)
+            return message.channel.send({embeds:[embed]})
         } else {
             return message.channel.send(`There is currently not a whitestar running with that role.`)
         }

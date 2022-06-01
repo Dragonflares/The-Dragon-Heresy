@@ -1,6 +1,6 @@
 import { GenericCommand } from './GenericCommand';
 import { MessageEmbed } from 'discord.js';
-const fetch = require("node-fetch");
+import fetch from 'node-fetch';
 
 export class XKCDCommand extends GenericCommand {
     constructor(plugin) {
@@ -19,36 +19,33 @@ export class XKCDCommand extends GenericCommand {
             this.load(url).then(response => {
                 try {
                     const data = JSON.parse(response);
-                    const rand =Math.floor(Math.random() * Math.floor(data.num))
+                    const rand = Math.floor(Math.random() * Math.floor(data.num))
                     const url = `http://xkcd.com/${rand}/info.0.json`;
                     this.load(url).then(response1 => {
                         const data1 = JSON.parse(response1);
                         const embed = new MessageEmbed();
-                        embed.addField(`Title`,`${data1.alt}`);
+                        embed.addField(`Title`, `${data1.alt}`);
                         embed.setImage(`${data1.img}`)
                         embed.setTitle("Here's a random XKCD");
                         embed.setColor("RANDOM");
-                        message.channel.send(embed);
+                        message.channel.send({ embeds: [embed] });
                     })
-                    
-                } catch(err) {
-                    message.channel.send("Can't look up jokes.");
+
+                } catch (err) {
+                    message.channel.send("Can't look up xkcd comics.");
                 }
             }).catch(console.error);
-        } catch(err) {
+        } catch (err) {
             console.log(err)
-            message.channel.send("I'm currently having trouble looking up jokes. Please try again later.");
+            message.channel.send("I'm currently having trouble looking up xkcd comics. Please try again later.");
         }
     }
 
-    async  load(url) {
+    async load(url) {
         let obj = null;
-        
         try {
-            
             obj = await fetch(url);
-
-        } catch(e) {
+        } catch (e) {
             console.log(e);
         }
         return await obj.text();

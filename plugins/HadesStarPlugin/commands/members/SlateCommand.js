@@ -1,9 +1,10 @@
 import { MemberCommand } from './MemberCommand';
-import { Member, Tech, Corp } from '../../database';
+import { Member, Corp } from '../../database';
 import { MessageAttachment } from 'discord.js';
 import { TechTree } from '../../techs';
-import TechData from '../../../../assets/techs.json';
-import { Canvas, loadImage } from 'canvas';
+import TechData from '../../../../assets/techs.json' assert { type: "json" };
+import pkg from 'canvas';
+const { Canvas, loadImage } = pkg;
 import { confirmResultButtons } from '../../utils';
 
 export class SlateCommand extends MemberCommand {
@@ -65,7 +66,7 @@ export class SlateCommand extends MemberCommand {
 		const buffer = await this.roster(CorpMember, pImages);
 		const filename = `image.jpg`;
 		const attachment = new MessageAttachment(buffer, filename);
-		await message.channel.send(attachment);
+		await message.channel.send({files: [attachment]});
 	}
 
 	async roster(CorpMember, pImages) {

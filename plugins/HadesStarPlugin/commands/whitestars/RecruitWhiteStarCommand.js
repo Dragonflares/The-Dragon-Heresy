@@ -14,14 +14,15 @@ export class RecruitWhiteStarCommand extends WhitestarsCommand {
   }
 
   async run(message, args) {
-    let user = message.guild.member(message.author)
+    let user = message.author
     let role = message.mentions.roles.first()
     let member = await Member.findOne({ discordId: user.id.toString() }).populate('Corp').exec();
     if (!member)
       return message.channel.send("You aren't part of any Corporation. Join a Corporation first.")
     else {
       let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate('rankRoles').exec();
-      if (user.roles.cache.find(r => r == corp.rankRoles.Officer))
+      let memberCheck = message.guild.members.cache.get(message.author.id)
+      if (memberCheck.roles.cache.some(role => role.id == corp.rankRoles.Officer))
         return this.roleMessage(message, role, args.join(' '), member)
       else
         return message.channel.send("You are not an Officer of this Corp!")
@@ -87,7 +88,7 @@ export class RecruitWhiteStarCommand extends WhitestarsCommand {
       const rolesEmbed = await WsUtils.whiteStarRecruitMessage(newWhiteStar);
 
       //Send Message
-      const messageReaction = await message.channel.send(rolesEmbed);
+      const messageReaction = await message.channel.send({embeds: [rolesEmbed]});
 
       //React
       WsUtils.whiteStarPrefEmojiGroup.forEach(async (value, key) => await messageReaction.react(key))
@@ -111,10 +112,11 @@ export class RecruitWhiteStarCommand extends WhitestarsCommand {
 
         //Send Message
         let recruitEmbed = await WsUtils.whiteStarRecruitMessage(ws);
-        const messageReaction = await message.channel.send(recruitEmbed);
+        const messageReaction = await message.channel.send({embeds: [recruitEmbed]});
 
         //React
-        WsUtils.whiteStarPrefEmojiGroup.forEach(async (value, key) => await messageReaction.react(key))
+        WsUtils.whiteStarPrefEmojiGroup.forEach(async (value, key
+          ) => await messageReaction.react(key))
         WsUtils.whiteStarRecruitReactions.forEach(async react => await messageReaction.react(react))
 
         //Save new ids in the database

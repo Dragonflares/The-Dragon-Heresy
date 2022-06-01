@@ -1,8 +1,10 @@
-const Discord = require('discord.js');
 import { Member, WhiteStar } from '../database';
 import * as timeUtils from './timeUtils.js'
+import { MessageEmbed} from 'discord.js';
 
 export let NormalShow = true
+
+
 
 export const whiteStarRecruitReactions = ['🤚', '🆘', '🚮', '✅']
 
@@ -40,6 +42,9 @@ export const embedFooters = new Map([
     ["Scanning", `🚮 - Delete White Star 🆘 - Switch to text mode 🛑 - Stop Scan ✅ - Found Match! 🔄 - Refresh`],
     ["Running", `🚮 - Delete White Star 🆘 - Switch to text mode ⬅️ - Back to scan 🔄 - Refresh\n 🕙: -10 Min 🕚: -1 Min 🕐: +1 Min 🕑: +10 Min`]
 ])
+export const SetNormal = async(normal) => {
+    NormalShow=normal;
+}
 
 export const whiteStarRecruitMessage = async (ws) => {
     //Get Members
@@ -57,7 +62,7 @@ export const whiteStarRecruitMessage = async (ws) => {
             let command = ws.leadPreferences.has(t.discordId) ? ' 🤚' : ''
 
             //Add him to the string
-            if (this.NormalShow) {
+            if (NormalShow) {
                 if (prefCatStrings.get(cat) == "None")
                     prefCatStrings.set(cat, `<@${t.discordId}>${command}`)
                 else
@@ -72,12 +77,12 @@ export const whiteStarRecruitMessage = async (ws) => {
     }
 
     //Create Message
-    let rolesEmbed = new Discord.MessageEmbed()
+    let rolesEmbed = new MessageEmbed()
         .setTitle(`White Star Recruitment by ${ws.author.name}:`)
         .setThumbnail("https://i.imgur.com/fNtJDNz.png")
         .setDescription(`${ws.description}`)
         .addField("Group:", `<@&${ws.wsrole}>`)
-        .addField("Current People", ws.members ? Object.keys(ws.members).length : "0")
+        .addField("Current People", ws.members ? Object.keys(ws.members).length.toString() : "0")
 
     //Add Categories and players
     whiteStarPrefEmojiGroup.forEach((value, key) =>
@@ -86,11 +91,11 @@ export const whiteStarRecruitMessage = async (ws) => {
     //Footers
     if (ws.status == "Recruiting") {
         rolesEmbed.setColor("ORANGE")
-            .setFooter(`🤚 - Commander  🆘 - Switch to text mode 🚮 - Stop Recruit ✅ - Finish Recruit`)
+            .setFooter({text: `🤚 - Commander  🆘 - Switch to text mode 🚮 - Stop Recruit ✅ - Finish Recruit`})
     }
     else {
         rolesEmbed.setColor("GREEN")
-            .setFooter(`Recruitment Done`)
+            .setFooter({text: `Recruitment Done`})
     }
     return rolesEmbed;
 
@@ -98,7 +103,7 @@ export const whiteStarRecruitMessage = async (ws) => {
 
 export const whiteStarStatusMessage = async (message, ws) => {
     //Create Message
-    let statusEmbed = new Discord.MessageEmbed()
+    let statusEmbed = new MessageEmbed()
 
     //Set Common Items
     statusEmbed.setTitle(`White Star Status`)
@@ -175,7 +180,7 @@ export const whiteStarStatusMessage = async (message, ws) => {
         let unassignedSpString
         let spString
         let playersString
-        if (this.NormalShow) {
+        if (NormalShow) {
             //Generate Battleships string
             unassignedBsString = Array.from(ws.members)
                 .filter(t => !assignedBs.includes(t))
@@ -258,13 +263,13 @@ export const whiteStarStatusMessage = async (message, ws) => {
         statusEmbed.addField("Player List", playersString)
     }
     statusEmbed.setColor(embedColors.get(ws.status))
-        .setFooter(embedFooters.get(ws.status), message.guild.iconURL())
+        .setFooter({text: `${embedFooters.get(ws.status)}`, iconURL: message.guild.iconURL()})
         .setTimestamp()
     return statusEmbed;
 }
 
 export const whiteStarCancelMessage = async (ws) => {
-    let rolesEmbed = new Discord.MessageEmbed()
+    let rolesEmbed = new MessageEmbed()
     rolesEmbed.setTitle(`White Star Status`)
         .setThumbnail("https://i.imgur.com/fNtJDNz.png")
         .setDescription(`${ws.description}`)
@@ -279,12 +284,12 @@ export const killWS = async (client, ws, message) => {
 
     if (ws.retruitchannel) {
         let msg = await client.channels.cache.get(ws.retruitchannel).messages.fetch(ws.recruitmessage.toString());
-        msg.edit("-", { embed: await whiteStarCancelMessage(ws) })
+        msg.edit({embeds: [await whiteStarCancelMessage(ws)] })
         msg.reactions.removeAll()
     }
     if (ws.statuschannel) {
         let statusmsg = await client.channels.cache.get(ws.statuschannel).messages.fetch(ws.statusmessage.toString());
-        statusmsg.edit("-", { embed: await whiteStarCancelMessage(ws) })
+        statusmsg.edit({embeds: [await whiteStarCancelMessage(ws)] })
         statusmsg.reactions.removeAll()
     }
     ws.members.forEach(async t => {
@@ -323,7 +328,7 @@ export const RefreshStatusMessage = async (client, ws, interval) => {
             //Create new message
             const statusEmbed = await whiteStarStatusMessage(msgStatus, intWs);
             //Remove Reactions
-            msgStatus.edit("-", { embed: statusEmbed })
+            msgStatus.edit( {embeds: [statusEmbed] })
         }
     }
     return msgStatus;
@@ -343,7 +348,7 @@ export const RefreshRecruitMessage = async (client, ws, interval) => {
         const recruitEmbed = await whiteStarRecruitMessage(intWs);
 
         //Remove Reactions
-        await msgRecruit.edit("-", { embed: recruitEmbed })
+        await msgRecruit.edit({embeds: [recruitEmbed] })
     }
 
     return msgRecruit;

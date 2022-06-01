@@ -1,9 +1,7 @@
 import { WhitestarsCommand } from './WhitestarsCommand';
 import { Member, WhiteStar, Tech, Corp } from '../../database';
-import { TechTree } from '../../techs';
 import * as WsUtils from '../../utils/whiteStarsUtils.js';
 import { confirmResultButtons } from '../../utils';
-const Discord = require('discord.js');
 
 export class ExportWSTechCommand extends WhitestarsCommand {
     constructor(plugin) {
@@ -16,7 +14,7 @@ export class ExportWSTechCommand extends WhitestarsCommand {
     }
 
     async run(message, args) {
-        let user = message.guild.member(message.author)
+        let user = message.author
         let roles = message.mentions.roles.first()
         let member = await Member.findOne({ discordId: user.id.toString() }).populate('Corp').exec();
         if (!member)
@@ -44,7 +42,13 @@ export class ExportWSTechCommand extends WhitestarsCommand {
 
     summaryAll = async (message, role) => {
         message.delete({ timeout: 1 });    //Delete User message
-        const ws = await WhiteStar.findOne({ wsrole: role.id }).populate('author').populate('members').populate('members/techs').exec()
+        const ws = await WhiteStar.findOne({ wsrole: role.id }).populate('author').populate('members').populate({ 
+            path: 'members',
+            populate: [{
+             path: 'techs',
+             model: 'Tech'
+            }] 
+         }).exec()
         if (!ws) return;
         this.summaryMessage(message, ws, "Weapons And Shields")
         this.summaryMessage(message, ws, "Support")

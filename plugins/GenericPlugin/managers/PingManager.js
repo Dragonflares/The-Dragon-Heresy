@@ -19,39 +19,38 @@ const pencolReplies = [
 ];
 
 
-export class PingManager extends Manager{
-    constructor(plugin){
+export class PingManager extends Manager {
+    constructor(plugin) {
         super(plugin);
     }
 
-    enable(){
-        if(!this.enabled){
-            this.client.on('message', async message => this.myListener(message))
+    enable() {
+        if (!this.enabled) {
+            this.client.on('messageCreate', async message => this.pingListener(message))
         }
         super.enable();
     }
 
-    myListener = (message) => {
-        if(message.author.bot) return;
-        if(message.mentions.has( this.client.user))
-		{	
-			message.channel.send(replies[randomInt(0, replies.length - 1)])
-	
+    pingListener = async (message) => {
+        if (message.author.bot) return;
+        if (message.mentions.has(this.client.user)) {
+            message.channel.send(replies[randomInt(0, replies.length - 1)])
         }
+
         //Me and Boom
-        else if(message.mentions.has('153558944478920704') && this.client.users.cache.find(u=> u.id == "153558944478920704").presence.status == "offline") {
-            message.channel.send(pencolReplies[randomInt(0, pencolReplies.length - 1)])
+        else if (message.mentions.has('153558944478920704')) {
+            let userOn = message.guild.members.cache.filter(member => (member.id == "153558944478920704" && member.presence?.status == "online")).size
+            if (userOn == 0) message.channel.send(pencolReplies[randomInt(0, pencolReplies.length - 1)])
         }
-  
-        else if(message.mentions.has('236891878690258944') && this.client.users.cache.find(u=> u.id == "236891878690258944").presence.status == "offline")
-		{	
-			message.channel.send("You had better hope that ping was important... He is a grumpy cop..")
-		}
+
+        else if (message.mentions.has('236891878690258944')) {
+            let userOn = message.guild.members.cache.filter(member => (member.id == "236891878690258944" && member.presence?.status == "online")).size
+            if (userOn == 0) message.channel.send("You had better hope that ping was important... He is a grumpy cop..")
+        }
     }
 
-    disable(){
-        if(this.enabled){
-
+    disable() {
+        if (this.enabled) {
         }
         super.disable();
     }

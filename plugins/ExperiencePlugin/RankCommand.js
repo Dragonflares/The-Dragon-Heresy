@@ -1,6 +1,7 @@
 import { Command } from '../../lib';
-import { registerFont, Canvas} from 'canvas';
-import TheCanvas from 'canvas';
+import pkg from 'canvas';
+const { TheCanvas, registerFont, Canvas} = pkg;
+
 import { MessageAttachment } from 'discord.js';
 
 

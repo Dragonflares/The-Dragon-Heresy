@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
-mongoose.set('useCreateIndex', true);
-mongoose.set('useFindAndModify', false);
+//mongoose.set('useCreateIndex', true);
+//mongoose.set('useFindAndModify', false);
 
 export class Database{
 	constructor(connectionString){

@@ -1,7 +1,5 @@
 import { GenericCommand } from './GenericCommand';
 import { MessageEmbed } from 'discord.js';
-import { embedColors } from '../../HadesStarPlugin/utils/whiteStarsUtils';
-const fetch = require("node-fetch");
 
 export class RollCommand extends GenericCommand {
     constructor(plugin) {
@@ -19,13 +17,13 @@ export class RollCommand extends GenericCommand {
         let min = parseInt(args[0])
         let max = parseInt(args[1])
         if (Number.isNaN(min) || Number.isNaN(max)) return message.channel.send("Not a number");
-        var randomnumber = Math.floor(Math.random() * (max - min+1)) + min;
+        var randomnumber = Math.floor(Math.random() * (max - min + 1)) + min;
         const embed = new MessageEmbed();
         embed.setTitle("Rolling");
-        embed.addField("You rolled: ", randomnumber)
+        embed.addField("You rolled: ", randomnumber.toString())
         embed.setThumbnail('https://i.imgur.com/UkIUx07.png')
         embed.setColor("RANDOM");
-        message.channel.send(embed);
+        message.channel.send({ embeds: [embed] });
 
     }
 }

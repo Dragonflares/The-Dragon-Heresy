@@ -2,8 +2,9 @@ import { WhitestarsCommand } from './WhitestarsCommand';
 import { Corp, Member, WhiteStar ,RankRoles} from '../../database';
 import * as WsUtils from '../../utils/whiteStarsUtils.js';
 import { MemberDAO, CorpDAO } from '../../../../lib/utils/DatabaseObjects'
-import { id } from 'common-tags';
-const { MessageButton, MessageActionRow, MessageMenuOption, MessageMenu } = require("discord-buttons")
+import pkg from 'common-tags';
+const { id } = pkg;
+import { MessageEmbed, MessageButton, MessageActionRow, MessageSelectMenu} from 'discord.js';
 
 export class RemovePlayerWhiteStarCommand extends WhitestarsCommand {
   constructor(plugin) {
@@ -16,17 +17,18 @@ export class RemovePlayerWhiteStarCommand extends WhitestarsCommand {
   }
 
   async run(message, args) {
-    let user = message.guild.member(message.author)
+    let user = message.author
     let member = await Member.findOne({ discordId: user.id.toString() }).populate('Corp').exec();
     if (!member)
       return message.channel.send("You aren't part of any Corporation. Join a Corporation first.")
     else {
-      let corp = await CorpDAO.find(message.guild.id)
+      let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate('rankRoles').exec();
       if(!corp){
         return message.channel.send("This Corp doesn't exist.")
       }
       let rankcorp = await CorpDAO.populateRanks(corp)
-      if (user.roles.cache.find(r=> r == rankcorp.rankRoles.Officer))
+      let memberCheck = message.guild.members.cache.get(message.author.id)
+      if (memberCheck.roles.cache.some(role => role.id == corp.rankRoles.Officer))
         return this.removePlayerWS(message, rankcorp)
       else
         return message.channel.send("You are not an Officer of this Corp!")
@@ -41,73 +43,67 @@ export class RemovePlayerWhiteStarCommand extends WhitestarsCommand {
       wsRolesList.push(message.guild.roles.cache.find(r => r.id == ws.wsrole).name)
     })
 
-    let selectLevel = new MessageMenu()
-      .setID('group')
+    let selectLevel = new MessageSelectMenu()
+      .setCustomId('group')
       .setPlaceholder('Select Whitestar Group')
-      .setMaxValues(1)
-      .setMinValues(1)
 
     wsRolesList.forEach(groupname => {
-      let optionstemp = new MessageMenuOption()
-        .setLabel(groupname)
-        .setValue(groupname)
-      selectLevel.addOption(optionstemp)
+      selectLevel.addOptions([
+        {
+        label: groupname,
+        value: groupname,
+        }
+      ])
     });
 
     let firstRow = new MessageActionRow()
     let secondRow = new MessageActionRow()
-    firstRow.addComponent(selectLevel)
+    firstRow.addComponents(selectLevel)
 
-    let messageReaction = await message.channel.send(`Select WS and User to remove!`, firstRow)
-    const filter = (button) => button.clicker.user.bot == false;
+    let messageReaction = await message.channel.send({content: `Select WS and User to remove!`,components: [firstRow]})
+    const filter = (button) => button.user.bot == false;
 
-    const collector = messageReaction.createMenuCollector(filter, { time: 2 * 60 * 1000, dispose: true });
-    const collectorBtn = messageReaction.createButtonCollector(filter, { time: 2 * 60 * 1000, dispose: true });
+    const collector = messageReaction.createMessageComponentCollector({filter,  time: 2 * 60 * 1000});
     let ws
     let name
     collector.on('collect', async b => {
 
-      if (b.id == "group") {
+      if (b.customId == "group") {
         ws = await WhiteStar.findOne({ wsrole: message.guild.roles.cache.find(r => r.name == b.values[0]).id }).populate('author').populate('members').exec()
-        if (ws) {
-          let selectMember = new MessageMenu()
-            .setID('member')
+        if (ws && ws.members.length >0) {
+          let selectMember = new MessageSelectMenu()
+            .setCustomId('member')
             .setPlaceholder('Select Member')
-            .setMaxValues(1)
-            .setMinValues(1)
           ws.members.forEach(m => {
-            let optionmem = new MessageMenuOption()
-              .setLabel(m.name.substring(0,24))
-              .setValue(m.name.substring(0,24))
-            selectMember.addOption(optionmem)
+            selectMember.addOptions([
+              {
+                label: m.name.substring(0,24),
+                value: m.name.substring(0,24),
+              }
+            ])
           });
 
-          secondRow.addComponent(selectMember)
+          secondRow.addComponents(selectMember)
           messageReaction.edit({ components: [secondRow] })
         }
       }
-      if (b.id == "member") {
+      if (b.customId == "member") {
         name = b.values[0]
         let acceptButton = new MessageButton()
-          .setStyle('red')
+          .setStyle(3)
           .setLabel('Accept')
-          .setID('Accept')
+          .setCustomId('Accept')
 
         let cancelButton = new MessageButton()
-          .setStyle('grey')
+          .setStyle(2)
           .setLabel('Cancel')
-          .setID('Cancel')
+          .setCustomId('Cancel')
         let buttonRow = new MessageActionRow()
-        buttonRow.addComponent(acceptButton);
-        buttonRow.addComponent(cancelButton);
-        messageReaction.edit(`Remove ${name} from  ${message.guild.roles.cache.find(r => r.id == ws.wsrole).name} White Star?`,{ components: [ buttonRow] })
+        buttonRow.addComponents(acceptButton);
+        buttonRow.addComponents(cancelButton);
+        messageReaction.edit({content: `Remove ${name} from  ${message.guild.roles.cache.find(r => r.id == ws.wsrole).name} White Star?`, components: [ buttonRow] })
       }
-      b.reply.defer()
-    });
-
-    collectorBtn.on('collect', async b => {
-      b.reply.defer()
-      if (b.id == "Accept") {
+      if (b.customId == "Accept") {
         let player = await ws.members.filter(m => m.name.substring(0,24) == name.substring(0,24))[0]
         if (ws.preferences.has(player.discordId)) {
           let remainingMembers = await ws.members.filter(m => m.name.substring(0,24) != name.substring(0,24))
@@ -118,17 +114,19 @@ export class RemovePlayerWhiteStarCommand extends WhitestarsCommand {
           roleMember.roles.remove(ws.wsrole)
           await ws.save()
           await WsUtils.RefreshRecruitMessage(this.client, ws, null);
-          await message.channel.send(`${player.name} removed from ${message.guild.roles.cache.find(r => r.id == ws.wsrole).name} White Star!`)
+          await messageReaction.edit({content: `${player.name} removed from ${message.guild.roles.cache.find(r => r.id == ws.wsrole).name} White Star!`, components: []})
         }
       }
 
-      if (b.id == "Accept" || b.id == "Cancel") {
-        messageReaction.delete({ timeout: 1 });
+      if (b.customId == "Cancel") {
+        await messageReaction.edit({content:`Remove WS player canceled`, components: []})
       }
-    })
+      b.deferUpdate()
+    });
 
     collector.on('end', async collected => {
-      messageReaction.delete({ timeout: 1 });
+      await messageReaction.edit({content:`Remove WS player timedout!`, components: []})
+     
     });
   }
 }

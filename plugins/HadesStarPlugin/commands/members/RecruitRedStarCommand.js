@@ -92,7 +92,7 @@ async sendInitialMessage(msgObject, rsLevel, timeout) {
         const messageReaction = await msgObject.channel.send({ content:`<@&${role}>`, components: [buttonRow, buttonRow1], embeds: [pollEmbed] });
         
         // Create button collector for the message
-        const filter = (button) => button.clicker.user.bot == false;
+        const filter = (button) => button.user.bot == false;
         const collector = messageReaction.createMessageComponentCollector(filter);
 
         //Create map of registered players and self incude

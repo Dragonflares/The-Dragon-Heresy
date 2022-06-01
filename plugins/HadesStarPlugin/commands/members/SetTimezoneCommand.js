@@ -150,7 +150,7 @@ export class SetTimezoneCommand extends MemberCommand{
         //Send message
         let messageReaction = await message.channel.send({embeds: [embed],  components: [firstRow,secondRow,thirdRow,forthRow] });
         
-        const filter = (button) => button.clicker.user.bot == false;
+        const filter = (button) => button.user.bot == false;
 
         //Open buttn and menu collectors
         const collector = messageReaction.createMessageComponentCollector({filter,  time: 2*60* 1000});

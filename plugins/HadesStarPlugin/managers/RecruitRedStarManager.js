@@ -33,7 +33,7 @@ export class RecruitRedStarManager extends Manager {
                 }catch(r){}
 
                 //Create collector
-                const filter = (button) => button.clicker.user.bot == false;
+                const filter = (button) => button.user.bot == false;
 
             })
         })

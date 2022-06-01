@@ -18,7 +18,7 @@ export class HelpCommand extends InfoCommand{
     }
 
     async run(message, args){
-        if(message.mentions.users > 0) return message.channel.send("You can't tag members for this command.")
+        if(message.mentions.users > 0) return message.channel.send({text: "You can't tag members for this command."})
         if (args[0])
             return this.getCMD(message, args[0]);
         return this.getAll(message);
@@ -61,7 +61,7 @@ export class HelpCommand extends InfoCommand{
             subCategories.get(command.subcategory).add(command)
         });
 
-        embed.setTitle(`Dragonflares Bot commands`);
+        embed.setTitle(`Rising Imperium Bot Commands`);
         categories.forEach((subCategories, category) => {
             embed.addField(stripIndents`**${capitalize(category)}**`, `${
                 Array.from(subCategories).map(([subCategory, commands]) => `${capitalize(subCategory)}\n${
@@ -70,8 +70,8 @@ export class HelpCommand extends InfoCommand{
             }`)
         });
 
-        embed.setFooter("use &help plus the name of the command for usage information.")
-        return message.channel.send(embed);
+        embed.setFooter({text: "use &help plus the name of the command for usage information."})
+        return message.channel.send({embeds:[embed]});
     }
 
     getCMD(message, input) {
@@ -80,16 +80,16 @@ export class HelpCommand extends InfoCommand{
         
         const info = [];
         if (!cmd) {
-            return message.channel.send(embed.setColor("RED").setDescription(`No information found for command **${input.toLowerCase()}**`));
+            return message.channel.send({embeds:[embed.setColor("RED").setDescription(`No information found for command **${input.toLowerCase()}**`)]});
         }
         if (cmd.name) info.push(`**Command name**: ${cmd.name}`);
         if (cmd.aliases) info.push(`**Aliases**: ${cmd.aliases.map(a => `\`${a}\``).join(", ")}`);
         if (cmd.description) info.push(`**Description**: ${cmd.description}`);
         if (cmd.usage) {
             info.push(`**Usage**: ${cmd.usage}`);
-            embed.setFooter(`Syntax: <> = required, () = optional`);
+            embed.setFooter({text:`Syntax: <> = required, () = optional`});
         }
 
-        return message.channel.send(embed.setColor("GREEN").setDescription(info.join('\n')));
+        return message.channel.send({embeds:[embed.setColor("GREEN").setDescription(info.join('\n'))]});
     }
 }

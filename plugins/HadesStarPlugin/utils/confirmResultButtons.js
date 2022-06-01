@@ -1,6 +1,6 @@
 import { randomInt } from './randomInt';
 import { findBestMatch } from 'string-similarity';
-const { MessageButton, MessageActionRow } = require("discord-buttons")
+import {MessageActionRow, MessageButton } from 'discord.js';
 
 const replies = [
     "Alright, just retry without dyslexia.",
@@ -23,43 +23,37 @@ export const confirmResultButtons = async (message, query, list) => {
         let buttonRow = new MessageActionRow()
         for (let i = 0; i < numOptions; i++) {
             buttons[i] = new MessageButton()
-                .setStyle('green')
+                .setStyle('SUCCESS')
                 .setLabel(rate.ratings[i].target)
-                .setID(rate.ratings[i].target)
-            buttonRow.addComponent(buttons[i]);
+                .setCustomId(rate.ratings[i].target)
+            buttonRow.addComponents(buttons[i]);
         }
         buttons[numOptions] = new MessageButton()
-            .setStyle('grey')
+            .setStyle('SUCCESS')
             .setLabel('Cancel')
-            .setID('Cancel')
-        buttonRow.addComponent(buttons[numOptions]);
+            .setCustomId('Cancel')
+        buttonRow.addComponents(buttons[numOptions]);
         let textMsg = `Did you mean?`
-        let messageReaction = await message.channel.send(textMsg, { component: buttonRow });
+
+        let messageReaction = await message.channel.send({content: textMsg, components: [buttonRow]});
+        const filter = i =>  i.user.id === message.author.id;
 
         try {
-            const response = await messageReaction.awaitButtons(
-                m => m.clicker.user.id === message.author.id, {
-                max: 1,
-                time: 10000,
-                errors: ['time']
-            });
-            let m = await response.first()
-
-            if (m.id == "Cancel") {
+            const i = await messageReaction.channel.awaitMessageComponent({ filter, time: 15000 }).catch();
+            if (i.customId == "Cancel") {
                 throw new Error();
             } else {
-                messageReaction.edit(`Your choice: ${m.id}`, { component: null })
-                m.reply.defer()
-                return m.id
+                messageReaction.edit({content: `Your choice: ${i.customId}`,  components: []})
+                return i.customId 
             }
         } catch (err) {
-            messageReaction.edit(textMsg, { component: null })
+            messageReaction.edit({textMsg,  components: [] })
             message.channel.send(replies[randomInt(0, replies.length - 1)]);
             return false;
         }
-
-        return;
+          
     }else {
-        return query
+        return rate.bestMatch.target
     }
+    
 }

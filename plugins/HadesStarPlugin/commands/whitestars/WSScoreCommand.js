@@ -1,10 +1,10 @@
-import { MemberCommand } from './MemberCommand';
+import { WhitestarsCommand } from './WhitestarsCommand';
 import { Member, Tech, Corp } from '../../database';
 import { MessageEmbed } from 'discord.js';
 import { TechTree } from '../../techs';
 import { confirmResultButtons } from '../../utils';
 
-export class WSScoreCommand extends MemberCommand {
+export class WSScoreCommand extends WhitestarsCommand {
     constructor(plugin) {
         super(plugin, {
             name: 'wsscore',
@@ -71,7 +71,7 @@ export class WSScoreCommand extends MemberCommand {
                             return `${t.name} ${memberTechs.get(t.name).level} __Score__: ${wsscore}`
                         })
                 ])
-                .forEach(categoryData => embed.addField(categoryData[0], categoryData[1]));
+                .forEach(categoryData => embed.addField(categoryData[0].toString(), categoryData[1].toString()));
 
             let bslevel = 1
             let minerlevel = 1
@@ -95,10 +95,10 @@ export class WSScoreCommand extends MemberCommand {
             totalScore += msScores[minerlevel]
             totalScore += tpsScores[tpslevel]
 
-            embed.addField("__**TOTAL:**__", totalScore)
+            embed.addField("__**TOTAL:**__", totalScore.toString())
         }
         else embed.setDescription("No techs were found!");
 
-        return message.channel.send(embed);
+        return message.channel.send({embeds: [embed]});
     }
 }

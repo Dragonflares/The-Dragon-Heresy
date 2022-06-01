@@ -100,11 +100,12 @@ export class PlayerTechCommand extends MemberCommand {
                         .filter(t => memberTechs.has(t.name))
                         .map(t => `${t.name} ${memberTechs.get(t.name).level}`)
                 ])
-                .forEach(categoryData => embed.addField(categoryData[0], categoryData[1]));
+                .forEach(categoryData => {
+                    embed.addField(categoryData[0], categoryData[1].join('\n'))
+                });
         }
         else embed.setDescription("No techs were found!");
-
-        return message.channel.send(embed);
+        return message.channel.send({embeds:[embed]});
     }
 
     displayCategory = async (message, member, categoryName) => {

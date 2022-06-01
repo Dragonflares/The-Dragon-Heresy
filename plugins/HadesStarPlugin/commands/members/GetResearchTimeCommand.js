@@ -20,7 +20,7 @@ export class GetResearchTimeCommand extends MemberCommand{
         const user = message.mentions.users.first()
         if (!user) {
             if (!args[0]) {
-                target = message.guild.member(message.author)
+                target = message.author
                 CorpMember = (await Member.findOne({ discordId: target.id.toString() }).populate("Corp").populate("techs").exec().catch(err => console.logg(err)))
             } else {
                 let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate('members').populate("members.techs").exec();
@@ -31,7 +31,7 @@ export class GetResearchTimeCommand extends MemberCommand{
             }
         }
         else {
-            target = message.guild.member(user)
+            target = user
             CorpMember = (await Member.findOne({ discordId: target.id.toString() }).populate("Corp").populate("techs").exec().catch(err => console.logg(err)))
         }
 

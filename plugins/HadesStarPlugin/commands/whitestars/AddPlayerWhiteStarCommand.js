@@ -13,7 +13,7 @@ export class AddPlayerWhiteStarCommand extends WhitestarsCommand {
   }
 
   async run(message, args) {
-    let user = message.guild.member(message.author)
+    let user = message.author
     let roles = message.mentions.roles.first()
     let dTarget = message.mentions.users.first()
     let member = await Member.findOne({ discordId: user.id.toString() }).populate('Corp').exec();
@@ -21,7 +21,7 @@ export class AddPlayerWhiteStarCommand extends WhitestarsCommand {
       return message.channel.send("You aren't part of any Corporation. Join a Corporation first.")
     else {
       if (!roles) return message.channel.send("Please input a discord role for the WS!")
-
+      if(!dTarget)return message.channel.send("Please input user to add!")
       let target = await Member.findOne({ discordId: dTarget.id.toString() }).populate("Corp").populate('techs').exec();
       if (!target)
         return message.channel.send("This Member was never part of a Corporation! He must join one to have a tech tracker!");

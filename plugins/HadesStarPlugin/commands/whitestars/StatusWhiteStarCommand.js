@@ -14,7 +14,7 @@ export class StatusWhiteStarCommand extends WhitestarsCommand {
   }
 
   async run(message, args) {
-    let user = message.guild.member(message.author)
+    let user = message.author
     let roles = message.mentions.roles.first()
     let member = await Member.findOne({ discordId: user.id.toString() }).populate('Corp').exec();
     if (!member)
@@ -52,7 +52,7 @@ export class StatusWhiteStarCommand extends WhitestarsCommand {
       const rolesEmbed = await WsUtils.whiteStarStatusMessage(message, ws);
 
       //Send Message
-      const messageReaction = await message.channel.send(rolesEmbed);
+      const messageReaction = await message.channel.send({embeds:[rolesEmbed]});
 
       //React
       WsUtils.whiteStarStatusReactions.get(ws.status).forEach(async react => await messageReaction.react(react))

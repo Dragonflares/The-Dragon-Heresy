@@ -1,4 +1,4 @@
-import TechData from '../../../assets/techs.json';
+import TechData from '../../../assets/techs.json' assert { type: "json" };
 import { Technology } from './Technology';
 import { findBestMatch } from 'string-similarity';
 

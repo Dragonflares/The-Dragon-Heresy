@@ -37,11 +37,6 @@ export class FindTechCommand extends MemberCommand {
             const level = parseInt(args[args.length - 1]);
             const techName = isNaN(level) ? args.join('') : args.slice(0, -1).join('');
 
-            //const techName = args[0];
-            //const tech = TechTree.find(techName);
-
-            //if (!await confirmTech(message, techName, tech))
-            //
             let techs = []
             for (const [key, value] of TechTree.technologies.entries()) {
                 techs.push(value._name)
@@ -50,10 +45,8 @@ export class FindTechCommand extends MemberCommand {
             let techActualName = await confirmResultButtons(message, techName, techs)
             if (!techActualName) return;
             const tech = TechTree.find(techActualName);
-                //return;
 
-            let requester = message.guild.member(message.author)
-            let error = false
+            let requester = message.author
 
             let member = await Member.findOne({ discordId: requester.id.toString() }).populate("Corp").exec()
             if (!member)
@@ -78,11 +71,9 @@ export class FindTechCommand extends MemberCommand {
         const members = Array.from(corp.members)
 
         let memListSorted = await Promise.all(
-            //members.map(async t => [t, await Tech.findOne({ _id: Array.from(t.techs)[GetModuleID(tech.name)] }).exec()])
             members.map(async t => [t, await this.GetModule(t, tech.name)])
         )
 
-        // console.log(memListSorted)
         memListSorted = memListSorted
             .filter(([key, value]) => value != null)
             .map(([key, value]) => [value.level, key.name])
@@ -113,7 +104,7 @@ export class FindTechCommand extends MemberCommand {
                     }else{
                         embed.addField("*Players*", `${mes}`)
                     }
-                    message.channel.send(embed)
+                    message.channel.send({embeds:[embed]})
                 }
             }
         }else{

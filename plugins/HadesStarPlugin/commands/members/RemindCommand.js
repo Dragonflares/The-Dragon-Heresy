@@ -1,5 +1,5 @@
 import { MemberCommand } from './MemberCommand';
-import { Member, Tech, Reminder } from '../../database';
+import { Member, Reminder } from '../../database';
 import Mongoose from 'mongoose';
 import * as timeUtils from '../../utils/timeUtils.js'
 
@@ -18,7 +18,7 @@ export class RemindCommand extends MemberCommand {
         let target
         let user = message.mentions.users.first()
         if (!user) {
-            target = message.guild.member(message.author)
+            target = message.author
         }
         else if (message.author.id === this.client.creator)
             target = user
@@ -87,9 +87,8 @@ export class RemindCommand extends MemberCommand {
       
         }
     }
-
-
 }
+
 function calculateInMiliSeconds(timeStamp) {
     var timeInMiliSeconds = 0;
     if (timeStamp.match(/(\d+)?[d|h|m|s]/g)) {

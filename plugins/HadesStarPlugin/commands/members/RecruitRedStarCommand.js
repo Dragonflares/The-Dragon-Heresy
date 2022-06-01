@@ -1,7 +1,6 @@
 import { MemberCommand } from './MemberCommand';
 import { RedStarRoles, RedStarQueue, Corp, RedStarLog} from '../../database'
-const { MessageButton, MessageActionRow } = require("discord-buttons")
-const Discord = require('discord.js');
+import { MessageEmbed, MessageButton, MessageActionRow} from 'discord.js';
 import Mongoose from 'mongoose'
 import * as RsQueuesUtils from '../../utils/redStarsQueuesUtils'
 
@@ -42,27 +41,27 @@ async sendInitialMessage(msgObject, rsLevel, timeout) {
         if (!role) return msgObject.channel.send(`The Role ${rsLevel} wasnt setup by server Administrator`);
 
         //Get Author Name
-        var authorName = msgObject.guild.member(msgObject.author).nickname
+        var authorName = msgObject.guild.members.fetch(msgObject.author).nickname
         if (!authorName) authorName = msgObject.author.username
 
         //Create Message
-        let pollEmbed = new Discord.MessageEmbed()
+        let pollEmbed = new MessageEmbed()
         .setTitle(`RS ${rsLevel} Recruitment invitation by ${authorName}:`)
         .setThumbnail("https://i.imgur.com/hedXFRd.png")
         .setDescription(`Do you want to be part of this Red Star? <@&${role}> \n Click below if you need your croid or not`)
         .addField("Current People", "0/4")
         .addField("Members", "None")
         .setColor("ORANGE")
-        .setFooter(`This invitation will be on for ${timeout / 60000} minutes`)
+        .setFooter({text:`This invitation will be on for ${timeout / 60000} minutes`})
 
         // Add Buttons
-        let styles = ['green', 'red', 'blurple','green']
+        let styles = [3, 4, 1,3] //1 blue  2 gray 3 green 4 red
         let labels = ['Croid', 'No Croid', '','']
         let ids = ['has_croid', 'no_croid', 'delete','done']
         let emojis = ['', '', '🚮','✅']
         let buttonRow = new MessageActionRow()
 
-        let styles1 = ['grey', 'grey']
+        let styles1 = [2, 2]
         let labels1 = ['+1', '+2']
         let ids1 = ['plusOne', 'plusTwo']
         let emojis1 = ['', '']
@@ -72,29 +71,29 @@ async sendInitialMessage(msgObject, rsLevel, timeout) {
         let button = new MessageButton()
             .setStyle(styles[i])
             .setLabel(labels[i])
-            .setID(ids[i])
+            .setCustomId(ids[i])
         if (emojis[i] != '')
             button.setEmoji(emojis[i])
-        buttonRow.addComponent(button);
+        buttonRow.addComponents(button);
         }
 
         for (let i = 0; i < styles1.length; i++) {
         let button = new MessageButton()
             .setStyle(styles1[i])
             .setLabel(labels1[i])
-            .setID(ids1[i])
+            .setCustomId(ids1[i])
         if (emojis1[i] != '')
             button.setEmoji(emojis1[i])
-        buttonRow1.addComponent(button);
+        buttonRow1.addComponents(button);
         }
 
 
         // Send message and save reaction
-        const messageReaction = await msgObject.channel.send(`<@&${role}>`, { components: [buttonRow,buttonRow1], embed: pollEmbed });
+        const messageReaction = await msgObject.channel.send({ content:`<@&${role}>`, components: [buttonRow, buttonRow1], embeds: [pollEmbed] });
         
         // Create button collector for the message
         const filter = (button) => button.clicker.user.bot == false;
-        const collector = messageReaction.createButtonCollector(filter);
+        const collector = messageReaction.createMessageComponentCollector(filter);
 
         //Create map of registered players and self incude
         let registeredPlayers = new Map()

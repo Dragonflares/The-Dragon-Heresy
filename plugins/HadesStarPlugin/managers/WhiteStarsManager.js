@@ -76,7 +76,7 @@ export class WhiteStarsManager extends Manager {
             }
         }
         if (messageReaction.emoji.name == '🆘') { //invalid users
-            WsUtils.NormalShow = !WsUtils.NormalShow
+            WsUtils.SetNormal(!WsUtils.NormalShow)
         }
         if (allowed && WsUtils.whiteStarStatusReactions.get(ws.status).includes(messageReaction.emoji.name)) {
             if (ws.status == "WaitForScan") {
@@ -156,9 +156,8 @@ export class WhiteStarsManager extends Manager {
         //Get reacted member
         let member = await Member.findOne({ discordId: user.id.toString() }).exec();
         if (!WsUtils.whiteStarRecruitReactions.includes(messageReaction.emoji.name) && !WsUtils.whiteStarPrefEmojiGroup.has(messageReaction.emoji.name)) return;
-
         if (messageReaction.emoji.name == '🆘') { //invalid users
-            WsUtils.NormalShow = !WsUtils.NormalShow
+            WsUtils.SetNormal(!WsUtils.NormalShow)
         }
 
         //Let officers change stuff
@@ -194,7 +193,7 @@ export class WhiteStarsManager extends Manager {
                     WsUtils.whiteStarStatusReactions.get(ws.status).forEach(async react => msgStatus.react(react))
 
                     //Edit old message
-                    msgStatus.edit("-", { embed: statusEmbed })
+                    msgStatus.edit({ embeds: [statusEmbed] })
                 }
             }
         } else if (WsUtils.whiteStarPrefEmojiGroup.has(messageReaction.emoji.name)) { //If Valid Emoji
@@ -225,7 +224,7 @@ export class WhiteStarsManager extends Manager {
         const rolesEmbed = await WsUtils.whiteStarRecruitMessage(ws);
 
         //Edit old message
-        messageReaction.message.edit("-", { embed: rolesEmbed })
+        messageReaction.message.edit({ embeds: [rolesEmbed] })
     }
 
     disable() {

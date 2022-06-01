@@ -22,7 +22,7 @@ export class SetRedStarRolesCommand extends CorpCommand{
                 author = member
             }  
         })
-        if(!author.hasPermission("ADMINISTRATOR") || !author.hasPermission("MANAGE_GUILD")) {
+        if(!author.permissions.has("ADMINISTRATOR") || !author.permissions.has("MANAGE_GUILD")) {
             let MemberResult = (await Member.findOne({discordId: author.id}))
             if(!MemberResult)
                 return message.channel.send("You aren't a member of any Corporations.")

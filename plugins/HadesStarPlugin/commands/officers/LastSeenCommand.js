@@ -28,7 +28,7 @@ export class LastSeenCommand extends OfficerCommand {
             if (message.mentions.users.size < 1) {
                 let memberCount = 0
                 let membersToBeCalled = []
-                const members = await message.guild.members.fetch();
+                let members = await message.guild.members.fetch().catch(console.error);
                 members.forEach(element => {
                     Member.findOne({ discordId: element.id.toString() }).populate("Corp").exec((err, obtainedMember) => {
                         if (!obtainedMember) { }
@@ -77,6 +77,7 @@ export class LastSeenCommand extends OfficerCommand {
             let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate('members').exec();
             let memberslist = new Map(corp.members.map(t => [t.name, t]))
             let member = await confirmResultButtons(message,args.join(' '), [...memberslist.keys()])
+            console.log(member)
             if (!member) return;
             return this.TeamTimeZoneSituation([memberslist.get(member)], message)
         }

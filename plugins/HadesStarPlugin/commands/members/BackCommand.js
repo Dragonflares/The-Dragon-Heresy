@@ -15,7 +15,7 @@ export class BackCommand extends MemberCommand {
         let target
         let user = message.mentions.users.first()
         if (!user) {
-            target = message.guild.member(message.author)
+            target = message.author
         }
         else if (message.author.id === this.client.creator)
             target = user

@@ -1,28 +1,25 @@
 import { Manager } from '../../../lib';
 
-export class LargerManager extends Manager{
-    constructor(plugin){
+export class LargerManager extends Manager {
+    constructor(plugin) {
         super(plugin);
     }
 
-    enable(){
-        if(!this.enabled){
-            this.client.on('message', async message => this.myListener(message))
+    enable() {
+        if (!this.enabled) {
+            this.client.on('messageCreate', async message => this.largerListener(message))
         }
         super.enable();
     }
 
-    myListener = (message) => {
-        if(message.content.startsWith("&ut ")|| message.content.startsWith("&updatetech "))
-        {
-			message.react(`👏`);
-	
-		}
+    largerListener = (message) => {
+        if (message.content.startsWith("&ut ") || message.content.startsWith("&updatetech ")) {
+            message.react(`👏`);
+        }
     }
 
-    disable(){
-        if(this.enabled){
-
+    disable() {
+        if (this.enabled) {
         }
         super.disable();
     }

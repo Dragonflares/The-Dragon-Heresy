@@ -1,10 +1,7 @@
 import { MemberCommand } from './MemberCommand';
 import { TechTree } from '../../techs';
 import { confirmResultButtons } from '../../utils';
-import { Member } from '../../database';
-import { MessageEmbed } from 'discord.js';
-
-const { MessageButton, MessageActionRow } = require("discord-buttons")
+import { MessageEmbed, MessageButton, MessageActionRow } from 'discord.js';
 
 export class TechDataCommand extends MemberCommand {
     constructor(plugin) {
@@ -44,69 +41,66 @@ export class TechDataCommand extends MemberCommand {
             if (isNaN(level)) {
                 embed.setTitle(`**Tech: ${tech.name}**`)
                 embed.setDescription(`${tech.description}\n`)
-                embed.setFooter(`You may add a number between 1 and ${tech.levels} to get info about the required level`)
+                embed.setFooter({text:`You may add a number between 1 and ${tech.levels} to get info about the required level`})
                 embed.setThumbnail(`${tech.image}`)
-                return message.channel.send(embed)
+                return message.channel.send({embeds:[embed]})
             }
 
             if (1 > level || tech.levels < level)
                 return message.channel.send(`The level you requested is invalid for that tech!`)
 
-
             let msgEmbed = await this.GetTechMessage(tech, level)
 
-
-
-
             let previousButton = new MessageButton()
-                .setStyle('blurple')
+                .setStyle(3)
                 .setLabel('Previous')
-                .setID('prev')
+                .setCustomId('prev')
 
             let nextButton = new MessageButton()
-                .setStyle('blurple')
+                .setStyle(3)
                 .setLabel('Next')
-                .setID('next')
+                .setCustomId('next')
             let buttonRow = new MessageActionRow()
 
-            if (level > 1) buttonRow.addComponent(previousButton)
-            if (level < tech.levels) buttonRow.addComponent(nextButton)
+            if (level > 1) buttonRow.addComponents(previousButton)
+            if (level < tech.levels) buttonRow.addComponents(nextButton)
             let messageReaction
             if (buttonRow.components.length > 0)
-                messageReaction = await message.channel.send({ component: buttonRow, embed: msgEmbed });
+                messageReaction = await message.channel.send({ components: [buttonRow], embeds: [msgEmbed] });
             else
-                messageReaction = await message.channel.send({ embed: msgEmbed });
+                messageReaction = await message.channel.send({ embed: [msgEmbed] });
             const filter = (button) => button.clicker.user.bot == false;
-            const collector = messageReaction.createButtonCollector(filter, { time: 2 * 60 * 1000, dispose: true });
+            const collector = messageReaction.createMessageComponentCollector({filter, time: 2 * 60 * 1000});
             collector.on('collect', async b => {
-                if (b.id == "prev") level--;
-                if (b.id == "next") level++;
-                if (b.id == "prev" || b.id == "next") {
+                if (b.customId == "prev") level--;
+                if (b.customId == "next") level++;
+                if (b.customId == "prev" || b.customId == "next") {
                     let msgEmbed = await this.GetTechMessage(tech, level)
                     let buttonRow = new MessageActionRow()
-                    if (level > 1) buttonRow.addComponent(previousButton)
-                    if (level < tech.levels) buttonRow.addComponent(nextButton)
-                    messageReaction.edit({ component: buttonRow, embed: msgEmbed })
+                    if (level > 1) buttonRow.addComponents(previousButton)
+                    if (level < tech.levels) buttonRow.addComponents(nextButton)
+                    messageReaction.edit({ components: [buttonRow], embeds: [msgEmbed] })
                 }
-                b.reply.defer()
+                b.deferUpdate()
             });
 
             collector.on('end', async collected => {
                 let msgEmbed = await this.GetTechMessage(tech, level)
-                messageReaction.edit({ component: null, embed: msgEmbed });
+                msgEmbed.setColor("RED")
+                messageReaction.edit({ components: [], embeds: [msgEmbed] })
             });
         }
     }
 
     async GetTechMessage(tech, level) {
         let embed = new MessageEmbed().setColor("RANDOM")
-        embed.setTitle(`**${tech.name}**`);
-        embed.addField('*Level*', level);
-        embed.addField('*Category*', tech.category);
-        embed.addField('*Description*', tech.description);
+        embed.setTitle(`**${tech.name.toString()}**`);
+        embed.addField('*Level*', level.toString());
+        embed.addField('*Category*', tech.category).toString();
+        embed.addField('*Description*', tech.description.toString());
         embed.setThumbnail(tech.image);
         tech.properties.forEach((levels, propery) => {
-            embed.addField(`*${propery}*`, `${levels[level - 1]}`)
+            embed.addField(`*${propery.toString()}*`, `${levels[level - 1]}`)
         });
         return embed;
     }

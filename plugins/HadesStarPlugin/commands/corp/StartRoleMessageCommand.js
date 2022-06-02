@@ -1,12 +1,13 @@
 import { CorpCommand } from './CorpCommand';
 import { Member, RedStarMessage, Corp } from '../../database';
 import Mongoose from 'mongoose'
-import { MessageEmbed } from 'discord.js';
+import { MessageEmbed, MessageButton, MessageActionRow } from 'discord.js';
+import * as RoleMessageUtils from '../../utils/roleMessageUtils'
 
 export class StartRoleMessageCommand extends CorpCommand {
     constructor(plugin) {
         super(plugin, {
-            name: 'startrolemsg',
+            name: 'sartrolemsg',
             aliases: ['srm'],
             description: "Starts Role Message Command.",
             usage: "&startrolemsg"
@@ -37,18 +38,25 @@ export class StartRoleMessageCommand extends CorpCommand {
     roleMessage = async (target, message) => {
         message.delete({ timeout: 1 });    //Delete User message
 
-
-
         let rolesEmbed = new MessageEmbed()
             .setTitle(`Select which Red Star Levels you want to get notified!`)
             .setThumbnail("https://i.imgur.com/hedXFRd.png")
-            .setDescription(`Click to Register/Unregister to/of Red Star Notifications!`)
-            .addField("Levels", "1️⃣-🔟 For RS1-RS10 and ‼️ for RS11")
+            .setDescription(`Check which Red Star Notifications you wanna recieve!`)
+            .addField("Info", "Press on **Setup** to change your notification settings")
             .setColor("GREEN")
             .setFooter({text:`Have fun!`})
 
-        const reactions = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟', '‼️']
-        const messageReaction = await message.channel.send({embeds: [rolesEmbed]});
+
+        let startButton = new MessageButton()
+        .setStyle(1)
+        .setLabel('Start')
+        .setCustomId('start')
+
+        let firstRow = new MessageActionRow()
+        firstRow.addComponents(startButton)
+
+        const messageReaction = await message.channel.send({embeds: [rolesEmbed], components: [firstRow]});
+        RoleMessageUtils.collectorFunc(this.client, messageReaction)
 
         //Save Message ID
         const corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate('redStarMessage').exec()
@@ -64,7 +72,5 @@ export class StartRoleMessageCommand extends CorpCommand {
         newRedStarMessage.save();
         corp.redStarMessage = newRedStarMessage
         corp.save()
-
-        reactions.forEach(async react => await messageReaction.react(react))
     }
 }

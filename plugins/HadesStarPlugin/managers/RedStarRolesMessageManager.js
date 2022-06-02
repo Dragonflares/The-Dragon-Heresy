@@ -1,5 +1,6 @@
 import { Manager } from '../../../lib';
-import { RedStarRoles, Corp } from '../database';
+import { Member, RedStarMessage, Corp } from '../database';
+import * as RoleMessageUtils from '../utils/roleMessageUtils'
 
 export class RedStarRolesMessageManager extends Manager {
     constructor(plugin) {
@@ -8,37 +9,46 @@ export class RedStarRolesMessageManager extends Manager {
 
     enable() {
         if (!this.enabled) {
-            this.client.on('messageReactionAdd', async (messageReaction, user) => this.reactListener(messageReaction, user))
+            this.reListen()
+            this.client.on('interactionCreate', async (interaction) => this.reactChosen(interaction))
         }
         super.enable();
     }
+    reListen = async () => {
+        const guilds = this.client.guilds.cache.map(guild => guild.id);
+        guilds.forEach(async guild => {
+            const corp = await Corp.findOne({ corpId: guild.toString() }).populate('redStarMessage').exec()
+            let redStarMessage = corp.redStarMessage
+            //Fetch recruit message
+            let messageReaction = await this.client.channels.cache.get(redStarMessage.rolesMessageChannel).messages.fetch(redStarMessage.rolesMessage);
+            RoleMessageUtils.collectorFunc(this.client, messageReaction)
+        });
+    }
 
-    reactListener = async (messageReaction, user) => {
-        if (user.bot) return;
-        const corp = await Corp.findOne({ corpId: messageReaction.message.guild.id.toString() }).populate('redStarMessage').exec()
-        if(!corp.redStarMessage){}
-        else if (messageReaction.message.id == corp.redStarMessage.rolesMessage) {
-            let message = messageReaction.message;
-            messageReaction.users.remove(user); // Remove it
+    reactChosen = async (interaction) => {
+        if (interaction.customId == "setRslevel") {
+            const corp = await Corp.findOne({ corpId: interaction.guild.id.toString() }).populate("redStarRoles").exec()
 
-            let level = 99
-            let reactionsIcons = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟', '‼️']
-            if (reactionsIcons.includes(messageReaction.emoji.name)) level = reactionsIcons.indexOf(messageReaction.emoji.name) + 1
-
-            if (level != 99) {
-                let existentRedStarRoles = await RedStarRoles.findOne({ corpId: message.guild.id.toString() })
-                if(existentRedStarRoles)
-                {
-                    let role = existentRedStarRoles.redStarRoles.get(`${level}`)
-                    if(role){
-                        let roleMember = await message.guild.members.fetch(user.id)
-                        if (roleMember.roles.cache.find(r => r.id === role))
-                        roleMember.roles.remove(role)
-                        else
-                        roleMember.roles.add(role)
-                    }
+            //get user
+            const members = await interaction.guild.members.fetch();
+            let author
+            await members.forEach(member => {
+                if (member.id === interaction.user.id) {
+                    author = member
+                }
+            })
+            let AuthorRoles = author.roles.cache.map(role => role.id)
+            //remove all rs roles
+            for (let i = 1; i < 12; i++) {
+                if(AuthorRoles.includes(corp.redStarRoles.redStarRoles.get(i.toString())))
+                    author.roles.remove(corp.redStarRoles.redStarRoles.get(i.toString()))
             }
-            }
+            //add new roles
+            interaction.values.forEach( role =>{
+                author.roles.add(corp.redStarRoles.redStarRoles.get(role.toString()))
+            })
+
+            await interaction.update({ content: 'Done!', components: [] });
         }
     }
 

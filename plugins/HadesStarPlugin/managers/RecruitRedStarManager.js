@@ -34,6 +34,19 @@ export class RecruitRedStarManager extends Manager {
 
                 //Create collector
                 const filter = (button) => button.user.bot == false;
+                const collector = messageReaction.createMessageComponentCollector(filter);
+                
+                if (currentStatusMessage) currentStatusMessage.delete({ timeout: 1 });
+                currentStatusMessage = await RsQueuesUtils.updateEmbed(this.client, messageReaction, newRedStarQueue, false) //Update the Embeed to show the new reaction   
+
+                // Save
+                newRedStarQueue.currentStatusMessage=currentStatusMessage.id;
+                await newRedStarQueue.save();
+        
+                // Listen to buttons
+                collector.on('collect', async b => {
+                   RsQueuesUtils.collectorFunc(this.client, messageReaction, newRedStarQueue, b)
+                });
 
             })
         })

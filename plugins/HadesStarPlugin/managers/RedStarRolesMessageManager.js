@@ -19,9 +19,13 @@ export class RedStarRolesMessageManager extends Manager {
         guilds.forEach(async guild => {
             const corp = await Corp.findOne({ corpId: guild.toString() }).populate('redStarMessage').exec()
             let redStarMessage = corp.redStarMessage
-            //Fetch recruit message
-            let messageReaction = await this.client.channels.cache.get(redStarMessage.rolesMessageChannel).messages.fetch(redStarMessage.rolesMessage);
-            RoleMessageUtils.collectorFunc(this.client, messageReaction)
+            if (redStarMessage) {
+                //Fetch recruit message
+                try {
+                    let messageReaction = await this.client.channels.cache.get(redStarMessage.rolesMessageChannel).messages.fetch(redStarMessage.rolesMessage);
+                    RoleMessageUtils.collectorFunc(this.client, messageReaction)
+                } catch (err) { }
+            }
         });
     }
 
@@ -40,11 +44,11 @@ export class RedStarRolesMessageManager extends Manager {
             let AuthorRoles = author.roles.cache.map(role => role.id)
             //remove all rs roles
             for (let i = 1; i < 12; i++) {
-                if(AuthorRoles.includes(corp.redStarRoles.redStarRoles.get(i.toString())))
+                if (AuthorRoles.includes(corp.redStarRoles.redStarRoles.get(i.toString())))
                     author.roles.remove(corp.redStarRoles.redStarRoles.get(i.toString()))
             }
             //add new roles
-            interaction.values.forEach( role =>{
+            interaction.values.forEach(role => {
                 author.roles.add(corp.redStarRoles.redStarRoles.get(role.toString()))
             })
 

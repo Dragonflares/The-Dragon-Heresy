@@ -15,6 +15,7 @@ export class RedStarRolesMessageManager extends Manager {
         super.enable();
     }
     reListen = async () => {
+        await this.client.guilds.fetch()
         const guilds = this.client.guilds.cache.map(guild => guild.id);
         guilds.forEach(async guild => {
             const corp = await Corp.findOne({ corpId: guild.toString() }).populate('redStarMessage').exec()

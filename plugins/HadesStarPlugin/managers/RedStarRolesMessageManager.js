@@ -19,13 +19,15 @@ export class RedStarRolesMessageManager extends Manager {
         const guilds = this.client.guilds.cache.map(guild => guild.id);
         guilds.forEach(async guild => {
             const corp = await Corp.findOne({ corpId: guild.toString() }).populate('redStarMessage').exec()
-            let redStarMessage = corp.redStarMessage
-            if (redStarMessage) {
-                //Fetch recruit message
-                try {
-                    let messageReaction = await this.client.channels.cache.get(redStarMessage.rolesMessageChannel).messages.fetch(redStarMessage.rolesMessage);
-                    RoleMessageUtils.collectorFunc(this.client, messageReaction)
-                } catch (err) { }
+            if(corp){
+                let redStarMessage = corp.redStarMessage
+                if (redStarMessage) {
+                    //Fetch recruit message
+                    try {
+                        let messageReaction = await this.client.channels.cache.get(redStarMessage.rolesMessageChannel).messages.fetch(redStarMessage.rolesMessage);
+                        RoleMessageUtils.collectorFunc(this.client, messageReaction)
+                    } catch (err) { }
+                }
             }
         });
     }

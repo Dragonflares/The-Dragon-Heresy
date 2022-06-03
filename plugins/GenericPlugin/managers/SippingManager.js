@@ -14,6 +14,7 @@ export class SippingManager extends Manager {
 
     sippingListener = (message) => {
         if (message.content.includes(`*sip`) || message.content.includes(`_sip`)) {
+            if(message.author.bot) return
             let amountOfReplies = 8
             var randomnumber = Math.floor(Math.random() * (amountOfReplies));
             let stringsArray = ["*sips back*",

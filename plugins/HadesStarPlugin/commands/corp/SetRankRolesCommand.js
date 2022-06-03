@@ -42,15 +42,40 @@ export class SetRankRolesCommand extends CorpCommand{
     async run(message, args){
         if(message.mentions.users.length > 0) return message.channel.send("I'll ignore that you just tagged a person for a role related command.")
         if(!message.mentions.roles) return message.channel.send("You need to mention a role for this command!")
+        //Get Author
         const members = await message.guild.members.fetch();
-        let author 
+        let author
         await members.forEach(member => {
-            if(member.id === message.author.id) {
+            if (member.id === message.author.id) {
                 author = member
-            }  
+            }
         })
+        const corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate("rankRoles").exec()
+        if (!author.permissions.has("ADMINISTRATOR") && !author.permissions.has("MANAGE_GUILD")) {
+            
+            let roles = corp.rankRoles
+            let AuthorRoles = author.roles.cache.map(role => role.id)
+
+            if (!AuthorRoles.includes(roles.Officer) && !AuthorRoles.includes(roles.FirstOfficer)) {
+                return message.channel.send("You don't have the authority to modifiy the rank roles of your Corp's server.")
+            } else {
+                SetRank(message, args, corp)
+            }
+        } else {
+            SetRank(message, args, corp)
+        }
+
+        /*
         if(!author.permissions.has("ADMINISTRATOR") || !author.permissions.has("MANAGE_GUILD")) {
-            let MemberResult = (await Member.findOne({discordId: author.id}))
+            const corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate("redStarRoles").exec()
+            let roles = corp.rankRoles
+            let AuthorRoles = author.roles.cache.map(role => role.id)
+            if (!AuthorRoles.includes(roles.Officer) || !AuthorRoles.includes(roles.FirstOfficer)) {
+                return message.channel.send("You don't have the authority to modifiy the red star roles of your Corp's server.")
+            } else {
+                SetRank(message, args, corp)
+            }*/
+        /*    let MemberResult = (await Member.findOne({discordId: author.id}))
             if(!MemberResult)
                 return message.channel.send("You aren't a member of any Corporations.")
             else{
@@ -103,7 +128,7 @@ export class SetRankRolesCommand extends CorpCommand{
             }
             else actualCorp = corp
             SetRank(message, args, actualCorp)
-        }
+        }*/
     }
 }
 

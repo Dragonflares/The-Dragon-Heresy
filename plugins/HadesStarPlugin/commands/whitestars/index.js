@@ -12,3 +12,4 @@ export * from './ExportWSTechCommand';
 export * from './WSGroupScoreCommand';
 //export * from './DeadShipWhiteStarCommand';
 export * from './WSScoreCommand';
+export * from './GetRolesWhiteStarCommand';

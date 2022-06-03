@@ -1,6 +1,5 @@
-import { RedStarRoles, RedStarQueue, Corp, RedStarLog } from '../database'
-import Mongoose from 'mongoose'
-import { MessageEmbed, MessageButton, MessageActionRow, MessageSelectMenu } from 'discord.js';
+import { Corp } from '../database'
+import { MessageActionRow, MessageSelectMenu } from 'discord.js';
 
 export const collectorFunc = async (client, messageReaction) => {
 
@@ -8,11 +7,9 @@ export const collectorFunc = async (client, messageReaction) => {
     const filter = (button) => button.user.bot == false;
     const collector = messageReaction.createMessageComponentCollector(filter);
 
-    const corp = await Corp.findOne({ corpId: messageReaction.guild.id.toString() }).populate("redStarRoles").exec()
-
     // Listen to buttons
     collector.on('collect', async b => {
-
+        const corp = await Corp.findOne({ corpId: messageReaction.guild.id.toString() }).populate("redStarRoles").exec()
         //get user
         const members = await messageReaction.guild.members.fetch();
         let author

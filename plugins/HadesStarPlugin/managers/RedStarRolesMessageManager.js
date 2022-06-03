@@ -26,7 +26,7 @@ export class RedStarRolesMessageManager extends Manager {
                     try {
                         let messageReaction = await this.client.channels.cache.get(redStarMessage.rolesMessageChannel).messages.fetch(redStarMessage.rolesMessage);
                         RoleMessageUtils.collectorFunc(this.client, messageReaction)
-                    } catch (err) { }
+                    } catch (err) { console.log(err)}
                 }
             }
         });

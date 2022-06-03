@@ -20,9 +20,13 @@ export const collectorFunc = async(client, messageReaction, newRedStarQueue, b) 
     if (b.customId == "delete") {     //When Trash
         if (b.user.id == newRedStarQueue.author) {
             failed(client, messageReaction, newRedStarQueue, false);
-            return await b.reply('Invitation Deleted', true);
+            try {
+            return await b.reply({ content:'Invitation Deleted',ephemeral: true });
+            } catch(e){}
         }
-        return await b.reply.send('You are not the owner of this invitation', true);
+        try {
+        return await b.reply({ content: 'You are not the owner of this invitation', ephemeral: true});
+    } catch(e){}
     } else if (b.customId== "done") { //Done
         if( b.user.id == newRedStarQueue.author ) {
             if ( registeredPlayers.size > 1 ){

@@ -15,3 +15,4 @@ export * from './ShipyardLevels';
 export * from './RedStarLog';
 export * from './Reminder';
 export * from './RedStarQueue';
+export * from './WhiteStarRoles';

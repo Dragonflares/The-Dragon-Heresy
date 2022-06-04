@@ -22,14 +22,7 @@ const WhiteStarSchema = Schema({
         type: Map,
         of: String
     },
-    bsGroupsRoles: {
-        type: Array,
-        of: String
-    },
-    spGroupsRoles: {
-        type: Array,
-        of: String
-    },
+    groupsRoles: { type: Schema.Types.ObjectId, ref: "WhiteStarRoles"},
     groupNotes: {
         type: Map,
         of: String

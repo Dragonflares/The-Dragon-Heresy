@@ -31,7 +31,7 @@ export class KillWhiteStarCommand extends WhitestarsCommand {
     message.delete({ timeout: 1 });    //Delete User message
 
     //Get Whitestart with role
-    const ws = await WhiteStar.findOne({ wsrole: role.id }).populate('author').populate('members').exec()
+    const ws = await WhiteStar.findOne({ wsrole: role.id }).populate('author').populate('members').populate('groupsRoles').exec()
     if (ws) {
       killWS(this.client, ws, message)
       return message.channel.send(`${role.name} White Star Killed!`)

@@ -52,7 +52,7 @@ export class WhiteStarsManager extends Manager {
 
 
         //ws react
-        let ws = await WhiteStar.findOne({ $or: [{ recruitmessage: messageReaction.message.id }, { statusmessage: messageReaction.message.id }] }).populate('author').populate('members').exec();
+        let ws = await WhiteStar.findOne({ $or: [{ recruitmessage: messageReaction.message.id }, { statusmessage: messageReaction.message.id }] }).populate('author').populate('members').populate('groupsRoles').exec();
         if (ws) {
             if (ws.recruitmessage == messageReaction.message.id) {   //Recruit
                 messageReaction.users.remove(user);

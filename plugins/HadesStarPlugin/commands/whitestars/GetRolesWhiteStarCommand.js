@@ -1,5 +1,5 @@
 import { WhitestarsCommand } from './WhitestarsCommand';
-import { Member, WhiteStar } from '../../database';
+import { Member, WhiteStar, WhiteStarRoles } from '../../database';
 import { confirmResultButtons } from '../../utils';
 import { MessageEmbed } from 'discord.js';
 
@@ -38,18 +38,17 @@ export class GetRolesWhiteStarCommand extends WhitestarsCommand {
     message.delete({ timeout: 1 });
 
     //Get ws
-    const ws = await WhiteStar.findOne({ wsrole: role.id }).populate('author').populate('members').exec()
+    const ws = await WhiteStar.findOne({ wsrole: role.id }).populate('author').populate('members').populate('groupsRoles').exec()
 
     let rolesEmbed = new MessageEmbed()
       .setTitle(`Whitestar ships roles`)
       .setThumbnail("https://i.imgur.com/fNtJDNz.png")
       .setColor("GREEN")
       .setFooter({ text: `This are the roles that get checked for ws status.` })
-      .addField("Whitestar",`<@&${role.id}>`)
+      .addField("Whitestar", `<@&${role.id}>`)
     let bsString = "";
 
-    console.log(ws.bsGroupsRoles)
-    ws.bsGroupsRoles.forEach(role => {
+    ws.groupsRoles.bsGroupsRoles.forEach(role => {
       bsString += `<@&${role}>\n`
     })
 
@@ -58,9 +57,10 @@ export class GetRolesWhiteStarCommand extends WhitestarsCommand {
 
     let spString = "";
 
-    ws.spGroupsRoles.forEach(role => {
+    ws.groupsRoles.spGroupsRoles.forEach(role => {
       spString += `<@&${role}>\n`
     })
+
 
     if (spString == "") spString = "None";
     rolesEmbed.addField("Support Ships:", spString)

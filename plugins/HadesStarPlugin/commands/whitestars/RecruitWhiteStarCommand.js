@@ -1,5 +1,5 @@
 import { WhitestarsCommand } from './WhitestarsCommand';
-import { Member, WhiteStar, Corp } from '../../database';
+import { Member, WhiteStar, Corp, WhiteStarRoles } from '../../database';
 import * as WsUtils from '../../utils/whiteStarsUtils.js'
 import Mongoose from 'mongoose'
 
@@ -36,10 +36,23 @@ export class RecruitWhiteStarCommand extends WhitestarsCommand {
     if (desc) description = desc
 
     //Get Whitestart with role
-    const ws = await WhiteStar.findOne({ wsrole: role.id }).populate('author').populate('members').exec()
+    const ws = await WhiteStar.findOne({ wsrole: role.id }).populate('author').populate('members').populate('groupsRoles').exec()
     if (!ws) {
       //Create new Whitestar
+
       const corp = await Corp.findOne({ corpId: message.guild.id.toString() }).exec()
+      //Get default whitestarroles
+      let groupsRoles = await WhiteStarRoles.findOne({ Corp: corp, wsrole: role.id }).exec()
+      if (!groupsRoles) {
+        groupsRoles = new WhiteStarRoles({
+          Corp: corp,
+          wsrole: role.id,
+          bsGroupsRoles: new Array(),
+          spGroupsRoles: new Array()
+        });
+        await groupsRoles.save()
+      }
+
       let newWhiteStar = new WhiteStar({
         _id: new Mongoose.Types.ObjectId(),
         author: member,
@@ -56,8 +69,7 @@ export class RecruitWhiteStarCommand extends WhitestarsCommand {
         members: new Array(),
         preferences: new Map(),
         leadPreferences: new Map(),
-        bsGroupsRoles: new Array(),
-        spGroupsRoles: new Array(),
+        groupsRoles: groupsRoles,
         groupNotes: new Map(),
         playerBsNotes: new Map(),
         playerSpNotes: new Map()
@@ -88,7 +100,7 @@ export class RecruitWhiteStarCommand extends WhitestarsCommand {
       const rolesEmbed = await WsUtils.whiteStarRecruitMessage(newWhiteStar);
 
       //Send Message
-      const messageReaction = await message.channel.send({embeds: [rolesEmbed]});
+      const messageReaction = await message.channel.send({ embeds: [rolesEmbed] });
 
       //React
       WsUtils.whiteStarPrefEmojiGroup.forEach(async (value, key) => await messageReaction.react(key))
@@ -112,11 +124,11 @@ export class RecruitWhiteStarCommand extends WhitestarsCommand {
 
         //Send Message
         let recruitEmbed = await WsUtils.whiteStarRecruitMessage(ws);
-        const messageReaction = await message.channel.send({embeds: [recruitEmbed]});
+        const messageReaction = await message.channel.send({ embeds: [recruitEmbed] });
 
         //React
         WsUtils.whiteStarPrefEmojiGroup.forEach(async (value, key
-          ) => await messageReaction.react(key))
+        ) => await messageReaction.react(key))
         WsUtils.whiteStarRecruitReactions.forEach(async react => await messageReaction.react(react))
 
         //Save new ids in the database

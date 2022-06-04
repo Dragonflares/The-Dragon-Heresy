@@ -39,7 +39,7 @@ export class StatusWhiteStarCommand extends WhitestarsCommand {
 
   statusMessage = async (message, role, member) => {
     message.delete({ timeout: 1 });    //Delete User message
-    const ws = await WhiteStar.findOne({ wsrole: role.id }).populate('author').populate('members').exec()
+    const ws = await WhiteStar.findOne({ wsrole: role.id }).populate('author').populate('members').populate('groupsRoles').exec()
     if (!ws) {
       message.channel.send("There is no ws going on with that role!")
     } else {

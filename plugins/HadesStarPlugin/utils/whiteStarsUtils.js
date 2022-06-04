@@ -1,4 +1,4 @@
-import { Member, WhiteStar } from '../database';
+import { Member, WhiteStar,WhiteStarRoles } from '../database';
 import * as timeUtils from './timeUtils.js'
 import { MessageEmbed} from 'discord.js';
 
@@ -148,9 +148,12 @@ export const whiteStarStatusMessage = async (message, ws) => {
                 afkMembers.set(player.discordId, "")
             }
         }))
+        //let groupsRoles = await WhiteStarRoles.findOne({ Corp: ws.Corp, wsrole: ws.wsrole }).exec()
 
+        //console.log(groupsRoles.bsGroupsRoles)
+        if(ws.groupsRoles.bsGroupsRoles){
         //Fill groups
-        await Promise.all(ws.bsGroupsRoles.map(async role => {
+        await Promise.all(ws.groupsRoles.bsGroupsRoles.map(async role => {
             await Promise.all(Array.from(ws.members).map(async player => {
                 let roleMember = await message.guild.members.fetch(player.discordId)
                 if (roleMember.roles.cache.find(r => r.id == role)) {
@@ -162,8 +165,9 @@ export const whiteStarStatusMessage = async (message, ws) => {
                 }
             }))
         }))
-
-        await Promise.all(ws.spGroupsRoles.map(async role => {
+    }
+    if(ws.groupsRoles.bsGroupsRoles){
+        await Promise.all(ws.groupsRoles.spGroupsRoles.map(async role => {
             await Promise.all(Array.from(ws.members).map(async player => {
                 let roleMember = await message.guild.members.fetch(player.discordId)
                 if (roleMember.roles.cache.find(r => r.id == role)) {
@@ -175,6 +179,7 @@ export const whiteStarStatusMessage = async (message, ws) => {
                 }
             }))
         }))
+    }
         let unassignedBsString
         let bsString
         let unassignedSpString
@@ -296,11 +301,11 @@ export const killWS = async (client, ws, message) => {
         let statusmsg = await client.channels.cache.get(ws.statuschannel).messages.fetch(ws.statusmessage.toString());
         let roleMember = await statusmsg.guild.members.fetch(t.discordId)
         roleMember.roles.remove(ws.wsrole)
-        ws.bsGroupsRoles.forEach(async bsRole => {
+        ws.groupsRoles.bsGroupsRoles.forEach(async bsRole => {
             let roleMember = await statusmsg.guild.members.fetch(t.discordId)
             roleMember.roles.remove(bsRole)
         })
-        ws.spGroupsRoles.forEach(async spGroupsRoles => {
+        ws.groupsRoles.spGroupsRoles.forEach(async spGroupsRoles => {
             let roleMember = await statusmsg.guild.members.fetch(t.discordId)
             roleMember.roles.remove(spGroupsRoles)
         })
@@ -311,7 +316,7 @@ export const killWS = async (client, ws, message) => {
 }
 
 export const RefreshStatusMessage = async (client, ws, interval) => {
-    let intWs = await WhiteStar.findOne({ wsrole: ws.wsrole }).populate('author').populate('members').exec();
+    let intWs = await WhiteStar.findOne({ wsrole: ws.wsrole }).populate('author').populate('members').populate('groupsRoles').exec();
     let msgStatus;
     if (intWs) {
         if (interval) {
@@ -335,7 +340,7 @@ export const RefreshStatusMessage = async (client, ws, interval) => {
 }
 
 export const RefreshRecruitMessage = async (client, ws, interval) => {
-    let intWs = await WhiteStar.findOne({ wsrole: ws.wsrole }).populate('author').populate('members').exec();
+    let intWs = await WhiteStar.findOne({ wsrole: ws.wsrole }).populate('author').populate('members').populate('groupsRoles').exec();
     let msgRecruit;
     if (intWs) {
 

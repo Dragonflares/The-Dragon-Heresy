@@ -177,8 +177,10 @@ export class RecruitRedStarCommand extends MemberCommand {
       currentStatusMessage = await RsQueuesUtils.updateEmbed(this.client, messageReaction, newRedStarQueue, false) //Update the Embeed to show the new reaction   
     } catch (e) { }
     // Save
-    newRedStarQueue.currentStatusMessage = currentStatusMessage.id;
-    await newRedStarQueue.save();
+    if (currentStatusMessage) {
+      newRedStarQueue.currentStatusMessage = currentStatusMessage.id;
+      await newRedStarQueue.save();
+    }
 
     // Listen to buttons
     collector.on('collect', async b => {

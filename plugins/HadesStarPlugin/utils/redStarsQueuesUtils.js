@@ -1,5 +1,5 @@
-import { MessageEmbed, MessageButton, MessageActionRow } from 'discord.js';
-import { RedStarRoles, RedStarQueue, Corp, RedStarLog } from '../database'
+import { MessageEmbed, MessageButton } from 'discord.js';
+import { Corp, RedStarLog } from '../database'
 import Mongoose from 'mongoose'
 
 export const collectorFunc = async (client, messageReaction, newRedStarQueue, b) => {
@@ -8,7 +8,7 @@ export const collectorFunc = async (client, messageReaction, newRedStarQueue, b)
     // Fetch status message
     let currentStatusMessage = null
     try { // Check if message is gone
-        currentStatusMessage = await client.channels.cache.get(newRedStarQueue.recruitChannel).messages.fetch(newRedStarQueue.currentStatusMessage.toString());   
+        currentStatusMessage = await client.channels.cache.get(newRedStarQueue.recruitChannel).messages.fetch(newRedStarQueue.currentStatusMessage.toString());
         if (currentStatusMessage) currentStatusMessage.delete({ timeout: 1 });
     } catch (r) { }
 
@@ -39,97 +39,63 @@ export const collectorFunc = async (client, messageReaction, newRedStarQueue, b)
         }
         return await b.reply({ content: 'You are not the owner of this invitation', ephemeral: true });
     }
+    else {
+        // When other buttons
+        // Check if already in the queue
+        let hadCroidAndClickCroid = b.customId == "has_croid" && registeredPlayers.has(b.user.id) && registeredPlayers.get(b.user.id) == '✅'
+        let noCroidAndClockNoCroid = b.customId == "no_croid" && registeredPlayers.has(b.user.id) && registeredPlayers.get(b.user.id) == '❎'
 
-    // When other buttons
-    // Check if already in the queue
-    let hadCroidAndClickCroid = b.customId == "has_croid" && registeredPlayers.has(b.user.id) && registeredPlayers.get(b.user.id) == '✅'
-    let noCroidAndClockNoCroid = b.customId == "no_croid" && registeredPlayers.has(b.user.id) && registeredPlayers.get(b.user.id) == '❎'
+        //Get out of queue
+        if (hadCroidAndClickCroid || noCroidAndClockNoCroid) {
 
-    //Get out of queue
-    if (hadCroidAndClickCroid || noCroidAndClockNoCroid) {
+            //Remove player
+            registeredPlayers.delete(b.user.id)
+            extraPlayers.delete(b.user.id)
 
-        //Remove player
-        registeredPlayers.delete(b.user.id)
-        extraPlayers.delete(b.user.id)
+            await b.reply({ content: 'You out of the queue', ephemeral: true });
+        } else {
 
+            //Get in queue
+            if (b.customId == "has_croid" || b.customId == "no_croid") {
+                if (b.customId == "has_croid")
+                    registeredPlayers.set(b.user.id, '✅')
+                else
+                    registeredPlayers.set(b.user.id, '❎')
+
+                await b.deferUpdate()
+            }
+        }
+        //Unregister plus one/tro
+        let plusOneClickPlusOne = b.customId == "plusOne" && extraPlayers.has(b.user.id) && extraPlayers.get(b.user.id) == 1
+        let plusTwoClickPlusTwo = b.customId == "plusTwo" && extraPlayers.has(b.user.id) && extraPlayers.get(b.user.id) == 2
+
+        if (plusOneClickPlusOne || plusTwoClickPlusTwo) {
+
+            // Remove  the +1/2
+            extraPlayers.delete(b.user.id)
+
+            await b.reply({ content: 'Unregistered plus player/s', ephemeral: true });
+        }
+        else {
+            // add plusone/two
+            let currentPeopleAmm = newRedStarQueue.registeredPlayers.size
+            newRedStarQueue.extraPlayers.forEach((value, key) => currentPeopleAmm += parseInt(value))
+
+            if (registeredPlayers.has(b.user.id) && (b.customId == "plusOne" || b.customId == "plusTwo")) {
+
+                // When plus one
+                if (b.customId == "plusOne") {
+                    if (currentPeopleAmm > 3) return await b.reply({ content: 'Too many players', ephemeral: true }); // If more than 3, too many players (4)
+                    extraPlayers.set(b.user.id, 1)
+                } else if (b.customId == "plusTwo") {
+                    if (currentPeopleAmm > 2) return await b.reply({ content: 'Too many players', ephemeral: true }); //if more than 2 too many players (3)
+                    extraPlayers.set(b.user.id, 2)
+                }
+                await b.deferUpdate()
+            }
+        }
         //Update db
         newRedStarQueue.registeredPlayers = registeredPlayers
-        newRedStarQueue.extraPlayers = extraPlayers
-
-        //Update Message
-        currentStatusMessage = await updateEmbed(client, messageReaction, newRedStarQueue, false) //Update the Embeed to show the new reaction   
-
-        // Save database changes
-        if(currentStatusMessage) {
-            newRedStarQueue.currentStatusMessage = currentStatusMessage.id;
-            await newRedStarQueue.save()
-        }
-
-        return await b.reply({ content:'You out of the queue', ephemeral: true });
-    }
-
-    //Get in queue
-    if (b.customId == "has_croid" || b.customId == "no_croid") {
-        if (b.customId == "has_croid")
-            registeredPlayers.set(b.user.id, '✅')
-        else
-            registeredPlayers.set(b.user.id, '❎')
-
-        //Update db
-        newRedStarQueue.registeredPlayers = registeredPlayers
-
-        //Update Message
-        currentStatusMessage = await updateEmbed(client, messageReaction, newRedStarQueue, false) //Update the Embeed to show the new reaction   
-
-        // Save database changes
-        if (currentStatusMessage) {
-            newRedStarQueue.currentStatusMessage = currentStatusMessage.id;
-            await newRedStarQueue.save()
-        }
-
-        return await b.deferUpdate()
-    }
-
-    //Unregister plus one/tro
-    let plusOneClickPlusOne = b.customId == "plusOne" && extraPlayers.has(b.user.id) && extraPlayers.get(b.user.id) == 1
-    let plusTwoClickPlusTwo = b.customId == "plusTwo" && extraPlayers.has(b.user.id) && extraPlayers.get(b.user.id) == 2
-
-    if (plusOneClickPlusOne || plusTwoClickPlusTwo) {
-
-        // Remove  the +1/2
-        extraPlayers.delete(b.user.id)
-
-        //Update db
-        newRedStarQueue.extraPlayers = extraPlayers
-
-        // Update Message
-        currentStatusMessage = await updateEmbed(client, messageReaction, newRedStarQueue, false) //Update the Embeed to show the new reaction   
-
-        // Save database changes
-        if(currentStatusMessage) {
-            newRedStarQueue.currentStatusMessage = currentStatusMessage.id;
-            await newRedStarQueue.save()
-        }
-
-        return await b.reply({ content:'Unregistered plus player/s', ephemeral: true });
-    }
-
-    // add plusone/two
-    let currentPeopleAmm = newRedStarQueue.registeredPlayers.size
-    newRedStarQueue.extraPlayers.forEach((value, key) => currentPeopleAmm += parseInt(value))
-
-    if (registeredPlayers.has(b.user.id)) {
-
-        // When plus one
-        if (b.customId == "plusOne") {
-            if (currentPeopleAmm > 3) return await b.reply({content: 'Too many players', ephemeral: true }); // If more than 3, too many players (4)
-            extraPlayers.set(b.user.id, 1)
-        } else if (b.customId == "plusTwo") {
-            if (currentPeopleAmm > 2) return await b.reply({content: 'Too many players', ephemeral: true }); //if more than 2 too many players (3)
-            extraPlayers.set(b.user.id, 2)
-        }
-
-        //Update db
         newRedStarQueue.extraPlayers = extraPlayers
 
         // Update Message
@@ -140,8 +106,6 @@ export const collectorFunc = async (client, messageReaction, newRedStarQueue, b)
             newRedStarQueue.currentStatusMessage = currentStatusMessage.id;
             await newRedStarQueue.save()
         }
-
-        return await b.deferUpdate()
     }
 }
 

@@ -27,7 +27,7 @@ export class PrintRankRolesCommand extends CorpCommand {
         let rolesEmbed = new MessageEmbed()
             .setTitle(`${corp.name} Rank roles`)
             .setColor("GREEN")
-            .setFooter({ text: `This are the roles used for bot ranks.` })
+            .setFooter({ text: `These are the roles used for bot ranks.` })
 
         let messageString = "";
         let printRoles = [corp.rankRoles.Guest,corp.rankRoles.Trader,corp.rankRoles.Mercenary, corp.rankRoles.Member,

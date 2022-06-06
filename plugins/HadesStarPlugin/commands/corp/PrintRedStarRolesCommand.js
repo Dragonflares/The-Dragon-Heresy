@@ -28,7 +28,7 @@ export class PrintRedStarRolesCommand extends CorpCommand {
             .setTitle(`${corp.name} Red Star roles`)
             .setThumbnail("https://i.imgur.com/hedXFRd.png")
             .setColor("GREEN")
-            .setFooter({ text: `This are the roles that get pinged when a recruit is open.` })
+            .setFooter({ text: `These are the roles that get pinged when a recruit is open.` })
 
         let messageString="";
 

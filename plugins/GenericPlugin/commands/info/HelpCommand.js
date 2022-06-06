@@ -65,7 +65,7 @@ export class HelpCommand extends InfoCommand{
         categories.forEach((subCategories, category) => {
             embed.addField(stripIndents`**${capitalize(category)}**`, `${
                 Array.from(subCategories).map(([subCategory, commands]) => `${capitalize(subCategory)}\n${
-                    Array.from(commands).map(command => `\`${command.name}\``).join(', ')
+                    Array.from(commands).map(command => (!command.hidden) ? `\`${command.name}\`` : "").join(', ')
                 }`).join('\n\n')
             }`)
         });

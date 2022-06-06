@@ -8,7 +8,8 @@ export class TestCommand extends MemberCommand {
             name: 'test',
             aliases: [''],
             description: "Test",
-            usage: "&test"
+            usage: "&test",
+            hidden: true
         });
     }
 

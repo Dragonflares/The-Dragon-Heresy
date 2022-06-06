@@ -48,7 +48,7 @@ export class RecruitRedStarCommand extends MemberCommand {
     const corp = await Corp.findOne({ corpId: msgObject.guild.id.toString() }).exec()
     let rsQueues = await RedStarQueue.find({ corp: corp._id, rsLevel: rsLevel }).exec();
     if (rsQueues.length > 0) {
-      var link = "http://discordapp.com/channels/" + msgObject.guild.id + "/" + rsQueues[0].recruitChannel + "/" + rsQueues[0].recruitMessage ;
+      var link = "http://discordapp.com/channels/" + msgObject.guild.id + "/" + rsQueues[0].recruitChannel + "/" + rsQueues[0].recruitMessage;
 
       //Make row
       let buttonRow = new MessageActionRow()
@@ -73,20 +73,20 @@ export class RecruitRedStarCommand extends MemberCommand {
       buttonRow.addComponents(buttonSave);
 
       let textMsg = `There is another <@&${role}> queue running, are you sure you want to open a new one?`
-      let messageReaction = await msgObject.channel.send({content: textMsg, components: [buttonRow], ephemeral: true});
-      const filter = i =>  i.user.id === msgObject.author.id;
+      let messageReaction = await msgObject.channel.send({ content: textMsg, components: [buttonRow], ephemeral: true });
+      const filter = i => i.user.id === msgObject.author.id;
       try {
-            const i = await messageReaction.channel.awaitMessageComponent({ filter, time: 15000 }).catch();
-            if (i.customId == "Cancel") {
-                throw new Error();
-            }else{
-              messageReaction.delete({timeout: 1})
-              i.deferUpdate();
-            }
-        } catch (err) {
-            messageReaction.delete({timeout: 1})
-            return false;
+        const i = await messageReaction.channel.awaitMessageComponent({ filter, time: 15000 }).catch();
+        if (i.customId == "Cancel") {
+          throw new Error();
+        } else {
+          messageReaction.delete({ timeout: 1 })
+          i.deferUpdate();
         }
+      } catch (err) {
+        messageReaction.delete({ timeout: 1 })
+        return false;
+      }
     }
 
     //Create Message
@@ -132,10 +132,12 @@ export class RecruitRedStarCommand extends MemberCommand {
       buttonRow1.addComponents(button);
     }
 
-
-    // Send message and save reaction
-    const messageReaction = await msgObject.channel.send({ content: `<@&${role}>`, components: [buttonRow, buttonRow1], embeds: [pollEmbed] });
-
+    let messageReaction
+    if (rsLevel > 2)
+      // Send message and save reaction
+      messageReaction = await msgObject.channel.send({ content: `<@&${role}>`, components: [buttonRow, buttonRow1], embeds: [pollEmbed] });
+    else
+      messageReaction = await msgObject.channel.send({ content: `<@&${role}>`, components: [buttonRow], embeds: [pollEmbed] });
     // Create button collector for the message
     const filter = (button) => button.user.bot == false;
     const collector = messageReaction.createMessageComponentCollector(filter);
@@ -167,12 +169,13 @@ export class RecruitRedStarCommand extends MemberCommand {
     })
 
     // CurrentStatusMessage
-    let currentStatusMessage = null
-    if (newRedStarQueue.currentStatusMessage)
-      currentStatusMessage = await this.client.channels.cache.get(newRedStarQueue.recruitChannel).messages.fetch(newRedStarQueue.currentStatusMessage.toString());
-    if (currentStatusMessage) currentStatusMessage.delete({ timeout: 1 });
-    currentStatusMessage = await RsQueuesUtils.updateEmbed(this.client, messageReaction, newRedStarQueue, false) //Update the Embeed to show the new reaction   
-
+    try {
+      let currentStatusMessage = null
+      if (newRedStarQueue.currentStatusMessage)
+        currentStatusMessage = await this.client.channels.cache.get(newRedStarQueue.recruitChannel).messages.fetch(newRedStarQueue.currentStatusMessage.toString());
+      if (currentStatusMessage) currentStatusMessage.delete({ timeout: 1 });
+      currentStatusMessage = await RsQueuesUtils.updateEmbed(this.client, messageReaction, newRedStarQueue, false) //Update the Embeed to show the new reaction   
+    } catch (e) { }
     // Save
     newRedStarQueue.currentStatusMessage = currentStatusMessage.id;
     await newRedStarQueue.save();

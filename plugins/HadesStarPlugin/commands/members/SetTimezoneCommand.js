@@ -213,7 +213,7 @@ export class SetTimezoneCommand extends MemberCommand{
                     messageReaction.edit({embeds:[embed]})
                 }
             }else{
-                await b.reply.send('Not your setup.', true);
+                await b.reply({content:'Not your setup.', ephemeral: true})
             }
         });
         collector.on('end', async collected => {

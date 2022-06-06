@@ -1,16 +1,17 @@
-import { MessageEmbed, MessageButton, MessageActionRow} from 'discord.js';
-import { RedStarRoles, RedStarQueue, Corp, RedStarLog} from '../database'
+import { MessageEmbed, MessageButton, MessageActionRow } from 'discord.js';
+import { RedStarRoles, RedStarQueue, Corp, RedStarLog } from '../database'
 import Mongoose from 'mongoose'
 
-export const collectorFunc = async(client, messageReaction, newRedStarQueue, b) => {
+export const collectorFunc = async (client, messageReaction, newRedStarQueue, b) => {
 
     //Delete old status message
     // Fetch status message
     let currentStatusMessage = null
-    try{ // Check if message is gone
-        currentStatusMessage = await client.channels.cache.get(newRedStarQueue.recruitChannel).messages.fetch(newRedStarQueue.currentStatusMessage.toString());
-    }catch(r){}
-    if (currentStatusMessage) currentStatusMessage.delete({ timeout: 1 });
+    try { // Check if message is gone
+        currentStatusMessage = await client.channels.cache.get(newRedStarQueue.recruitChannel).messages.fetch(newRedStarQueue.currentStatusMessage.toString());   
+        if (currentStatusMessage) currentStatusMessage.delete({ timeout: 1 });
+    } catch (r) { }
+
 
     //Fetch players
     let registeredPlayers = newRedStarQueue.registeredPlayers
@@ -21,24 +22,24 @@ export const collectorFunc = async(client, messageReaction, newRedStarQueue, b) 
         if (b.user.id == newRedStarQueue.author) {
             failed(client, messageReaction, newRedStarQueue, false);
             try {
-            return await b.reply({ content:'Invitation Deleted',ephemeral: true });
-            } catch(e){}
+                return await b.reply({ content: 'Invitation Deleted', ephemeral: true });
+            } catch (e) { }
         }
         try {
-        return await b.reply({ content: 'You are not the owner of this invitation', ephemeral: true});
-    } catch(e){}
-    } else if (b.customId== "done") { //Done
-        if( b.user.id == newRedStarQueue.author ) {
-            if ( registeredPlayers.size > 1 ){
+            return await b.reply({ content: 'You are not the owner of this invitation', ephemeral: true });
+        } catch (e) { }
+    } else if (b.customId == "done") { //Done
+        if (b.user.id == newRedStarQueue.author) {
+            if (registeredPlayers.size > 1) {
                 currentStatusMessage = await updateEmbed(client, messageReaction, newRedStarQueue, true) //Update the Embeed to show the new reaction    
                 return await b.deferUpdate()
-            }else{
-                return await b.reply('You need more than one player to finish a queue', true);
+            } else {
+                return await b.reply({ content: 'You need more than one player to finish a queue', ephemeral: true });
             }
         }
-        return await b.reply('You are not the owner of this invitation', true);
+        return await b.reply({ content: 'You are not the owner of this invitation', ephemeral: true });
     }
-    
+
     // When other buttons
     // Check if already in the queue
     let hadCroidAndClickCroid = b.customId == "has_croid" && registeredPlayers.has(b.user.id) && registeredPlayers.get(b.user.id) == '✅'
@@ -52,17 +53,19 @@ export const collectorFunc = async(client, messageReaction, newRedStarQueue, b) 
         extraPlayers.delete(b.user.id)
 
         //Update db
-        newRedStarQueue.registeredPlayers =registeredPlayers
+        newRedStarQueue.registeredPlayers = registeredPlayers
         newRedStarQueue.extraPlayers = extraPlayers
 
         //Update Message
         currentStatusMessage = await updateEmbed(client, messageReaction, newRedStarQueue, false) //Update the Embeed to show the new reaction   
 
         // Save database changes
-        newRedStarQueue.currentStatusMessage=currentStatusMessage.id;
-        await newRedStarQueue.save()
+        if(currentStatusMessage) {
+            newRedStarQueue.currentStatusMessage = currentStatusMessage.id;
+            await newRedStarQueue.save()
+        }
 
-    return await b.reply('You out of the queue', true);
+        return await b.reply({ content:'You out of the queue', ephemeral: true });
     }
 
     //Get in queue
@@ -73,15 +76,17 @@ export const collectorFunc = async(client, messageReaction, newRedStarQueue, b) 
             registeredPlayers.set(b.user.id, '❎')
 
         //Update db
-        newRedStarQueue.registeredPlayers =registeredPlayers
+        newRedStarQueue.registeredPlayers = registeredPlayers
 
         //Update Message
         currentStatusMessage = await updateEmbed(client, messageReaction, newRedStarQueue, false) //Update the Embeed to show the new reaction   
-        
+
         // Save database changes
-        newRedStarQueue.currentStatusMessage=currentStatusMessage.id;
-        await newRedStarQueue.save()
-        
+        if (currentStatusMessage) {
+            newRedStarQueue.currentStatusMessage = currentStatusMessage.id;
+            await newRedStarQueue.save()
+        }
+
         return await b.deferUpdate()
     }
 
@@ -101,10 +106,12 @@ export const collectorFunc = async(client, messageReaction, newRedStarQueue, b) 
         currentStatusMessage = await updateEmbed(client, messageReaction, newRedStarQueue, false) //Update the Embeed to show the new reaction   
 
         // Save database changes
-        newRedStarQueue.currentStatusMessage=currentStatusMessage.id;
-        await newRedStarQueue.save()
+        if(currentStatusMessage) {
+            newRedStarQueue.currentStatusMessage = currentStatusMessage.id;
+            await newRedStarQueue.save()
+        }
 
-        return await b.reply('Unregistered plus player/s', true);
+        return await b.reply({ content:'Unregistered plus player/s', ephemeral: true });
     }
 
     // add plusone/two
@@ -115,10 +122,10 @@ export const collectorFunc = async(client, messageReaction, newRedStarQueue, b) 
 
         // When plus one
         if (b.customId == "plusOne") {
-            if (currentPeopleAmm > 3) return await b.reply.send('Too many players', true); // If more than 3, too many players (4)
+            if (currentPeopleAmm > 3) return await b.reply({content: 'Too many players', ephemeral: true }); // If more than 3, too many players (4)
             extraPlayers.set(b.user.id, 1)
         } else if (b.customId == "plusTwo") {
-            if (currentPeopleAmm > 2) return await b.reply.send('Too many players', true); //if more than 2 too many players (3)
+            if (currentPeopleAmm > 2) return await b.reply({content: 'Too many players', ephemeral: true }); //if more than 2 too many players (3)
             extraPlayers.set(b.user.id, 2)
         }
 
@@ -127,10 +134,10 @@ export const collectorFunc = async(client, messageReaction, newRedStarQueue, b) 
 
         // Update Message
         currentStatusMessage = await updateEmbed(client, messageReaction, newRedStarQueue, false) //Update the Embeed to show the new reaction   
-        
+
         // Save database changes
-        if(currentStatusMessage){
-            newRedStarQueue.currentStatusMessage= currentStatusMessage.id;
+        if (currentStatusMessage) {
+            newRedStarQueue.currentStatusMessage = currentStatusMessage.id;
             await newRedStarQueue.save()
         }
 
@@ -139,13 +146,13 @@ export const collectorFunc = async(client, messageReaction, newRedStarQueue, b) 
 }
 
 
-export const  updateEmbed = async (client, message, newRedStarQueue, close) => { 
+export const updateEmbed = async (client, message, newRedStarQueue, close) => {
     // Members text and count members
     let membersString = ""
-    let currentPeopleAmm=0
-    newRedStarQueue.registeredPlayers.forEach( async (croid, memberID) => {
+    let currentPeopleAmm = 0
+    newRedStarQueue.registeredPlayers.forEach(async (croid, memberID) => {
         let tx = ""
-        let memberUsername = client.users.cache.find(u=> u.id == memberID).username
+        let memberUsername = client.users.cache.find(u => u.id == memberID).username
         if (newRedStarQueue.extraPlayers.has(memberID)) {
             tx = `**+${newRedStarQueue.extraPlayers.get(memberID)}**`
             currentPeopleAmm += parseInt(newRedStarQueue.extraPlayers.get(memberID));
@@ -158,12 +165,18 @@ export const  updateEmbed = async (client, message, newRedStarQueue, close) => {
     //Get Embed
     let newEmbed = new MessageEmbed(message.embeds[0])
 
+    //Needed to fill
+    let maxMembers = 4
+    if (newRedStarQueue.rsLevel < 3)
+        maxMembers = 2
+
+
     //Update Embed
-    newEmbed.fields[0].value = `${currentPeopleAmm}/4` //"Current People"
+    newEmbed.fields[0].value = `${currentPeopleAmm}/${maxMembers}` //"Current People"
     newEmbed.fields[1].value = `${membersString}` //"Members"
-    
+
     //Check if amount of members is enough to finish
-    if (currentPeopleAmm == 4 || close) { 
+    if (currentPeopleAmm == maxMembers || close) {
         // Save an RS Log
         let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).exec();
         let newRSLog = new RedStarLog({
@@ -184,70 +197,70 @@ export const  updateEmbed = async (client, message, newRedStarQueue, close) => {
 
         //Create ping message
         let pingString = ""
-        newRedStarQueue.registeredPlayers.forEach( async (croid, memberID) => {
-          let tx = ""
-          if (newRedStarQueue.extraPlayers.has(memberID)) tx = `**+${newRedStarQueue.extraPlayers.get(memberID)}**`
-          pingString += ` <@${memberID}> ${croid} ${tx},`
+        newRedStarQueue.registeredPlayers.forEach(async (croid, memberID) => {
+            let tx = ""
+            if (newRedStarQueue.extraPlayers.has(memberID)) tx = `**+${newRedStarQueue.extraPlayers.get(memberID)}**`
+            pingString += ` <@${memberID}> ${croid} ${tx},`
         })
 
-        if(!close) {
+        if (!close) {
             pingString += ` Full Team for RS${newRedStarQueue.rsLevel}!`
-        }else{
+        } else {
             pingString += ` Partial Team for RS${newRedStarQueue.rsLevel}!`
         }
 
-        if(currentPeopleAmm == 2)
+        if (currentPeopleAmm == 2)
             pingString += ` Lets duo this!`
-        else if(currentPeopleAmm == 3)
+        else if (currentPeopleAmm == 3)
             pingString += ` Almost full!`
 
         // Send ping
         message.channel.send(pingString);
-        
+
         // Remove buttons
         message.edit({ components: [], embeds: [newEmbed] });
 
         //Remove queue from db
         await newRedStarQueue.remove()
-    }else{
+    } else {
 
         // Set color and send the embed
         newEmbed.setColor("ORANGE");
-        message.edit({embeds: [newEmbed]}); 
+        message.edit({ embeds: [newEmbed] });
 
         //Send jump botton message
         var link = "http://discordapp.com/channels/" + message.guild.id + "/" + message.channel.id + "/" + message.id;
         let urlbutton = new MessageButton()
-          .setStyle(5)
-          .setURL(link)
-          .setLabel('Jump to Recruit!');
-        let sent = await message.channel.send(`There is currently a RS${newRedStarQueue.rsLevel} going with ${currentPeopleAmm}/4`, urlbutton)
+            .setStyle(5)
+            .setURL(link)
+            .setLabel('Jump to Recruit!');
+        let sent = await message.channel.send(`There is currently a RS${newRedStarQueue.rsLevel} going with ${currentPeopleAmm}/${maxMembers}`, urlbutton)
         return sent;
-        
+
     }
 }
 
-export const failed = async (client, message, newRedStarQueue,timedout) => { 
+export const failed = async (client, message, newRedStarQueue, timedout) => {
     let newEmbed = new MessageEmbed(message.embeds[0])
-    newEmbed.fields[0].value = `0/0` 
+    newEmbed.fields[0].value = `0/0`
     newEmbed.setColor("RED")
-    if(!timedout)
-        newEmbed.setFooter({text: "Closed"})
+    if (!timedout)
+        newEmbed.setFooter({ text: "Closed" })
     else
-        newEmbed.setFooter({text: "Timed Out"})
+        newEmbed.setFooter({ text: "Timed Out" })
     message.edit({ components: [], embeds: [newEmbed] });
 
     //Create ping message
     let pingString = ""
-    newRedStarQueue.registeredPlayers.forEach( async (croid, memberID) => {
-    let tx = ""
-    if (newRedStarQueue.extraPlayers.has(memberID)) tx = `**+${newRedStarQueue.extraPlayers.get(memberID)}**`
-    pingString += ` <@${memberID}> ${croid} ${tx},`
+    newRedStarQueue.registeredPlayers.forEach(async (croid, memberID) => {
+        let tx = ""
+        if (newRedStarQueue.extraPlayers.has(memberID)) tx = `**+${newRedStarQueue.extraPlayers.get(memberID)}**`
+        pingString += ` <@${memberID}> ${croid} ${tx},`
     })
 
-    if(!timedout) {
+    if (!timedout) {
         pingString += ` Queue was closed with partial team for RS${newRedStarQueue.rsLevel}!`
-    }else{
+    } else {
         pingString += ` Queue was timeout with partial team for RS${newRedStarQueue.rsLevel}!`
     }
     // Send ping

@@ -169,8 +169,8 @@ export class RecruitRedStarCommand extends MemberCommand {
     })
 
     // CurrentStatusMessage
+    let currentStatusMessage = null
     try {
-      let currentStatusMessage = null
       if (newRedStarQueue.currentStatusMessage)
         currentStatusMessage = await this.client.channels.cache.get(newRedStarQueue.recruitChannel).messages.fetch(newRedStarQueue.currentStatusMessage.toString());
       if (currentStatusMessage) currentStatusMessage.delete({ timeout: 1 });

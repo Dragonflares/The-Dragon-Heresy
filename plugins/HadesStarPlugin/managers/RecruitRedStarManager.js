@@ -2,6 +2,7 @@ import { Manager } from '../../../lib';
 import { Corp, RedStarQueue, RedStarLog} from '../database';
 import Mongoose from 'mongoose'
 import * as RsQueuesUtils from '../utils/redStarsQueuesUtils'
+import { CommandInteractionOptionResolver } from 'discord.js';
 
 export class RecruitRedStarManager extends Manager {
     constructor(plugin) {
@@ -69,7 +70,6 @@ export class RecruitRedStarManager extends Manager {
                 //Save RS log
                 //Timeout
                 let corp = await Corp.findOne({ corpId: msgRecruit.guild.id.toString() }).populate('members').exec();
-
                 let newRSLog = new RedStarLog({
                     _id: new Mongoose.Types.ObjectId(),
                     corpOpened: corp,
@@ -77,7 +77,7 @@ export class RecruitRedStarManager extends Manager {
                     timeClosed: new Date(),
                     endStatus: "Timeout",
                     creatorId: msgRecruit.author.id,
-                    membersIds: Array.from(rsQueue.registeredPlayers.keys()).map(a => a.id)
+                    membersIds: Array.from( rsQueue.registeredPlayers.keys())
                 })
                 corp.redStarLogs.push(newRSLog)
                 await newRSLog.save()

@@ -150,7 +150,7 @@ export const updateEmbed = async (client, message, newRedStarQueue, close) => {
             timeClosed: new Date(),
             endStatus: "Succeeded",
             creatorId: newRedStarQueue.author,
-            membersIds: Array.from(newRedStarQueue.registeredPlayers.keys()).map(a => a.id)
+            membersIds: Array.from( newRedStarQueue.registeredPlayers.keys())
         })
         corp.redStarLogs.push(newRSLog)
         await newRSLog.save()

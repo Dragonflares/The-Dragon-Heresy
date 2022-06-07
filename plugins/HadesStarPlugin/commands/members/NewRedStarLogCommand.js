@@ -72,7 +72,7 @@ export class NewRedStarLogCommand extends MemberCommand {
 
 
 
-        let generalEmbed = await this.showByRedstar(corp, levels, startOfDay)
+        let generalEmbed = await this.showByRedstar(corp, levels, startOfDay,new Date())
 
         let messageReaction = await message.channel.send({ embeds: [generalEmbed], components: [firstRow, secondRow] });
         const filter = (button) => button.user.bot == false;
@@ -83,10 +83,10 @@ export class NewRedStarLogCommand extends MemberCommand {
         collector.on('collect', async b => {
             if (b.user.id == message.author.id) {
                 if (b.customId == "redstar") {
-                    let generalEmbed = await this.showByRedstar(corp, levels, startOfDay)
+                    let generalEmbed = await this.showByRedstar(corp, levels, startOfDay,new Date())
                     await messageReaction.edit({ embeds: [generalEmbed] })
                 } else if (b.customId == "member") {
-                    let generalEmbed = await this.showByMember(corp, levels, startOfDay)
+                    let generalEmbed = await this.showByMember(corp, levels, startOfDay,new Date())
                     await messageReaction.edit({ embeds: [generalEmbed] })
                 }
             }
@@ -111,37 +111,37 @@ export class NewRedStarLogCommand extends MemberCommand {
         return emb
     }
 
-    async showByMember(corp, levels, date) {
+    async showByMember(corp, levels, date, enddate) {
         //Start Embed
         let generalEmbed = await this.getInitialEmbed(corp, date)
 
         //Get Data
-        let data = await this.getRsLogData(corp, date)
+        let data = await this.getRsLogData(corp, date, enddate)
         let map = await this.getMapByMember(data, levels)
         map.forEach((values, keys) => {
             if (values)
-                generalEmbed.addField(keys, values, true)
+                generalEmbed.addField(keys, values)
         })
         return generalEmbed
     }
 
-    async showByRedstar(corp, levels, date) {
+    async showByRedstar(corp, levels, date, enddate) {
         //Start Embed
         let generalEmbed = await this.getInitialEmbed(corp, date)
 
         //Get Data
-        let data = await this.getRsLogData(corp, date)
+        let data = await this.getRsLogData(corp, date, enddate)
         let map = await this.getMapByRedstar(data, levels)
         map.forEach((values, keys) => {
             if (values)
-                generalEmbed.addField(keys, values, true)
+                generalEmbed.addField(keys, values)
         })
 
         return generalEmbed
     }
 
-    async getRsLogData(corp, date) {
-        let logs = await RedStarLog.find({ corpOpened: corp, "timeClosed": { "$gte": date } }).exec()
+    async getRsLogData(corp, date,enddate) {
+        let logs = await RedStarLog.find({ corpOpened: corp, "timeClosed": { "$gte": date }, "timeClosed": { "$lte": enddate }}).exec()
         return logs
     }
 

@@ -79,7 +79,7 @@ export class HelpCommand extends InfoCommand{
         const cmd = this.bot.commands.get(input.toLowerCase());
         
         const info = [];
-        if (!cmd) {
+        if (!cmd || cmd.hidden) {
             return message.channel.send({embeds:[embed.setColor("RED").setDescription(`No information found for command **${input.toLowerCase()}**`)]});
         }
         if (cmd.name) info.push(`**Command name**: ${cmd.name}`);

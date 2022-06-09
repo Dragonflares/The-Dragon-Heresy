@@ -225,7 +225,7 @@ export const failed = async (client, message, newRedStarQueue, timedout) => {
     if (!timedout) {
         pingString += ` Queue was closed with partial team for RS${newRedStarQueue.rsLevel}!`
     } else {
-        pingString += ` Queue was timeout with partial team for RS${newRedStarQueue.rsLevel}!`
+        pingString += ` Queue was timed out with partial team for RS${newRedStarQueue.rsLevel}!`
     }
     // Send ping
     message.channel.send(pingString);

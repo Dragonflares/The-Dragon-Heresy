@@ -141,7 +141,7 @@ export class NewRedStarLogCommand extends MemberCommand {
     }
 
     async getRsLogData(corp, date,enddate) {
-        let logs = await RedStarLog.find({ corpOpened: corp, "timeClosed": { "$gte": date }, "timeClosed": { "$lte": enddate }}).exec()
+        let logs = await RedStarLog.find({ corpOpened: corp, "timeClosed": { "$gte": date , "$lte": enddate }}).exec()
         return logs
     }
 

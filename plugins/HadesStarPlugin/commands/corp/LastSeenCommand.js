@@ -1,4 +1,4 @@
-import { CorpCommand } from '../officers/OfficerCommand';
+import { CorpCommand } from './CorpCommand';
 import { Member, Corp } from '../../database';
 import { confirmResultButtons } from '../../utils';
 import * as timeUtils from '../../utils/timeUtils.js'

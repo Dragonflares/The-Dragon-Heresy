@@ -112,7 +112,11 @@ export class RecruitRedStarCommand extends MemberCommand {
     let emojis1 = ['', '']
     let buttonRow1 = new MessageActionRow()
 
-    for (let i = 0; i < styles.length; i++) {
+
+    let butlen = styles.length
+    if(rsLevel<3) butlen-=1;
+
+    for (let i = 0; i < butlen; i++) {
       let button = new MessageButton()
         .setStyle(styles[i])
         .setLabel(labels[i])

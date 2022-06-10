@@ -64,15 +64,11 @@ export class NewRedStarLogCommand extends MemberCommand {
         secondRow.addComponents([buttonDate, buttonLevel])
 
         let generalEmbed = await this.makeEmbed(corp, levels, targetID, messsageShown, startTime, endTime)
-        let messageReaction
-        // if (!targetID)
-        messageReaction = await message.channel.send({ embeds: [generalEmbed], components: [firstRow, secondRow] });
-        // else
-        //     messageReaction = await message.channel.send({ embeds: [generalEmbed], components: [secondRow] });
-        //const filter = (button) => button.user.bot == false;
+        let messageReaction = await message.channel.send({ embeds: [generalEmbed], components: [firstRow, secondRow] });
 
         //Open components  collectors
-        const collector = messageReaction.createMessageComponentCollector({ time: 2 * 60 * 1000 });
+        const filter = (button) => button.user.bot == false;
+        const collector = messageReaction.createMessageComponentCollector({filter, time: 2 * 60 * 1000 });
 
         //listener filters
         let rsLevelMenuFilter = null
@@ -181,7 +177,7 @@ export class NewRedStarLogCommand extends MemberCommand {
         let emb = new MessageEmbed()
             .setTitle(`${corp.name} Red Stars General Summary:`)
             .setThumbnail("https://i.imgur.com/hedXFRd.png")
-            .setDescription(`This information are from closed queues in the corp server.\n (Succeed,Timeout)`)
+            .setDescription(`This information are from closed queues in the corp server.\n (Succeed/Timeout)`)
             .setColor("GREEN")
 
         if (dateStart.getDate() == dateEnd.getDate() && dateStart.getMonth() == dateEnd.getMonth() && dateStart.getFullYear() == dateEnd.getFullYear())

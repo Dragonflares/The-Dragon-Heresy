@@ -1,7 +1,7 @@
 import { Manager } from '../../../lib';
 import { Member, WhiteStar, Corp } from '../database';
 import * as WsUtils from '../utils/whiteStarsUtils.js'
-
+import * as WsMessages from '../utils/whiteStarsMessages.js'
 export class WhiteStarsManager extends Manager {
     constructor(plugin) {
         super(plugin);
@@ -11,11 +11,11 @@ export class WhiteStarsManager extends Manager {
         if (!this.enabled) {
             //Refresh Timers
             await this.timersStart();
-
+            await this.reListen()
             //Reaction Events
-            this.client.on('messageReactionAdd', async (messageReaction, user) => {
-                this.reactListener(messageReaction, user)
-            })
+          //  this.client.on('messageReactionAdd', async (messageReaction, user) => {
+            //    this.reactListener(messageReaction, user)
+          //  })
 
             //Role changes
             /*this.client.on("guildMemberUpdate", async (oldMember, newMember) => {
@@ -40,12 +40,41 @@ export class WhiteStarsManager extends Manager {
         super.enable();
     }
 
+    reListen = async () => {
+        await this.client.guilds.fetch()
+        let wss = await WhiteStar.find().populate('author').populate('members').populate('groupsRoles').exec();
+        wss.forEach(async ws =>{
+            let wsMessage = ws.recruitmessage
+            let wsChannel = ws.retruitchannel
+            if( wsMessage && wsChannel) {
+             let messageReaction = await this.client.channels.cache.get(wsChannel).messages.fetch(wsMessage);
+             if(messageReaction) 
+                 WsUtils.recruitCollector(this.client,messageReaction,ws)
+            }
+        })
+        /*
+        const guilds = this.client.guilds.cache.map(guild => guild.id);
+        guilds.forEach(async guild => {
+            const corp = await Corp.findOne({ corpId: guild.toString() }).populate('redStarMessage').exec()
+            if(corp){
+                let redStarMessage = corp.redStarMessage
+                if (redStarMessage) {
+                    //Fetch recruit message
+                    try {
+                        let messageReaction = await this.client.channels.cache.get(redStarMessage.rolesMessageChannel).messages.fetch(redStarMessage.rolesMessage);
+                        RoleMessageUtils.collectorFunc(this.client, messageReaction)
+                    } catch (err) { console.log(err)}
+                }
+            }
+        });*/
+    }
+
     timersStart = async () => {
         let ws = await WhiteStar.find({ $or: [{ status: "Scanning" }, { status: "WaitForScan" }, { status: "Running" }] }).populate('author').populate('members').exec();
         ws.forEach(t => WsUtils.StartTimerStatusRefresh(this.client, t))
     }
 
-    reactListener = async (messageReaction, user) => {
+    /*reactListener = async (messageReaction, user) => {
         if (user.bot) return;
 
         //Remove Reaction
@@ -150,9 +179,9 @@ export class WhiteStarsManager extends Manager {
 
             WsUtils.RefreshStatusMessage(this.client, ws, null);
         }
-    }
+    }*/
 
-    recruitListener = async (ws, messageReaction, user) => {
+ /*   recruitListener = async (ws, messageReaction, user) => {
         //Get reacted member
         let member = await Member.findOne({ discordId: user.id.toString() }).exec();
         if (!WsUtils.whiteStarRecruitReactions.includes(messageReaction.emoji.name) && !WsUtils.whiteStarPrefEmojiGroup.has(messageReaction.emoji.name)) return;
@@ -225,7 +254,7 @@ export class WhiteStarsManager extends Manager {
 
         //Edit old message
         messageReaction.message.edit({ embeds: [rolesEmbed] })
-    }
+    }*/
 
     disable() {
         if (this.enabled) {

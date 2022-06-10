@@ -1,300 +1,225 @@
-import { Member, WhiteStar,WhiteStarRoles } from '../database';
+import { Member, WhiteStar, WhiteStarRoles } from '../database';
 import * as timeUtils from './timeUtils.js'
-import { MessageEmbed} from 'discord.js';
-
+import { MessageEmbed, MessageButton, MessageActionRow, Modal, TextInputComponent } from 'discord.js';
 export let NormalShow = true
+import * as WsMessages from './whiteStarsMessages.js'
+import { isGeneratorFunction } from 'util/types';
 
+//Recruit
 
+export const recruitCollector = async (client, message, ws) => {
 
-export const whiteStarRecruitReactions = ['🤚', '🆘', '🚮', '✅']
+    const filter = (button) => button.user.bot == false;
+    const collector = message.createMessageComponentCollector({ filter });
 
-export const whiteStarStatusReactions = new Map([
-    ["Recruiting", ['🚮']],
-    ["WaitForScan", ['🚮', '🆘', '⬅️', '✅', '🔄']],
-    ["Scanning", ['🚮', '🆘', '🛑', '✅', '🔄']],
-    ["Running", ['🚮', '🆘', '⬅️', '🔄', '🕙', '🕚', '🕐', '🕑']]
-])
+    //Keep track so can check interactionCreated
+    let bDetailsID = null
+    let bMembersID = null
+    let bRolesID = null
+    let bTimeID = null
+    let bDeleteID = null
 
-export const whiteStarPrefEmojiGroup = new Map([
-    ['⚔️', "Attackers"],
-    ['🛡️', "Defenders"],
-    ['🗡️', "Assassins"],
-    ['❓', "Doesnt Matter"]
-])
+    let mDetailsID = null
 
-export const embedTitles = new Map([
-    ["Recruiting", "Waiting for recruitment"],
-    ["WaitForScan", "Waiting for scanning"],
-    ["Scanning", "Scanning"],
-    ["Running", "Running"]
-])
+    let bAddMemberID = null
+    let bRemoveMemberID = null
 
-export const embedColors = new Map([
-    ["Recruiting", "RED"],
-    ["WaitForScan", "ORANGE"],
-    ["Scanning", "ORANGE"],
-    ["Running", "GREEN"]
-])
+    let bAddRoleID = null
+    let bRemoveRoleID = null
 
-export const embedFooters = new Map([
-    ["Recruiting", `🚮 - Delete White Star`],
-    ["WaitForScan", `🚮 - Delete White Star 🆘 - Switch to text mode ⬅️ - Back to recruit ✅ - Start Scan  🔄 - Refresh`],
-    ["Scanning", `🚮 - Delete White Star 🆘 - Switch to text mode 🛑 - Stop Scan ✅ - Found Match! 🔄 - Refresh`],
-    ["Running", `🚮 - Delete White Star 🆘 - Switch to text mode ⬅️ - Back to scan 🔄 - Refresh\n 🕙: -10 Min 🕚: -1 Min 🕐: +1 Min 🕑: +10 Min`]
-])
-export const SetNormal = async(normal) => {
-    NormalShow=normal;
-}
+    collector.on('collect', async b => {
+        if (b.user.id == ws.author.discordId) {
+            if (b.customId == "setup") {
+                //Keep track so can check interactionCreated
+                bDetailsID = b.id + 'details'
+                bMembersID = b.id + 'members'
+                bRolesID = b.id + 'roles'
+                bTimeID = b.id + 'time'
+                bDeleteID = b.id + 'delete'
 
-export const whiteStarRecruitMessage = async (ws) => {
-    //Get Members
-    let prefCatStrings = new Map()
-
-    //Fill Categries with None
-    whiteStarPrefEmojiGroup.forEach((value) => prefCatStrings.set(value, "None"))
-
-    if (ws.members) {
-        Array.from(ws.members).map(async t => {
-            //Get Player Category
-            let cat = whiteStarPrefEmojiGroup.get(ws.preferences.get(t.discordId));
-
-            //If Player Leads
-            let command = ws.leadPreferences.has(t.discordId) ? ' 🤚' : ''
-
-            //Add him to the string
-            if (NormalShow) {
-                if (prefCatStrings.get(cat) == "None")
-                    prefCatStrings.set(cat, `<@${t.discordId}>${command}`)
+                //Create buttons
+                let bDetails = new MessageButton().setStyle(2).setLabel("Details").setCustomId(bDetailsID)
+                let bMembers = new MessageButton().setStyle(2).setLabel("Members").setCustomId(bMembersID)
+                let bRoles = new MessageButton().setStyle(2).setLabel("Roles").setCustomId(bRolesID)
+                let bTime = new MessageButton().setStyle(2).setLabel("Time").setCustomId(bTimeID)
+                let bDelete = new MessageButton().setStyle(1).setLabel("🚮").setCustomId(bDeleteID)
+                let replyRow = new MessageActionRow()
+                if (ws.status == "NotStarted") // No need to add/remove members before starting
+                    replyRow.addComponents([bDetails, bRoles, bTime, bDelete]);
                 else
-                    prefCatStrings.set(cat, `${prefCatStrings.get(cat)}\n<@${t.discordId}>${command}`)
-            } else {
-                if (prefCatStrings.get(cat) == "None")
-                    prefCatStrings.set(cat, `${t.name}${command}`)
-                else
-                    prefCatStrings.set(cat, `${prefCatStrings.get(cat)}\n${t.name}${command}`)
+                    replyRow.addComponents([bDetails, bMembers, bRoles, bTime, bDelete]);
+
+                await b.reply({ components: [replyRow], ephemeral: true })
+            } else if (b.customId == "start") {
+                await b.reply({ content: 'Start', ephemeral: true })
             }
-        })
-    }
-
-    //Create Message
-    let rolesEmbed = new MessageEmbed()
-        .setTitle(`White Star Recruitment by ${ws.author.name}:`)
-        .setThumbnail("https://i.imgur.com/fNtJDNz.png")
-        .setDescription(`${ws.description}`)
-        .addField("Group:", `<@&${ws.wsrole}>`)
-        .addField("Current People", ws.members ? Object.keys(ws.members).length.toString() : "0")
-
-    //Add Categories and players
-    whiteStarPrefEmojiGroup.forEach((value, key) =>
-        rolesEmbed.addField(`${key} ${value}`, prefCatStrings.get(value), true))
-
-    //Footers
-    if (ws.status == "Recruiting") {
-        rolesEmbed.setColor("ORANGE")
-            .setFooter({text: `🤚 - Commander  🆘 - Switch to text mode 🚮 - Stop Recruit ✅ - Finish Recruit`})
-    }
-    else {
-        rolesEmbed.setColor("GREEN")
-            .setFooter({text: `Recruitment Done`})
-    }
-    return rolesEmbed;
-
-}
-
-export const whiteStarStatusMessage = async (message, ws) => {
-    //Create Message
-    let statusEmbed = new MessageEmbed()
-
-    //Set Common Items
-    statusEmbed.setTitle(`White Star Status`)
-        .setThumbnail("https://i.imgur.com/fNtJDNz.png")
-        .addField("Group:", `<@&${ws.wsrole}>`)
-        .addField("Status:", embedTitles.get(ws.status))
-    if (ws.status == "Scanning") {
-        //calculate delta time
-        let today = new Date()
-        let {diffDays, diffHrs, diffMins } = timeUtils.timeDiff(today, ws.scantime);
-        diffMins = diffMins.toString().padStart(2, '0')
-        statusEmbed.addField("Time Passed:", `${diffDays} Days,  ${diffHrs} Hours and ${diffMins} Minutes`)
-    } else if (ws.status == "Running") {
-        //calculate delta time
-        let today = new Date()
-        let diffMs = 432000000 - (today - ws.matchtime)
-        var diffDays = Math.floor(diffMs / 86400000); // days
-        var diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours
-        var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
-        statusEmbed.addField("Current Time:", `${diffDays} Days,  ${diffHrs} Hours and ${diffMins} Minutes`)
-    }
-    if (ws.status != "Recruiting") {
-        //Create variables
-        let assignedBs = new Array();
-        let assignedSp = new Array();
-        let bsGroupMembers = new Map()
-        let spGroupMembers = new Map()
-        let afkMembers = new Map()
-
-        //Check AFKs
-        await Promise.all(Array.from(ws.members).map(async player => {
-            let member = await Member.findOne({ discordId: player.discordId.toString() }).populate('Corp').populate('techs').exec();
-            if (!member) afkMembers.set(chMember, "")
-            if (member.awayTime) {
-                let awayTime = new Date();
-                if (awayTime.getTime() < member.awayTime.getTime()) {
-                    afkMembers.set(player.discordId, "🅰️")
-                } else {
-                    afkMembers.set(player.discordId, "")
-                }
-            } else {
-                afkMembers.set(player.discordId, "")
-            }
-        }))
-        //let groupsRoles = await WhiteStarRoles.findOne({ Corp: ws.Corp, wsrole: ws.wsrole }).exec()
-
-        //console.log(groupsRoles.bsGroupsRoles)
-        if(ws.groupsRoles.bsGroupsRoles){
-        //Fill groups
-        await Promise.all(ws.groupsRoles.bsGroupsRoles.map(async role => {
-            await Promise.all(Array.from(ws.members).map(async player => {
-                let roleMember = await message.guild.members.fetch(player.discordId)
-                if (roleMember.roles.cache.find(r => r.id == role)) {
-                    assignedBs.push(player)
-                    if (bsGroupMembers.has(role))
-                        bsGroupMembers.get(role).push(roleMember)
-                    else
-                        bsGroupMembers.set(role, new Array(roleMember))
-                }
-            }))
-        }))
-    }
-    if(ws.groupsRoles.bsGroupsRoles){
-        await Promise.all(ws.groupsRoles.spGroupsRoles.map(async role => {
-            await Promise.all(Array.from(ws.members).map(async player => {
-                let roleMember = await message.guild.members.fetch(player.discordId)
-                if (roleMember.roles.cache.find(r => r.id == role)) {
-                    assignedSp.push(player)
-                    if (spGroupMembers.has(role))
-                        spGroupMembers.get(role).push(roleMember)
-                    else
-                        spGroupMembers.set(role, new Array(roleMember))
-                }
-            }))
-        }))
-    }
-        let unassignedBsString
-        let bsString
-        let unassignedSpString
-        let spString
-        let playersString
-        if (NormalShow) {
-            //Generate Battleships string
-            unassignedBsString = Array.from(ws.members)
-                .filter(t => !assignedBs.includes(t))
-                .map(t => `-<@${t.discordId}> ${ws.preferences.get(t.discordId)}${ws.leadPreferences.has(t.discordId) ? ' 🤚' : ''}${ws.playerBsNotes.has(t.discordId) ? ` ${ws.playerBsNotes.get(t.discordId)}` : ''}`)
-                .join('\n')
-
-            bsString = Array.from(bsGroupMembers)
-                .map(([groupName, players]) => `**<@&${groupName}> ${ws.groupNotes.has(groupName) ? ` ${ws.groupNotes.get(groupName)}` : ''}:**\n --${Array.from(players)
-                    .map(p => `${p} ${ws.playerBsNotes.has(p.id) ? ` ${ws.playerBsNotes.get(p.id)}` : ''}`).join('\n--')}\n`)
-                .join('\n')
-            if (unassignedBsString != "") bsString = bsString + "\n**Unassigned:**\n" + unassignedBsString
-            bsString == "" ? bsString = "None" : bsString
-
-            //Generate Support string
-            unassignedSpString = Array.from(ws.members)
-                .filter(t => !assignedSp.includes(t))
-                .map(t => `-<@${t.discordId}> ${ws.preferences.get(t.discordId)}${ws.leadPreferences.has(t.discordId) ? ' 🤚' : ''}${ws.playerSpNotes.has(t.discordId) ? ` ${ws.playerSpNotes.get(t.discordId)}` : ''}`)
-                .join('\n')
-            spString = Array.from(spGroupMembers)
-                .map(([groupName, players]) => `**<@&${groupName}> ${ws.groupNotes.has(groupName) ? ` ${ws.groupNotes.get(groupName)}` : ''}:**\n --${Array.from(players)
-                    .map(p => `${p} ${ws.playerSpNotes.has(p.id) ? ` ${ws.playerSpNotes.get(p.id)}` : ''}`).join('\n--')}\n`)
-                .join('\n')
-            if (unassignedSpString != "") spString = spString + "\n**Unassigned:**\n" + unassignedSpString
-            spString == "" ? spString = "None" : spString
-
-            //Generate Players string
-            playersString = Array.from(ws.members)
-                .map(t => {
-                    if (t.timezone == "+0")
-                        return `-<@${t.discordId}> (TOD: Not  set up)`
-                    let today = new Date()
-                    today = new Date(today.getTime() + today.getTimezoneOffset() * 60 * 1000);
-                    today = new Date(today.getTime() + t.timezone * 60 * 60 * 1000);
-                    return `-${afkMembers.get(t.discordId)}<@${t.discordId}> (TOD: ${today.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })})`
-                })
-                .join('\n')
-            playersString == "" ? playersString = "None" : playersString
         } else {
-            //Generate Battleships string
-            unassignedBsString = Array.from(ws.members)
-                .filter(t => !assignedBs.includes(t))
-                .map(t => `-${t.name} ${ws.preferences.get(t.discordId)}${ws.leadPreferences.has(t.discordId) ? ' 🤚' : ''}${ws.playerBsNotes.has(t.discordId) ? ` ${ws.playerBsNotes.get(t.discordId)}` : ''}`)
-                .join('\n')
-
-            bsString = Array.from(bsGroupMembers)
-                .map(([groupName, players]) => `**<@&${groupName}> ${ws.groupNotes.has(groupName) ? ` ${ws.groupNotes.get(groupName)}` : ''}:**\n --${Array.from(players)
-                    .map(p => `${ws.members.filter(t=> t.discordId == p.id)[0].name} ${ws.playerBsNotes.has(p.id) ? ` ${ws.playerBsNotes.get(p.id)}` : ''}`).join('\n--')}\n`)
-                .join('\n')
-            if (unassignedBsString != "") bsString = bsString + "\n**Unassigned:**\n" + unassignedBsString
-            bsString == "" ? bsString = "None" : bsString
-
-            //Generate Support string
-            unassignedSpString = Array.from(ws.members)
-                .filter(t => !assignedSp.includes(t))
-                .map(t => `-${t.name} ${ws.preferences.get(t.discordId)}${ws.leadPreferences.has(t.discordId) ? ' 🤚' : ''}${ws.playerSpNotes.has(t.discordId) ? ` ${ws.playerSpNotes.get(t.discordId)}` : ''}`)
-                .join('\n')
-            spString = Array.from(spGroupMembers)
-                .map(([groupName, players]) => `**<@&${groupName}> ${ws.groupNotes.has(groupName) ? ` ${ws.groupNotes.get(groupName)}` : ''}:**\n --${Array.from(players)
-                 .map(p => `${ws.members.filter(t=> t.discordId == p.id)[0].name} ${ws.playerSpNotes.has(p.id) ? ` ${ws.playerSpNotes.get(p.id)}` : ''}`).join('\n--')}\n`)
-                .join('\n')
-            if (unassignedSpString != "") spString = spString + "\n**Unassigned:**\n" + unassignedSpString
-            spString == "" ? spString = "None" : spString
-
-            //Generate Players string
-            playersString = Array.from(ws.members)
-                .map(t => {
-                    if (t.timezone == "+0")
-                        return `-${t.name} (TOD: Not  set up)`
-                    let today = new Date()
-                    today = new Date(today.getTime() + today.getTimezoneOffset() * 60 * 1000);
-                    today = new Date(today.getTime() + t.timezone * 60 * 60 * 1000);
-                    return `-${afkMembers.get(t.discordId)}${t.name} (TOD: ${today.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })})`
-                })
-                .join('\n')
-            playersString == "" ? playersString = "None" : playersString
+            await b.reply({ content: 'You cant setup this whitestar.', ephemeral: true })
         }
-        //Add members to embed
-        statusEmbed.addField("Battleships:", bsString, true)
-        statusEmbed.addField("Support:", spString, true)
-        statusEmbed.addField("Player List", playersString)
+    })
+
+    client.on('interactionCreate', async (i) => {
+
+        if (i.customId == bDetailsID) {
+            //Open modal
+            // Create the modal
+            mDetailsID = i.id + "-detailsModal"
+            const modal = new Modal().setCustomId(mDetailsID).setTitle('Configure the whitestar');
+            const descriptionInput = new TextInputComponent().setCustomId('descriptionInput')
+                .setLabel("Description:")
+                .setStyle('PARAGRAPH')
+                .setPlaceholder(ws.description)
+            const corporationInput = new TextInputComponent().setCustomId('corporationInput')
+                .setLabel("Corporation")
+                .setStyle('SHORT')
+                .setPlaceholder(ws.corporation)
+
+            const natureInput = new TextInputComponent().setCustomId('natureInput')
+                .setLabel("Nature")
+                .setStyle('SHORT')
+                .setPlaceholder(ws.nature)
+
+            const firstActionRow = new MessageActionRow().addComponents(corporationInput);
+            const secondActionRow = new MessageActionRow().addComponents(natureInput);
+            const thirdActionRow = new MessageActionRow().addComponents(descriptionInput);
+            // Add inputs to the modal
+            modal.addComponents(firstActionRow, secondActionRow, thirdActionRow);
+
+            await i.showModal(modal)
+
+            //    await i.update({ content: "detailsWIP", components: [] })
+        } else if (i.customId == bMembersID) {
+            bAddMemberID = i.id + 'bAddMemberID'
+            bRemoveMemberID = i.id + 'bRemoveMemberID'
+            //Create buttons
+            let bAddMember = new MessageButton().setStyle(2).setLabel("Details").setCustomId(bAddMemberID)
+            let bRemoveMember = new MessageButton().setStyle(2).setLabel("Members").setCustomId(bRemoveMemberID)
+            const membersrow = new MessageActionRow().addComponents([bAddMember, bRemoveMember]);
+            await i.update({ content: "Select add or remove member", components: [membersrow] })
+        } else if (i.customId == bRolesID) {
+
+            bAddRoleID = i.id + 'bAddRoleID'
+            bRemoveRoleID = i.id + 'bRemoveRoleID'
+            //Show roles
+            let rolesEmbed = new MessageEmbed()
+                .setTitle(`Whitestar ships roles`)
+                .setThumbnail("https://i.imgur.com/fNtJDNz.png")
+                .setColor("GREEN")
+                .setFooter({ text: `use &srolesws @wsrole bs/sp @role` })
+                .addField("Whitestar", `<@&${ws.wsrole}>`)
+            let bsString = "";
+            ws.groupsRoles.bsGroupsRoles.forEach(role => {
+                bsString += `<@&${role}>\n`
+            })
+
+            if (bsString == "") bsString = "None";
+            rolesEmbed.addField("Battle Ships:", bsString)
+
+            let spString = "";
+
+            ws.groupsRoles.spGroupsRoles.forEach(role => {
+                spString += `<@&${role}>\n`
+            })
+
+
+            if (spString == "") spString = "None";
+            rolesEmbed.addField("Support Ships:", spString)
+
+            //buttons
+            let bAddRole = new MessageButton().setStyle(3).setLabel("Add").setCustomId(bAddRoleID)
+            let bRemoveRole = new MessageButton().setStyle(4).setLabel("Remove").setCustomId(bRemoveRoleID)
+            const rolessetupRow = new MessageActionRow().addComponents([bAddRole, bRemoveRole]);
+
+            await i.update({ embeds: [rolesEmbed], components: [rolessetupRow] })
+        } else if (i.customId == bTimeID) {
+            await i.update({ content: "time WIP", components: [] })
+        } else if (i.customId == bDeleteID) {
+            killWS(client, ws)
+            await i.update({ content: "WS Deleted", components: [] })
+        }
+        else if(i.customId == bAddRoleID){ //not main menu anymore
+            await i.update({content: `use &srolesws @wsrole bs/sp @role`, embeds:[], components: []})
+        }else if(i.customId == bRemoveRoleID){
+            await i.update({content: `uWIP`, embeds:[], components: []})
+        }
+
+        //Modal
+        if (i.customId == mDetailsID) {
+            let descriptionInput = i.fields.getTextInputValue('descriptionInput');
+            let corporationInput = i.fields.getTextInputValue('corporationInput');
+            let natureInput = i.fields.getTextInputValue('natureInput');
+            ws.description = descriptionInput != "" ? descriptionInput : ws.description
+            ws.corporation = corporationInput != "" ? corporationInput : ws.corporation
+            ws.nature = natureInput != "" ? natureInput : ws.nature
+            await ws.save()
+            RefreshRecruitMessage(client, ws)
+            await i.update({ content: "Details updated.", components: [] })
+        }
+    })
+}
+
+
+export const RefreshRecruitMessage = async (client, ws, interval) => {
+    let intWs = await WhiteStar.findOne({ wsrole: ws.wsrole }).populate('author').populate('members').populate('groupsRoles').exec();
+    let msgRecruit;
+    if (intWs) {
+
+        //Fetch old message
+        let recruitChannel = await client.channels.cache.get(intWs.retruitchannel)
+        if (recruitChannel) {
+            msgRecruit = await recruitChannel.messages.fetch(intWs.recruitmessage.toString())
+        }
+        //Create new message
+        const recruitEmbed = await WsMessages.whiteStarRecruitMessage(intWs);
+
+        //Remove Reactions
+        await msgRecruit.edit({ embeds: [recruitEmbed] })
     }
-    statusEmbed.setColor(embedColors.get(ws.status))
-        .setFooter({text: `${embedFooters.get(ws.status)}`, iconURL: message.guild.iconURL()})
-        .setTimestamp()
-    return statusEmbed;
+
+    return msgRecruit;
 }
 
-export const whiteStarCancelMessage = async (ws) => {
-    let rolesEmbed = new MessageEmbed()
-    rolesEmbed.setTitle(`White Star Status`)
-        .setThumbnail("https://i.imgur.com/fNtJDNz.png")
-        .setDescription(`${ws.description}`)
-        .addField("Group:", `<@&${ws.wsrole}>`)
-        .addField("Status:", "This WS Was Cancelled")
-        .setColor("RED")
 
-    return rolesEmbed;
+//Status
+
+
+
+
+/*const RefreshStatusMessage = async (client, ws, interval) => {
+    let intWs = await WhiteStar.findOne({ wsrole: ws.wsrole }).populate('author').populate('members').populate('groupsRoles').exec();
+    let msgStatus;
+    if (intWs) {
+        if (interval) {
+            if (intWs.status == "Recruiting") {
+                clearInterval(interval);
+            }
+        }
+ 
+        //Fetch old message
+        if (!intWs.statuschannel || !intWs.statusmessage) { }
+        else {
+            msgStatus = await client.channels.cache.get(intWs.statuschannel).messages.fetch(intWs.statusmessage.toString());
+ 
+            //Create new message
+            const statusEmbed = await whiteStarStatusMessage(msgStatus, intWs);
+            //Remove Reactions
+            msgStatus.edit( {embeds: [statusEmbed] })
+        }
+    }
+    return msgStatus;
 }
-
-export const killWS = async (client, ws, message) => {
+*/
+//Both
+export const killWS = async (client, ws) => {
 
     if (ws.retruitchannel) {
         let msg = await client.channels.cache.get(ws.retruitchannel).messages.fetch(ws.recruitmessage.toString());
-        msg.edit({embeds: [await whiteStarCancelMessage(ws)] })
+        msg.edit({ embeds: [await WsMessages.whiteStarCancelMessage(ws)], components: [] })
         msg.reactions.removeAll()
     }
     if (ws.statuschannel) {
         let statusmsg = await client.channels.cache.get(ws.statuschannel).messages.fetch(ws.statusmessage.toString());
-        statusmsg.edit({embeds: [await whiteStarCancelMessage(ws)] })
+        statusmsg.edit({ embeds: [await whiteStarCancelMessage(ws)] })
         statusmsg.reactions.removeAll()
     }
     ws.members.forEach(async t => {
@@ -314,51 +239,6 @@ export const killWS = async (client, ws, message) => {
 
     ws.remove();
 }
-
-export const RefreshStatusMessage = async (client, ws, interval) => {
-    let intWs = await WhiteStar.findOne({ wsrole: ws.wsrole }).populate('author').populate('members').populate('groupsRoles').exec();
-    let msgStatus;
-    if (intWs) {
-        if (interval) {
-            if (intWs.status == "Recruiting") {
-                clearInterval(interval);
-            }
-        }
-
-        //Fetch old message
-        if (!intWs.statuschannel || !intWs.statusmessage) { }
-        else {
-            msgStatus = await client.channels.cache.get(intWs.statuschannel).messages.fetch(intWs.statusmessage.toString());
-
-            //Create new message
-            const statusEmbed = await whiteStarStatusMessage(msgStatus, intWs);
-            //Remove Reactions
-            msgStatus.edit( {embeds: [statusEmbed] })
-        }
-    }
-    return msgStatus;
-}
-
-export const RefreshRecruitMessage = async (client, ws, interval) => {
-    let intWs = await WhiteStar.findOne({ wsrole: ws.wsrole }).populate('author').populate('members').populate('groupsRoles').exec();
-    let msgRecruit;
-    if (intWs) {
-
-        //Fetch old message
-        let recruitChannel = await client.channels.cache.get(intWs.retruitchannel)
-        if (recruitChannel) {
-            msgRecruit = await recruitChannel.messages.fetch(intWs.recruitmessage.toString())
-        }
-        //Create new message
-        const recruitEmbed = await whiteStarRecruitMessage(intWs);
-
-        //Remove Reactions
-        await msgRecruit.edit({embeds: [recruitEmbed] })
-    }
-
-    return msgRecruit;
-}
-
 export const StartTimerStatusRefresh = async (client, ws) => {
     let interval;
     interval = setInterval(function () {

@@ -1,6 +1,7 @@
 import { WhitestarsCommand } from './WhitestarsCommand';
 import { Member, WhiteStar, WhiteStarRoles } from '../../database';
 import * as WsUtils from '../../utils/whiteStarsUtils.js';
+import * as WsMessages from '../../utils/whiteStarsMessages.js'
 
 export class SetRolesWhiteStarCommand extends WhitestarsCommand {
   constructor(plugin) {
@@ -60,7 +61,7 @@ export class SetRolesWhiteStarCommand extends WhitestarsCommand {
         }
       }
       groupsRoles.save()
-      await WsUtils.RefreshStatusMessage(this.client, ws, null);
+      await WsMessages.RefreshStatusMessage(this.client, ws, null);
     } else {
       return message.channel.send(`No WS going in <@&"${role}>`)
     }

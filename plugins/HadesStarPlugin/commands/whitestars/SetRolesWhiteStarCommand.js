@@ -60,8 +60,8 @@ export class SetRolesWhiteStarCommand extends WhitestarsCommand {
             groupsRoles.spGroupsRoles.push(roles[i])
         }
       }
-      groupsRoles.save()
-      await WsMessages.RefreshStatusMessage(this.client, ws, null);
+      await groupsRoles.save()
+      //await WsMessages.RefreshStatusMessage(this.client, ws, null);
     } else {
       return message.channel.send(`No WS going in <@&"${role}>`)
     }

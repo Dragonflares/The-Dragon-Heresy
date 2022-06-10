@@ -1,9 +1,8 @@
 import { Member, WhiteStar, WhiteStarRoles } from '../database';
 import * as timeUtils from './timeUtils.js'
-import { MessageEmbed, MessageButton, MessageActionRow, Modal, TextInputComponent } from 'discord.js';
+import { MessageEmbed, MessageButton, MessageActionRow, Modal, TextInputComponent, MessageSelectMenu } from 'discord.js';
 export let NormalShow = true
 import * as WsMessages from './whiteStarsMessages.js'
-import { isGeneratorFunction } from 'util/types';
 
 //Recruit
 
@@ -26,6 +25,9 @@ export const recruitCollector = async (client, message, ws) => {
 
     let bAddRoleID = null
     let bRemoveRoleID = null
+
+    let bsGroupRemoveMenuID = null
+    let spGroupRemoveMenuID = null
 
     collector.on('collect', async b => {
         if (b.user.id == ws.author.discordId) {
@@ -108,7 +110,10 @@ export const recruitCollector = async (client, message, ws) => {
                 .setFooter({ text: `use &srolesws @wsrole bs/sp @role` })
                 .addField("Whitestar", `<@&${ws.wsrole}>`)
             let bsString = "";
-            ws.groupsRoles.bsGroupsRoles.forEach(role => {
+
+            let groupsRoles = await WhiteStarRoles.findOne({ Corp: ws.Corp, wsrole: ws.wsrole }).exec()
+
+            groupsRoles.bsGroupsRoles.forEach(role => {
                 bsString += `<@&${role}>\n`
             })
 
@@ -117,7 +122,7 @@ export const recruitCollector = async (client, message, ws) => {
 
             let spString = "";
 
-            ws.groupsRoles.spGroupsRoles.forEach(role => {
+            groupsRoles.spGroupsRoles.forEach(role => {
                 spString += `<@&${role}>\n`
             })
 
@@ -137,10 +142,69 @@ export const recruitCollector = async (client, message, ws) => {
             killWS(client, ws)
             await i.update({ content: "WS Deleted", components: [] })
         }
-        else if(i.customId == bAddRoleID){ //not main menu anymore
-            await i.update({content: `use &srolesws @wsrole bs/sp @role`, embeds:[], components: []})
-        }else if(i.customId == bRemoveRoleID){
-            await i.update({content: `uWIP`, embeds:[], components: []})
+        else if (i.customId == bAddRoleID) { //not main menu anymore
+            await i.update({ content: `use &srolesws @wsrole bs/sp @role`, embeds: [], components: [] })
+        } else if (i.customId == bRemoveRoleID) {
+            bsGroupRemoveMenuID = i.id + "bsGroupRemoveMenuID"
+            spGroupRemoveMenuID = i.id + "bsGrouspGroupRemoveMenuIDpRemoveMenuID"
+            //Remove Role
+            //battleship
+            let bsGroupRemoveMenu = new MessageSelectMenu().setCustomId(bsGroupRemoveMenuID)
+                .setPlaceholder('Select battleship group')
+            let spGroupRemoveMenu = new MessageSelectMenu().setCustomId(spGroupRemoveMenuID)
+                .setPlaceholder('Select support group')
+
+            let groupsRoles = await WhiteStarRoles.findOne({ Corp: ws.Corp, wsrole: ws.wsrole }).exec()
+
+            groupsRoles.bsGroupsRoles.forEach(m => {
+                bsGroupRemoveMenu.addOptions([
+                    {
+                        label: message.guild.roles.cache.find(r => r.id == m).name,
+                        value: m,
+                    }
+                ])
+            });
+            groupsRoles.spGroupsRoles.forEach(m => {
+                spGroupRemoveMenu.addOptions([
+                    {
+                        label: message.guild.roles.cache.find(r => r.id == m).name,
+                        value: m,
+                    }
+                ])
+            });
+            let rows = []
+            let groupMenusRow1 = new MessageActionRow()
+            let groupMenusRow2 = new MessageActionRow()
+            if(groupsRoles.bsGroupsRoles.length>0)
+            {
+            groupMenusRow1.addComponents(bsGroupRemoveMenu)
+            rows.push(groupMenusRow1)
+            }
+            if(groupsRoles.spGroupsRoles.length>0)
+            {
+            groupMenusRow2.addComponents(spGroupRemoveMenu)
+            rows.push(groupMenusRow2)
+            }
+            await i.update({ content: `Select which roles to remove`, embeds: [], components: rows })
+        }
+
+        if (i.isSelectMenu()) {
+            //Remove roles handling
+            if (i.customId == bsGroupRemoveMenuID) {
+                let roleToRemove = i.values[0]
+                await i.update({ content: `<@&${roleToRemove}> Battleship group removed`, embeds: [], components: [] })
+                let groupsRoles = await WhiteStarRoles.findOne({ Corp: ws.Corp, wsrole: ws.wsrole }).exec()
+                groupsRoles.bsGroupsRoles = groupsRoles.bsGroupsRoles.filter(m => m != roleToRemove)
+                await groupsRoles.save()
+            } else if (i.customId == spGroupRemoveMenuID) {
+                let roleToRemove = i.values[0]
+                await i.update({ content: `<@&${roleToRemove}> Support group removed`, embeds: [], components: [] })
+                let groupsRoles = await WhiteStarRoles.findOne({ Corp: ws.Corp, wsrole: ws.wsrole }).exec()
+                groupsRoles.spGroupsRoles = groupsRoles.spGroupsRoles.filter(m => m != roleToRemove)
+                await groupsRoles.save()
+            }
+
+
         }
 
         //Modal
@@ -157,7 +221,6 @@ export const recruitCollector = async (client, message, ws) => {
         }
     })
 }
-
 
 export const RefreshRecruitMessage = async (client, ws, interval) => {
     let intWs = await WhiteStar.findOne({ wsrole: ws.wsrole }).populate('author').populate('members').populate('groupsRoles').exec();

@@ -13,7 +13,7 @@ export class NewRecruitWhiteStarCommand extends WhitestarsCommand {
       aliases: ['nrws', 'n'],
       description: "Start a White Star recruit message.",
       usage: "&nrws <wsrole> ",
-      hidene: true
+      hidden: true
     });
   }
 

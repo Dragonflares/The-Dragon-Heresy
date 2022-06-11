@@ -1,5 +1,5 @@
 import { Manager } from '../../../lib';
-import { Corp, RedStarQueue, RedStarLog} from '../database';
+import { Corp, RedStarQueue, RedStarLog } from '../database';
 import Mongoose from 'mongoose'
 import * as RsQueuesUtils from '../utils/redStarsQueuesUtils'
 import { CommandInteractionOptionResolver } from 'discord.js';
@@ -11,7 +11,7 @@ export class RecruitRedStarManager extends Manager {
 
     enable() {
         if (!this.enabled) {
-          // Resync Queues
+            // Resync Queues
             this.RelistenQueues()
 
             let interval;
@@ -22,31 +22,27 @@ export class RecruitRedStarManager extends Manager {
 
     RelistenQueues = async () => {
         await RedStarQueue.find().exec().then(async rsQueues => {
-            rsQueues.forEach( async newRedStarQueue => {
+            rsQueues.forEach(async newRedStarQueue => {
 
                 //Fetch recruit message
                 let messageReaction = await this.client.channels.cache.get(newRedStarQueue.recruitChannel).messages.fetch(newRedStarQueue.recruitMessage.toString());
-        
-                // Fetch status message
-                let currentStatusMessage = null
-                try{ // Check if message is gone
-                    currentStatusMessage = await this.client.channels.cache.get(newRedStarQueue.recruitChannel).messages.fetch(newRedStarQueue.currentStatusMessage.toString());
-                }catch(r){}
 
                 //Create collector
                 const filter = (button) => button.user.bot == false;
                 const collector = messageReaction.createMessageComponentCollector(filter);
-                
-                if (currentStatusMessage) currentStatusMessage.delete({ timeout: 1 });
-                currentStatusMessage = await RsQueuesUtils.updateEmbed(this.client, messageReaction, newRedStarQueue, false) //Update the Embeed to show the new reaction   
 
+                await RsQueuesUtils.deleteOldStatusMsgs(this.client, newRedStarQueue)
+
+                let sendData = await RsQueuesUtils.updateEmbed(this.client, messageReaction, newRedStarQueue, false) //Update the Embeed to show the new reaction   
+                if (sendData)
+                   await RsQueuesUtils.sendStatusMsg(this.client, messageReaction, newRedStarQueue)
                 // Save
-                newRedStarQueue.currentStatusMessage=currentStatusMessage.id;
+
                 await newRedStarQueue.save();
-        
+
                 // Listen to buttons
                 collector.on('collect', async b => {
-                   RsQueuesUtils.collectorFunc(this.client, messageReaction, newRedStarQueue, b)
+                    await RsQueuesUtils.collectorFunc(this.client, messageReaction, newRedStarQueue, b)
                 });
 
             })
@@ -54,18 +50,11 @@ export class RecruitRedStarManager extends Manager {
     }
 
     CheckRedStarQueues = async (client) => {
-        await RedStarQueue.find({"timeToTimeout":{"$lte": new Date()}}).exec().then(async rsQueues => {
-            rsQueues.forEach( async rsQueue => {
+        await RedStarQueue.find({ "timeToTimeout": { "$lte": new Date() } }).exec().then(async rsQueues => {
+            rsQueues.forEach(async rsQueue => {
 
                 //Fetch recruit message
                 let msgRecruit = await this.client.channels.cache.get(rsQueue.recruitChannel).messages.fetch(rsQueue.recruitMessage.toString());
-       
-                //Delete status message
-                let currentStatusMessage = null
-                try{ // Check if message is gone
-                    currentStatusMessage = await this.client.channels.cache.get(rsQueue.recruitChannel).messages.fetch(rsQueue.currentStatusMessage.toString());
-                }catch(e){}
-                if (currentStatusMessage) currentStatusMessage.delete({ timeout: 1 });
 
                 //Save RS log
                 //Timeout
@@ -77,7 +66,7 @@ export class RecruitRedStarManager extends Manager {
                     timeClosed: new Date(),
                     endStatus: "Timeout",
                     creatorId: msgRecruit.author.id,
-                    membersIds: Array.from( rsQueue.registeredPlayers.keys())
+                    membersIds: Array.from(rsQueue.registeredPlayers.keys())
                 })
                 corp.redStarLogs.push(newRSLog)
                 await newRSLog.save()
@@ -86,9 +75,10 @@ export class RecruitRedStarManager extends Manager {
                 //Update embeed to timed out
                 RsQueuesUtils.failed(client, msgRecruit, rsQueue, true)
 
-            })})
-        .catch(err => console.log(err))
-    }   
+            })
+        })
+            .catch(err => console.log(err))
+    }
 
     disable() {
         if (this.enabled) {

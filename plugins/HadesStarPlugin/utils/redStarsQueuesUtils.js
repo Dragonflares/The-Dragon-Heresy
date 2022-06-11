@@ -1,19 +1,11 @@
-import { MessageEmbed, MessageButton, CategoryChannel } from 'discord.js';
+import { MessageEmbed, MessageButton, CategoryChannel, MessageActionRow } from 'discord.js';
 import { Corp, RedStarLog } from '../database'
 import Mongoose from 'mongoose'
 
 export const collectorFunc = async (client, messageReaction, newRedStarQueue, b) => {
-    let deleted = false;
-
+    await b.deferUpdate().catch(console.error)
     //Delete old status message
-    // Fetch status message
-    let currentStatusMessage = null
-    try { // Check if message is gone
-        currentStatusMessage = await client.channels.cache.get(newRedStarQueue.recruitChannel).messages.fetch(newRedStarQueue.currentStatusMessage.toString());
-        if (currentStatusMessage)
-            currentStatusMessage.delete({ timeout: 1 });
-    } catch (r) { console.log(r) }
-
+    let deleted = false
 
     //Fetch players
     let registeredPlayers = newRedStarQueue.registeredPlayers
@@ -21,20 +13,18 @@ export const collectorFunc = async (client, messageReaction, newRedStarQueue, b)
 
     if (b.user.id == newRedStarQueue.author && (b.customId == "delete" || b.customId == "done")) {
         if (b.customId == "delete") {     //When Trash
-            await b.reply({ content: 'Invitation Closed', ephemeral: true });
-            deleted = true;
+            deleted = true
             return failed(client, messageReaction, newRedStarQueue, false);
 
         } else if (b.customId == "done") { //Done
             if (registeredPlayers.size > 1) {
-                await b.deferUpdate()
                 await updateEmbed(client, messageReaction, newRedStarQueue, true) //Update the Embeed to show the new reaction    
 
             } else {
-                await b.reply({ content: 'You need more than one player to finish a queue', ephemeral: true });
+                await b.editReply({ content: 'You need more than one player to finish a queue', ephemeral: true }).catch(console.error);
             }
         } else {
-            await b.reply({ content: 'You are not the owner of this invitation', ephemeral: true });
+            await b.editReply({ content: 'You are not the owner of this invitation', ephemeral: true }).catch(console.error);
         }
         return;
     }
@@ -47,22 +37,16 @@ export const collectorFunc = async (client, messageReaction, newRedStarQueue, b)
 
         //Get out of queue
         if (hadCroidAndClickCroid || noCroidAndClockNoCroid) {
-            await b.reply({ content: 'You out of the queue', ephemeral: true });
             //Remove player
             registeredPlayers.delete(b.user.id)
             extraPlayers.delete(b.user.id)
-
-
         } else {
-
             //Get in queue
             if (b.customId == "has_croid" || b.customId == "no_croid") {
-                await b.deferUpdate()
                 if (b.customId == "has_croid")
                     registeredPlayers.set(b.user.id, '✅')
                 else
                     registeredPlayers.set(b.user.id, '❎')
-
 
             }
         }
@@ -71,11 +55,8 @@ export const collectorFunc = async (client, messageReaction, newRedStarQueue, b)
         let plusTwoClickPlusTwo = b.customId == "plusTwo" && extraPlayers.has(b.user.id) && extraPlayers.get(b.user.id) == 2
 
         if (plusOneClickPlusOne || plusTwoClickPlusTwo) {
-
             // Remove  the +1/2
             extraPlayers.delete(b.user.id)
-
-            await b.reply({ content: 'Unregistered plus player/s', ephemeral: true });
         }
         else {
             // add plusone/two
@@ -83,35 +64,79 @@ export const collectorFunc = async (client, messageReaction, newRedStarQueue, b)
             newRedStarQueue.extraPlayers.forEach((value, key) => currentPeopleAmm += parseInt(value))
 
             if (registeredPlayers.has(b.user.id) && (b.customId == "plusOne" || b.customId == "plusTwo")) {
-                await b.deferUpdate()
                 // When plus one
                 if (b.customId == "plusOne") {
-                    if (currentPeopleAmm > 3) return await b.reply({ content: 'Too many players', ephemeral: true }); // If more than 3, too many players (4)
+                    if (currentPeopleAmm > 3) return await b.followUp({ content: 'Too many players', ephemeral: true }).catch(console.error);; // If more than 3, too many players (4)
                     extraPlayers.set(b.user.id, 1)
                 } else if (b.customId == "plusTwo") {
-                    if (currentPeopleAmm > 2) return await b.reply({ content: 'Too many players', ephemeral: true }); //if more than 2 too many players (3)
+                    if (currentPeopleAmm > 2) return await b.followUp({ content: 'Too many players', ephemeral: true }).catch(console.error);; //if more than 2 too many players (3)
                     extraPlayers.set(b.user.id, 2)
                 }
 
             }
         }
-        if (!deleted) {
-            //Update db
-            newRedStarQueue.registeredPlayers = registeredPlayers
-            newRedStarQueue.extraPlayers = extraPlayers
+        //Update db
+        newRedStarQueue.registeredPlayers = registeredPlayers
+        newRedStarQueue.extraPlayers = extraPlayers
 
-            // Update Message
-            currentStatusMessage = await updateEmbed(client, messageReaction, newRedStarQueue, false) //Update the Embeed to show the new reaction   
+        //Delete old message
+        await deleteOldStatusMsgs(client, newRedStarQueue)
 
-            // Save database changes
-            if (currentStatusMessage) {
-                newRedStarQueue.currentStatusMessage = currentStatusMessage.id;
-                await newRedStarQueue.save()
-            }
+        // Update Message
+        let sendData = await updateEmbed(client, messageReaction, newRedStarQueue, false) //Update the Embeed to show the new reaction   
+
+        if (sendData) {
+            // Make new message
+            await sendStatusMsg(client, messageReaction, newRedStarQueue)
         }
+    }
+
+    // Save database changes
+    if (!deleted) {
+        await newRedStarQueue.save().catch(r => {})
     }
 }
 
+export const sendStatusMsg = async (client, message, newRedStarQueue) => {
+    //Send jump botton message
+    var link = "http://discordapp.com/channels/" + message.guild.id + "/" + message.channel.id + "/" + message.id;
+    let urlbutton = new MessageButton()
+        .setStyle(5)
+        .setURL(link)
+        .setLabel('Jump to Recruit!');
+
+    let btnRow = new MessageActionRow()
+    btnRow.addComponents(urlbutton)
+
+    //Needed to fill
+    let maxMembers = 4
+    if (newRedStarQueue.rsLevel < 3)
+        maxMembers = 2
+
+    let currentPeopleAmm = 0
+    newRedStarQueue.registeredPlayers.forEach(async (croid, memberID) => {
+        if (newRedStarQueue.extraPlayers.has(memberID)) {
+            currentPeopleAmm += parseInt(newRedStarQueue.extraPlayers.get(memberID));
+        }
+        currentPeopleAmm++;
+    })
+
+    let statusMessage = await message.channel.send({ content: `There is currently a RS${newRedStarQueue.rsLevel} going with ${currentPeopleAmm}/${maxMembers}`, components: [btnRow] })
+    if (statusMessage) {
+        newRedStarQueue.currentStatusMessages.push(statusMessage.id.toString())
+    }
+}
+
+export const deleteOldStatusMsgs = async (client, redStarQueue) => {
+    for (let i = 0; i < redStarQueue.currentStatusMessages.length + 1; i++) {
+        let statusMsg = redStarQueue.currentStatusMessages.pop()
+        try {
+            let currentStatusMessage = await client.channels.cache.get(redStarQueue.recruitChannel).messages.fetch(statusMsg)
+            if (currentStatusMessage)
+                await currentStatusMessage.delete({ timeout: 1 })
+        } catch (r) { }
+    }
+}
 
 export const updateEmbed = async (client, message, newRedStarQueue, close) => {
     try {
@@ -162,6 +187,7 @@ export const updateEmbed = async (client, message, newRedStarQueue, close) => {
 
             //Set color to green
             newEmbed.setColor("GREEN");
+            newEmbed.setFooter({ text: "Invitation full" })
 
             //Create ping message
             let pingString = ""
@@ -191,6 +217,7 @@ export const updateEmbed = async (client, message, newRedStarQueue, close) => {
             }
             //Remove queue from db
             await newRedStarQueue.remove()
+            return false
         } else {
 
             // Set color and send the embed
@@ -198,20 +225,16 @@ export const updateEmbed = async (client, message, newRedStarQueue, close) => {
             if (message)
                 message.edit({ embeds: [newEmbed] });
 
-            //Send jump botton message
-            var link = "http://discordapp.com/channels/" + message.guild.id + "/" + message.channel.id + "/" + message.id;
-            let urlbutton = new MessageButton()
-                .setStyle(5)
-                .setURL(link)
-                .setLabel('Jump to Recruit!');
-            let sent = await message.channel.send(`There is currently a RS${newRedStarQueue.rsLevel} going with ${currentPeopleAmm}/${maxMembers}`, urlbutton)
-            return sent;
+            return true
 
         }
     } catch (e) { console.log(e) }
 }
 
 export const failed = async (client, message, newRedStarQueue, timedout) => {
+
+    await deleteOldStatusMsgs(client, newRedStarQueue)
+
     let newEmbed = new MessageEmbed(message.embeds[0])
     newEmbed.fields[0].value = `0/0`
     newEmbed.setColor("RED")

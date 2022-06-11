@@ -17,7 +17,7 @@ const RedStarQueueSchema = Schema ({
         of: String
     },
     recruitMessage: String,
-    currentStatusMessage: String,
+    currentStatusMessages: [{type: String}],
     recruitChannel: String,
     text: String
 })

@@ -114,7 +114,7 @@ export class RecruitRedStarCommand extends MemberCommand {
 
 
     let butlen = styles.length
-    if(rsLevel<3) butlen-=1;
+    if (rsLevel < 3) butlen -= 1;
 
     for (let i = 0; i < butlen; i++) {
       let button = new MessageButton()
@@ -172,19 +172,14 @@ export class RecruitRedStarCommand extends MemberCommand {
       text: ""
     })
 
-    // CurrentStatusMessage
-    let currentStatusMessage = null
-    try {
-      if (newRedStarQueue.currentStatusMessage)
-        currentStatusMessage = await this.client.channels.cache.get(newRedStarQueue.recruitChannel).messages.fetch(newRedStarQueue.currentStatusMessage.toString());
-      if (currentStatusMessage) currentStatusMessage.delete({ timeout: 1 });
-      currentStatusMessage = await RsQueuesUtils.updateEmbed(this.client, messageReaction, newRedStarQueue, false) //Update the Embeed to show the new reaction   
-    } catch (e) { }
-    // Save
-    if (currentStatusMessage) {
-      newRedStarQueue.currentStatusMessage = currentStatusMessage.id;
-      await newRedStarQueue.save();
-    }
+
+    let sendData = await RsQueuesUtils.updateEmbed(this.client, messageReaction, newRedStarQueue, false) //Update the Embeed to show the new reaction   
+    
+    if(sendData)
+    await RsQueuesUtils.sendStatusMsg(this.client,messageReaction,newRedStarQueue)
+    
+
+    await newRedStarQueue.save();
 
     // Listen to buttons
     collector.on('collect', async b => {

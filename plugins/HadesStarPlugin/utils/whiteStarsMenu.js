@@ -172,7 +172,7 @@ export class WsConfigMenu {
 
     //Roles
     checkIfRolesMenu = (id) => {
-        let idsToCheck = [this.bAddRoleID, this.bRemoveRoleID, this.bsGroupRemoveMenuID]
+        let idsToCheck = [this.bAddRoleID, this.bRemoveRoleID, this.bsGroupRemoveMenuID, this.spGroupRemoveMenuID]
         return idsToCheck.includes(id)
     }
 
@@ -263,7 +263,7 @@ export class WsConfigMenu {
         } else if (i.customId == this.bRemoveRoleID) {
             await i.deferUpdate()
             this.bsGroupRemoveMenuID = i.id + "bsGroupRemoveMenuID"
-            this.spGroupRemoveMenuID = i.id + "bsGrouspGroupRemoveMenuIDpRemoveMenuID"
+            this.spGroupRemoveMenuID = i.id + "spRemoveMenuID"
             //Remove Role
             //battleship
             let bsGroupRemoveMenu = new MessageSelectMenu().setCustomId(this.bsGroupRemoveMenuID)
@@ -303,15 +303,18 @@ export class WsConfigMenu {
             return await i.editReply({ content: `Select which roles to remove`, embeds: [], components: rows, ephemeral: true })
         }
         else if (i.isSelectMenu()) {
-            await i.deferUpdate()
+           
             //Remove roles handling
             if (i.customId == this.bsGroupRemoveMenuID) {
+                await i.deferUpdate()
                 let roleToRemove = i.values[0]
                 await i.editReply({ content: `<@&${roleToRemove}> Battleship group removed`, embeds: [], components: [], ephemeral: true })
                 let groupsRoles = await WhiteStarRoles.findOne({ Corp: this.ws.Corp, wsrole: this.ws.wsrole }).exec()
                 groupsRoles.bsGroupsRoles = groupsRoles.bsGroupsRoles.filter(m => m != roleToRemove)
                 return await groupsRoles.save()
             } else if (i.customId == this.spGroupRemoveMenuID) {
+                await i.deferUpdate()
+                console.log("tryremove")
                 let roleToRemove = i.values[0]
                 await i.editReply({ content: `<@&${roleToRemove}> Support group removed`, embeds: [], components: [], ephemeral: true })
                 let groupsRoles = await WhiteStarRoles.findOne({ Corp: this.ws.Corp, wsrole: this.ws.wsrole }).exec()

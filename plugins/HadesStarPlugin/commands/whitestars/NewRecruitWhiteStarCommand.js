@@ -58,7 +58,7 @@ export class NewRecruitWhiteStarCommand extends WhitestarsCommand {
     let expectedtime = null
 
     //Check that no ws exists and if does, reprint the rectuit?
-    const newWhiteStar = await WhiteStar.findOne({ wsrole: role.id }).populate('author').populate('members').populate('groupsRoles').exec()
+    let newWhiteStar = await WhiteStar.findOne({ wsrole: role.id }).populate('author').populate('members').populate('groupsRoles').exec()
     if (!newWhiteStar) {
       //Create new ws
       const corp = await Corp.findOne({ corpId: message.guild.id.toString() }).exec()
@@ -100,8 +100,10 @@ export class NewRecruitWhiteStarCommand extends WhitestarsCommand {
       });
     } else {
       //fetch recruit msg and delete
+      try{
       let msg = await this.client.channels.cache.get(newWhiteStar.retruitchannel).messages.fetch(newWhiteStar.recruitmessage.toString())
       if (msg) msg.delete({ timeout: 1 })
+      }catch(r){}
     }
     //Send Message
     const recruitEmbed = await WsMessages.whiteStarRecruitMessage(newWhiteStar);

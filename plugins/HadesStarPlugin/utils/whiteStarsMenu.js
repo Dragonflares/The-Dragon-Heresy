@@ -9,6 +9,7 @@ export class WsConfigMenu {
         //Keep track so can check interactionCreated
         this.client = client
         this.ws = ws
+        this.listening =false
     }
 
     getRow = async (b, message) => {
@@ -34,26 +35,28 @@ export class WsConfigMenu {
         else
             replyRow.addComponents([bDetails, bMembers, bRoles, bTime, bDelete]);
 
-        this.client.on('interactionCreate', async (interaction) => this.listenMenu(interaction))
+        if(!this.listening){
+            this.listening = true
+            this.client.on('interactionCreate', async (interaction) => this.listenMenu(interaction))
+        }
+       
 
         return replyRow
     }
 
     listenMenu = async (i) => {
-        await i.deferUpdate()
 
         if (this.checkIfMainMenu(i.customId))
             return await this.listenMainMenu(i);
-
         else if (this.checkIfRolesMenu(i.customId))
             return await this.listenRolesMenu(i);
-
+        else if (this.checkIfAddRolesMenu(i.customId))
+            return await this.listenAddRolesMenu(i);
         //DetailsModal
         if (i.isModalSubmit())
             await this.listenDetailsModal(i);
 
     }
-
 
 
     // Main Menu
@@ -66,19 +69,20 @@ export class WsConfigMenu {
         //Details
         if (i.customId == this.bDetailsID) {   //Open details modal
             this.mDetailsID = i.id + "-detailsModal"
-            return await i.showModal(this.createDetailsModal()) // Show modal as response
+            return await i.showModal(this.createDetailsModal()).catch(console.error); // Show modal as response
         }
         else if (i.customId == this.bMembersID) { //Open 2 buttons for add and remove members (WIP)
+            await i.deferUpdate()
             this.bAddMemberID = i.id + 'bAddMemberID'
             this.bRemoveMemberID = i.id + 'bRemoveMemberID'
             //Create buttons
             let bAddMember = new MessageButton().setStyle(2).setLabel("Details").setCustomId(this.bAddMemberID)
             let bRemoveMember = new MessageButton().setStyle(2).setLabel("Members").setCustomId(this.bRemoveMemberID)
             const membersrow = new MessageActionRow().addComponents([bAddMember, bRemoveMember]);
-            return await i.editReply({ content: "Select add or remove member", components: [membersrow] }) //Add bottons as response
+            return await i.followUp({ content: "Select add or remove member", components: [membersrow] }) //Add bottons as response
         }
         else if (i.customId == this.bRolesID) {  //Groups Embeed
-
+            await i.deferUpdate()
             this.bAddRoleID = i.id + 'bAddRoleID'
             this.bRemoveRoleID = i.id + 'bRemoveRoleID'
             //Show roles
@@ -114,12 +118,14 @@ export class WsConfigMenu {
             let bRemoveRole = new MessageButton().setStyle(4).setLabel("Remove").setCustomId(this.bRemoveRoleID)
             const rolessetupRow = new MessageActionRow().addComponents([bAddRole, bRemoveRole]);
 
-            return await i.editReply({ embeds: [rolesEmbed], components: [rolessetupRow] }) //add rows and roles as response
+            return await i.followUp({ embeds: [rolesEmbed], components: [rolessetupRow], ephemeral: true }) //add rows and roles as response
         } else if (i.customId == this.bTimeID) {
-            return await i.editReply({ content: "time WIP", components: [] })
+            await i.deferUpdate()
+            return await i.followUp({ content: "time WIP", components: [] })
         } else if (i.customId == this.bDeleteID) {
+            await i.deferUpdate()
             WsUtils.killWS(this.client, this.ws)
-            return await i.editReply({ content: "WS Deleted", components: [] })
+            return await i.followUp({ content: "WS Deleted", components: [] })
         }
     }
 
@@ -150,15 +156,17 @@ export class WsConfigMenu {
 
     listenDetailsModal = async (i) => {
         if (i.customId == this.mDetailsID) {
+            await i.deferUpdate().catch(r=>r)
             let descriptionInput = i.fields.getTextInputValue('descriptionInput');
             let corporationInput = i.fields.getTextInputValue('corporationInput');
             let natureInput = i.fields.getTextInputValue('natureInput');
             this.ws.description = descriptionInput != "" ? descriptionInput : this.ws.description
             this.ws.corporation = corporationInput != "" ? corporationInput : this.ws.corporation
             this.ws.nature = natureInput != "" ? natureInput : this.ws.nature
-            await this.ws.save()
+            await this.ws.save().catch(err => console.log(err))
             WsUtils.RefreshRecruitMessage(this.client, this.ws)
-            return await i.editReply({ content: "Details updated.", components: [] })
+            return await i.followUp({ content: "Details updated.", components: [], ephemeral: true })
+
         }
     }
 
@@ -170,8 +178,90 @@ export class WsConfigMenu {
 
     listenRolesMenu = async (i) => {
         if (i.customId == this.bAddRoleID) { //not main menu anymore
-            return await i.editReply({ content: `use &srolesws @wsrole bs/sp @role`, embeds: [], components: [] })
+            await i.deferUpdate()
+
+            let divideNum = 25
+
+            //get roles
+            let rolesStrs = []
+            let roleStr = ""
+            let roleIds = this.message.guild.roles.cache.filter(role => role.name != "@everyone");
+
+            //roleIds = roleIds.flatMap((x) => [x, x+1]);
+
+            roleIds.map(role => role.id).forEach((role, index) => {
+                roleStr += `${index + 1} - <@&${role}>\n`
+                if ((index + 1) % divideNum === 0) {
+                    rolesStrs.push(roleStr)
+                    roleStr = ""
+                }
+            })
+
+            let addRolesEmbed = new MessageEmbed()
+                .setTitle(`Whitestar select roles`)
+                .setThumbnail("https://i.imgur.com/fNtJDNz.png")
+                .setColor("GREEN")
+                .setFooter({ text: `Select if battleship/support and the role you want to add` })
+                .addField("Whitestar", `<@&${this.ws.wsrole}>`)
+
+            rolesStrs.forEach((rolestr, i) => {
+                addRolesEmbed.addField(`Roles [${i + 1}/${rolesStrs.length}]`, rolestr != "" ? rolestr : "None")
+            })
+
+            //create menus
+            let menusNeeded = rolesStrs.length
+
+            //battleship/support menu
+
+            let componentsToAdd = []
+
+            this.addBsSpMenuID = i.id + "addBsSpMenuID"
+            let addBsSpMenu = new MessageSelectMenu().setCustomId(this.addBsSpMenuID).setPlaceholder('Select battleship/support')
+            addBsSpMenu.addOptions([
+                {
+                    label: "Battleship",
+                    value: "Battleship",
+                },
+                {
+                    label: "Support",
+                    value: "Support",
+                }
+            ])
+            let groupMenusRow1 = new MessageActionRow()
+            groupMenusRow1.addComponents([addBsSpMenu])
+            componentsToAdd.push(groupMenusRow1)
+
+            this.addRoleMenuID = []
+
+            //create first
+            this.addCurrRoleMenuId = i.id + 0 + "addBsSpMenuID"
+            this.addRoleMenuID.push(this.addCurrRoleMenuId)
+            let addRoleMenu = new MessageSelectMenu().setCustomId(this.addCurrRoleMenuId).setPlaceholder(`0 - ${divideNum}`)
+            //Create menus
+            roleIds.map(r => r = r).forEach((role, index) => {
+                addRoleMenu.addOptions([
+                    {
+                        label: `${index + 1} - ${role.name}`,
+                        value: role.id,
+                    }])
+
+                //roleStr += `${index+1} - <@&${role}>\n`
+                if ((index + 1) % divideNum === 0) {
+                    //Add to row
+                    let groupMenusRow = new MessageActionRow()
+                    groupMenusRow.addComponents(addRoleMenu)
+                    componentsToAdd.push(groupMenusRow)
+
+                    //Make new
+                    this.addCurrRoleMenuId = i.id + ((index + 1) / 24) + "addBsSpMenuID"
+                    this.addRoleMenuID.push(this.addCurrRoleMenuId)
+                    addRoleMenu = new MessageSelectMenu().setCustomId(this.addCurrRoleMenuId).setPlaceholder(`${((index + 1) / divideNum) * divideNum} - ${((index + 1) / divideNum) + 1 * divideNum} `)
+
+                }
+            })
+            return await i.editReply({ embeds: [addRolesEmbed], components: componentsToAdd, ephemeral: true })
         } else if (i.customId == this.bRemoveRoleID) {
+            await i.deferUpdate()
             this.bsGroupRemoveMenuID = i.id + "bsGroupRemoveMenuID"
             this.spGroupRemoveMenuID = i.id + "bsGrouspGroupRemoveMenuIDpRemoveMenuID"
             //Remove Role
@@ -210,24 +300,67 @@ export class WsConfigMenu {
                 groupMenusRow2.addComponents(spGroupRemoveMenu)
                 rows.push(groupMenusRow2)
             }
-            return await i.editReply({ content: `Select which roles to remove`, embeds: [], components: rows })
+            return await i.editReply({ content: `Select which roles to remove`, embeds: [], components: rows, ephemeral: true })
         }
-         else if (i.isSelectMenu()) {
+        else if (i.isSelectMenu()) {
+            await i.deferUpdate()
             //Remove roles handling
             if (i.customId == this.bsGroupRemoveMenuID) {
                 let roleToRemove = i.values[0]
-                await i.editReply({ content: `<@&${roleToRemove}> Battleship group removed`, embeds: [], components: [] })
+                await i.editReply({ content: `<@&${roleToRemove}> Battleship group removed`, embeds: [], components: [], ephemeral: true })
                 let groupsRoles = await WhiteStarRoles.findOne({ Corp: this.ws.Corp, wsrole: this.ws.wsrole }).exec()
                 groupsRoles.bsGroupsRoles = groupsRoles.bsGroupsRoles.filter(m => m != roleToRemove)
                 return await groupsRoles.save()
             } else if (i.customId == this.spGroupRemoveMenuID) {
                 let roleToRemove = i.values[0]
-                await i.editReply({ content: `<@&${roleToRemove}> Support group removed`, embeds: [], components: [] })
+                await i.editReply({ content: `<@&${roleToRemove}> Support group removed`, embeds: [], components: [], ephemeral: true })
                 let groupsRoles = await WhiteStarRoles.findOne({ Corp: this.ws.Corp, wsrole: this.ws.wsrole }).exec()
                 groupsRoles.spGroupsRoles = groupsRoles.spGroupsRoles.filter(m => m != roleToRemove)
                 return await groupsRoles.save()
             }
         }
+
+
+
+    }
+
+    // Add roles
+    checkIfAddRolesMenu = (id) => {
+        let idsToCheck = [this.addBsSpMenuID, this.addRoleMenuID]
+        if (this.addRoleMenuID) idsToCheck = [...idsToCheck, ...this.addRoleMenuID]
+        return idsToCheck.includes(id)
+    }
+
+    listenAddRolesMenu = async (i) => {
+
+        if (i.customId == this.addBsSpMenuID) {
+            await i.deferUpdate()
+            this.selAddType = i.values[0]
+        }
+        else if (this.addRoleMenuID && this.addRoleMenuID.includes(i.customId)) {
+            await i.deferUpdate()
+            this.selAddRole = i.values[0]
+        }
+        if (i.customId == this.addBsSpMenuID || (this.addRoleMenuID && this.addRoleMenuID.includes(i.customId))) {
+            if (this.selAddType && this.selAddRole) {
+                let groupsRoles = await WhiteStarRoles.findOne({ Corp: this.ws.Corp, wsrole: this.ws.wsrole }).exec()
+                if (this.selAddType == "Battleship") {
+                    if (!groupsRoles.bsGroupsRoles.includes(this.selAddRole))
+                        groupsRoles.bsGroupsRoles.push(this.selAddRole)
+                } else {
+                    if (!groupsRoles.spGroupsRoles.includes(this.selAddRole))
+                        groupsRoles.spGroupsRoles.push(this.selAddRole)
+                }
+                await groupsRoles.save()
+
+                await i.editReply({ content: `Rrole <@&${this.selAddRole}> Added as ${this.selAddType}`, embeds: [], components: [], ephemeral: true })
+                this.selAddType = null
+                this.selAddRole = null
+                return
+            }
+        }
+
+
     }
 }
 

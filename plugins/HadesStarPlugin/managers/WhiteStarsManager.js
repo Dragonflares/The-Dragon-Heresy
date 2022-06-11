@@ -2,6 +2,7 @@ import { Manager } from '../../../lib';
 import { Member, WhiteStar, Corp } from '../database';
 import * as WsUtils from '../utils/whiteStarsUtils.js'
 import * as WsMessages from '../utils/whiteStarsMessages.js'
+import * as WsMenu from '../utils/whiteStarsMenu.js'
 export class WhiteStarsManager extends Manager {
     constructor(plugin) {
         super(plugin);
@@ -47,9 +48,11 @@ export class WhiteStarsManager extends Manager {
             let wsMessage = ws.recruitmessage
             let wsChannel = ws.retruitchannel
             if( wsMessage && wsChannel) {
+                try{
              let messageReaction = await this.client.channels.cache.get(wsChannel).messages.fetch(wsMessage);
              if(messageReaction) 
                  WsUtils.recruitCollector(this.client,messageReaction,ws)
+                }catch(e){}
             }
         })
         /*

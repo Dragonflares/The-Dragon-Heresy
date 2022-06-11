@@ -13,18 +13,19 @@ export const recruitCollector = async (client, message, ws) => {
     const collector = message.createMessageComponentCollector({ filter });
 
     let wsConfigMenu = new WsConfigMenu(ws, client)
-
+    
     collector.on('collect', async b => {
+        await b.deferUpdate()
         if (b.user.id == ws.author.discordId) {
             if (b.customId == "setup") {
                 //let menuRow = await WsMenu.startMenu(client,message,ws)
                 let menuRow = await wsConfigMenu.getRow(b,message)
-                await b.reply({ components: [menuRow], ephemeral: true })
+                await b.followUp({ components: [menuRow], ephemeral: true })
             } else if (b.customId == "start") {
-                await b.reply({ content: 'Start', ephemeral: true })
+                await b.followUp({ content: 'Start', ephemeral: true })
             }
         } else {
-            await b.reply({ content: 'You cant setup this whitestar.', ephemeral: true })
+            await b.followUp({ content: 'You cant setup this whitestar.', ephemeral: true })
         }
     })
 

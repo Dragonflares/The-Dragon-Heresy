@@ -73,7 +73,7 @@ export class RecruitRedStarManager extends Manager {
                 await corp.save()
 
                 //Update embeed to timed out
-                RsQueuesUtils.failed(client, msgRecruit, rsQueue, true)
+                RsQueuesUtils.failed(this.client, msgRecruit, rsQueue, true)
 
             })
         })

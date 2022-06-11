@@ -259,7 +259,7 @@ export const failed = async (client, message, newRedStarQueue, timedout) => {
         pingString += ` Queue was timed out with partial team for RS${newRedStarQueue.rsLevel}!`
     }
     // Send ping
-    message.channel.send(pingString);
+    await message.channel.send(pingString);
 
     await newRedStarQueue.remove();
 }

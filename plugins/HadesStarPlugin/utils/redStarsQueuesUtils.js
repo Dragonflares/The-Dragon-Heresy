@@ -21,10 +21,10 @@ export const collectorFunc = async (client, messageReaction, newRedStarQueue, b)
                 await updateEmbed(client, messageReaction, newRedStarQueue, true) //Update the Embeed to show the new reaction    
 
             } else {
-                await b.editReply({ content: 'You need more than one player to finish a queue', ephemeral: true }).catch(console.error);
+                await b.followUp({ content: 'You need more than one player to finish a queue', ephemeral: true }).catch(console.error);
             }
         } else {
-            await b.editReply({ content: 'You are not the owner of this invitation', ephemeral: true }).catch(console.error);
+            await b.followUp({ content: 'You are not the owner of this invitation', ephemeral: true }).catch(console.error);
         }
         return;
     }

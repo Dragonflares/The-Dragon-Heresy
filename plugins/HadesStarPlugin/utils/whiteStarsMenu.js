@@ -73,13 +73,14 @@ export class WsConfigMenu {
         }
         else if (i.customId == this.bMembersID) { //Open 2 buttons for add and remove members (WIP)
             await i.deferUpdate()
-            this.bAddMemberID = i.id + 'bAddMemberID'
+            /*this.bAddMemberID = i.id + 'bAddMemberID'
             this.bRemoveMemberID = i.id + 'bRemoveMemberID'
             //Create buttons
             let bAddMember = new MessageButton().setStyle(2).setLabel("Details").setCustomId(this.bAddMemberID)
             let bRemoveMember = new MessageButton().setStyle(2).setLabel("Members").setCustomId(this.bRemoveMemberID)
             const membersrow = new MessageActionRow().addComponents([bAddMember, bRemoveMember]);
-            return await i.followUp({ content: "Select add or remove member", components: [membersrow] }) //Add bottons as response
+            return await i.followUp({ content: "Select add or remove member", components: [membersrow] }) //Add bottons as response*/
+            return await i.followUp({ content: "Members settings in work.", components: [], ephemeral:true })
         }
         else if (i.customId == this.bRolesID) {  //Groups Embeed
             await i.deferUpdate()
@@ -121,11 +122,11 @@ export class WsConfigMenu {
             return await i.followUp({ embeds: [rolesEmbed], components: [rolessetupRow], ephemeral: true }) //add rows and roles as response
         } else if (i.customId == this.bTimeID) {
             await i.deferUpdate()
-            return await i.followUp({ content: "time WIP", components: [] })
+            return await i.followUp({ content: "Estimated time is not supported yet.", components: [] , ephemeral: true })
         } else if (i.customId == this.bDeleteID) {
             await i.deferUpdate()
             WsUtils.killWS(this.client, this.ws)
-            return await i.followUp({ content: "WS Deleted", components: [] })
+            return await i.followUp({ content: "WS Deleted", components: [] , ephemeral: true })
         }
     }
 
@@ -314,7 +315,6 @@ export class WsConfigMenu {
                 return await groupsRoles.save()
             } else if (i.customId == this.spGroupRemoveMenuID) {
                 await i.deferUpdate()
-                console.log("tryremove")
                 let roleToRemove = i.values[0]
                 await i.editReply({ content: `<@&${roleToRemove}> Support group removed`, embeds: [], components: [], ephemeral: true })
                 let groupsRoles = await WhiteStarRoles.findOne({ Corp: this.ws.Corp, wsrole: this.ws.wsrole }).exec()

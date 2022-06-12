@@ -1,8 +1,6 @@
 export * from './RecruitWhiteStarCommand';
 export * from './StatusWhiteStarCommand';
 export * from './WSRewardsCommand';
-//export * from './KillWhiteStarCommand';
-//export * from './SetRolesWhiteStarCommand';
 //export * from './NoteGroupWhiteStarCommand';
 //export * from './NotePlayerWhiteStarCommand';
 //export * from './AddPlayerWhiteStarCommand';
@@ -12,5 +10,3 @@ export * from './ExportWSTechCommand';
 export * from './WSGroupScoreCommand';
 //export * from './DeadShipWhiteStarCommand';
 export * from './WSScoreCommand';
-//export * from './GetRolesWhiteStarCommand';
-export * from './NewRecruitWhiteStarCommand';

@@ -48,6 +48,42 @@ export const SetNormal = async (normal) => {
 
 //Recruit
 
+export const whiteStarRecruitButtons = async (ws) => {
+    if (ws.status == "NotStarted") {
+        //Create Buttons
+        let buttonSetup = new MessageButton().setStyle(1).setLabel("Setup").setCustomId("setup")
+        let buttonSave = new MessageButton().setStyle(3).setLabel("Start").setCustomId("start")
+
+        //Add Button
+        let secondRow = new MessageActionRow()
+        secondRow.addComponents([buttonSetup, buttonSave]);
+
+        return [secondRow]
+    } else if (ws.status == "Recruiting") {
+        let firstRow = new MessageActionRow()
+        //First row
+        whiteStarPrefEmojiGroup.forEach((val, key) => {
+            let btn = new MessageButton().setStyle(2).setLabel(key).setCustomId(key)
+            firstRow.addComponents([btn])
+        })
+        let buttonLead = new MessageButton().setStyle(1).setLabel('🤚').setCustomId('🤚')
+        firstRow.addComponents([buttonLead])
+        //Create Buttons
+        let buttonSetup = new MessageButton().setStyle(1).setLabel("Setup").setCustomId("setup")
+        let buttonSave = new MessageButton().setStyle(3).setLabel("End Recruit").setCustomId("endrecruit")
+
+        //Add Button
+        let secondRow = new MessageActionRow()
+        secondRow.addComponents([buttonSetup, buttonSave]);
+        return [firstRow, secondRow]
+    } else {
+        let buttonSetup = new MessageButton().setStyle(1).setLabel("Setup").setCustomId("setup")
+        let secondRow = new MessageActionRow()
+        secondRow.addComponents([buttonSetup]);
+        return [secondRow]
+    }
+}
+
 export const whiteStarRecruitMessage = async (ws) => {
     //Get Members
     let prefCatStrings = new Map()

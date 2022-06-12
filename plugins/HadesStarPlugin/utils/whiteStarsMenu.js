@@ -9,7 +9,7 @@ export class WsConfigMenu {
         //Keep track so can check interactionCreated
         this.client = client
         this.ws = ws
-        this.listening =false
+        this.listening = false
     }
 
     getRow = async (b, message) => {
@@ -35,11 +35,11 @@ export class WsConfigMenu {
         else
             replyRow.addComponents([bDetails, bMembers, bRoles, bTime, bDelete]);
 
-        if(!this.listening){
+        if (!this.listening) {
             this.listening = true
             this.client.on('interactionCreate', async (interaction) => this.listenMenu(interaction))
         }
-       
+
 
         return replyRow
     }
@@ -80,7 +80,7 @@ export class WsConfigMenu {
             let bRemoveMember = new MessageButton().setStyle(2).setLabel("Members").setCustomId(this.bRemoveMemberID)
             const membersrow = new MessageActionRow().addComponents([bAddMember, bRemoveMember]);
             return await i.followUp({ content: "Select add or remove member", components: [membersrow] }) //Add bottons as response*/
-            return await i.followUp({ content: "Members settings in work.", components: [], ephemeral:true })
+            return await i.followUp({ content: "Members settings in work.", components: [], ephemeral: true })
         }
         else if (i.customId == this.bRolesID) {  //Groups Embeed
             await i.deferUpdate()
@@ -122,11 +122,11 @@ export class WsConfigMenu {
             return await i.followUp({ embeds: [rolesEmbed], components: [rolessetupRow], ephemeral: true }) //add rows and roles as response
         } else if (i.customId == this.bTimeID) {
             await i.deferUpdate()
-            return await i.followUp({ content: "Estimated time is not supported yet.", components: [] , ephemeral: true })
+            return await i.followUp({ content: "Estimated time is not supported yet.", components: [], ephemeral: true })
         } else if (i.customId == this.bDeleteID) {
             await i.deferUpdate()
             WsUtils.killWS(this.client, this.ws)
-            return await i.followUp({ content: "WS Deleted", components: [] , ephemeral: true })
+            return await i.followUp({ content: "WS Deleted", components: [], ephemeral: true })
         }
     }
 
@@ -157,7 +157,7 @@ export class WsConfigMenu {
 
     listenDetailsModal = async (i) => {
         if (i.customId == this.mDetailsID) {
-            await i.deferUpdate().catch(r=>r)
+            await i.deferUpdate().catch(r => r)
             let descriptionInput = i.fields.getTextInputValue('descriptionInput');
             let corporationInput = i.fields.getTextInputValue('corporationInput');
             let natureInput = i.fields.getTextInputValue('natureInput');
@@ -186,8 +186,8 @@ export class WsConfigMenu {
             //get roles
             let rolesStrs = []
             let roleStr = ""
-            let roleIds = this.message.guild.roles.cache.filter(role => role.name != "@everyone");
-
+            await this.message.guild.roles.fetch()
+            let roleIds = await this.message.guild.roles.cache.filter(role => role.name != "@everyone");
             //roleIds = roleIds.flatMap((x) => [x, x+1]);
 
             roleIds.map(role => role.id).forEach((role, index) => {
@@ -197,6 +197,8 @@ export class WsConfigMenu {
                     roleStr = ""
                 }
             })
+            if (roleStr != "")
+                rolesStrs.push(roleStr)
 
             let addRolesEmbed = new MessageEmbed()
                 .setTitle(`Whitestar select roles`)
@@ -245,7 +247,6 @@ export class WsConfigMenu {
                         label: `${index + 1} - ${role.name}`,
                         value: role.id,
                     }])
-
                 //roleStr += `${index+1} - <@&${role}>\n`
                 if ((index + 1) % divideNum === 0) {
                     //Add to row
@@ -254,12 +255,20 @@ export class WsConfigMenu {
                     componentsToAdd.push(groupMenusRow)
 
                     //Make new
-                    this.addCurrRoleMenuId = i.id + ((index + 1) / 24) + "addBsSpMenuID"
+                    this.addCurrRoleMenuId = i.id + ((index + 1) / divideNum) + "addBsSpMenuID"
                     this.addRoleMenuID.push(this.addCurrRoleMenuId)
                     addRoleMenu = new MessageSelectMenu().setCustomId(this.addCurrRoleMenuId).setPlaceholder(`${((index + 1) / divideNum) * divideNum} - ${((index + 1) / divideNum) + 1 * divideNum} `)
 
                 }
             })
+
+            if (addRoleMenu.options.length >0)
+            {
+                let groupMenusRow = new MessageActionRow()
+                groupMenusRow.addComponents(addRoleMenu)
+                componentsToAdd.push(groupMenusRow)
+            }
+
             return await i.editReply({ embeds: [addRolesEmbed], components: componentsToAdd, ephemeral: true })
         } else if (i.customId == this.bRemoveRoleID) {
             await i.deferUpdate()
@@ -304,7 +313,7 @@ export class WsConfigMenu {
             return await i.editReply({ content: `Select which roles to remove`, embeds: [], components: rows, ephemeral: true })
         }
         else if (i.isSelectMenu()) {
-           
+
             //Remove roles handling
             if (i.customId == this.bsGroupRemoveMenuID) {
                 await i.deferUpdate()

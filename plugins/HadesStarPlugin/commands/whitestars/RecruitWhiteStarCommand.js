@@ -11,8 +11,7 @@ export class RecruitWhiteStarCommand extends WhitestarsCommand {
       name: 'recruitws',
       aliases: ['rws'],
       description: "Start a White Star recruit message.",
-      usage: "&rws <wsrole> ",
-      hidden: true
+      usage: "&rws <wsrole> "
     });
   }
 

@@ -39,20 +39,24 @@ export const recruitCollector = async (client, message, ws) => {
                 const recruitButtons = await WsMessages.whiteStarRecruitButtons(ws)
 
                 //add the menu buttons
-                await message.edit({embeds: [recruitEmbed], components: recruitButtons })
+                await message.edit({ embeds: [recruitEmbed], components: recruitButtons })
             } else {
                 await b.followUp({ content: 'You cant setup this whitestar.', ephemeral: true })
             }
         } else if (b.customId == "endrecruit") {
-            //change to recruiting
-            ws.status = "WaitForScan"
-            await ws.save()
-            //Refresh embed
-            const recruitEmbed = await WsMessages.whiteStarRecruitMessage(ws)
-            const recruitButtons = await WsMessages.whiteStarRecruitButtons(ws)
+            if (b.user.id == ws.author.discordId) {
+                //change to recruiting
+                ws.status = "WaitForScan"
+                await ws.save()
+                //Refresh embed
+                const recruitEmbed = await WsMessages.whiteStarRecruitMessage(ws)
+                const recruitButtons = await WsMessages.whiteStarRecruitButtons(ws)
 
-            //add the menu buttons
-            await message.edit({embeds: [recruitEmbed], components: recruitButtons})
+                //add the menu buttons
+                await message.edit({ embeds: [recruitEmbed], components: recruitButtons })
+            } else {
+                await b.followUp({ content: 'You cant setup this whitestar.', ephemeral: true })
+            }
         } else if (b.customId == '🤚') {
             let member = await Member.findOne({ discordId: b.user.id.toString() }).exec();
             if (ws.leadPreferences.has(member.discordId)) { //If member is commander
@@ -66,6 +70,16 @@ export const recruitCollector = async (client, message, ws) => {
 
             //add the menu buttons
             await message.edit({ embeds: [recruitEmbed], components: recruitButtons, ephemeral: true })
+
+        } else if (b.customId == '🆘') {
+            WsMessages.SetNormal(!WsMessages.NormalShow)
+            //Refresh embed
+            const recruitEmbed = await WsMessages.whiteStarRecruitMessage(ws)
+            const recruitButtons = await WsMessages.whiteStarRecruitButtons(ws)
+
+            //add the menu buttons
+            await message.edit({ embeds: [recruitEmbed], components: recruitButtons, ephemeral: true })
+
         } else
 
             if (WsMessages.whiteStarPrefEmojiGroup.get(b.customId)) {
@@ -99,7 +113,7 @@ export const recruitCollector = async (client, message, ws) => {
                 const recruitButtons = await WsMessages.whiteStarRecruitButtons(ws)
 
                 //add the menu buttons
-                await message.edit({embeds: [recruitEmbed], components: recruitButtons, ephemeral: true })
+                await message.edit({ embeds: [recruitEmbed], components: recruitButtons, ephemeral: true })
             }
     })
 

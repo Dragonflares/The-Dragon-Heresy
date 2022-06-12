@@ -127,6 +127,8 @@ export class NewRedStarLogCommand extends MemberCommand {
 
                     return b.showModal(modal)
                 }
+            }else{
+                await b.deferUpdate()
             }
 
         })

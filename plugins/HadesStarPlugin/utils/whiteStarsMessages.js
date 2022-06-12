@@ -69,12 +69,13 @@ export const whiteStarRecruitButtons = async (ws) => {
         let buttonLead = new MessageButton().setStyle(1).setLabel('🤚').setCustomId('🤚')
         firstRow.addComponents([buttonLead])
         //Create Buttons
+        let buttonSos = new MessageButton().setStyle(4).setLabel('🆘').setCustomId('🆘')
         let buttonSetup = new MessageButton().setStyle(1).setLabel("Setup").setCustomId("setup")
         let buttonSave = new MessageButton().setStyle(3).setLabel("End Recruit").setCustomId("endrecruit")
 
         //Add Button
         let secondRow = new MessageActionRow()
-        secondRow.addComponents([buttonSetup, buttonSave]);
+        secondRow.addComponents([buttonSos,buttonSetup, buttonSave]);
         return [firstRow, secondRow]
     } else {
         let buttonSetup = new MessageButton().setStyle(1).setLabel("Setup").setCustomId("setup")
@@ -136,7 +137,7 @@ export const whiteStarRecruitMessage = async (ws) => {
         whiteStarPrefEmojiGroup.forEach((value, key) =>
             rolesEmbed.addField(`${key} ${value}`, prefCatStrings.get(value), true))
         rolesEmbed.setColor("ORANGE")
-            .setFooter({ text: `🤚 - Commander  🆘 - Switch to text mode 🚮 - Stop Recruit ✅ - Finish Recruit` })
+            .setFooter({ text: `🤚 - Commander  🆘 - Switch to text mode` })
     }
     else {
         rolesEmbed.setColor("GREEN")

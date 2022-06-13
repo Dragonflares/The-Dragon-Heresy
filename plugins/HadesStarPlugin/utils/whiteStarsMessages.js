@@ -77,7 +77,7 @@ export const whiteStarRecruitButtons = async (ws) => {
 
         //Add Button
         let secondRow = new MessageActionRow()
-        secondRow.addComponents([buttonSos,buttonSetup, buttonSave]);
+        secondRow.addComponents([buttonSos, buttonSetup, buttonSave]);
         return [firstRow, secondRow]
     } else {
         let buttonSetup = new MessageButton().setStyle(1).setLabel("Setup").setCustomId("setup")
@@ -167,18 +167,18 @@ export const whiteStarCancelMessage = async (ws) => {
 
 export const whiteStarStatusButtons = async (message, ws) => {
     if (ws.status == "WaitForScan") {
-           //Create Buttons
-           let buttonSos = new MessageButton().setStyle(4).setLabel('🆘').setCustomId('🆘')
-           let buttonSetup = new MessageButton().setStyle(1).setLabel("Setup").setCustomId("setup")
-           let buttonBackRec = new MessageButton().setStyle(2).setLabel("Back to Recruit").setCustomId("backrecruit")
-           let buttonStartScan = new MessageButton().setStyle(3).setLabel("Start Scan").setCustomId("startscan")
-   
-           //Add Button
-           let secondRow = new MessageActionRow()
-           secondRow.addComponents([buttonSos,buttonSetup,buttonBackRec, buttonStartScan]);
-           return [secondRow]
+        //Create Buttons
+        let buttonSos = new MessageButton().setStyle(4).setLabel('🆘').setCustomId('🆘')
+        let buttonSetup = new MessageButton().setStyle(1).setLabel("Setup").setCustomId("setup")
+        let buttonBackRec = new MessageButton().setStyle(2).setLabel("Back to Recruit").setCustomId("backrecruit")
+        let buttonStartScan = new MessageButton().setStyle(3).setLabel("Start Scan").setCustomId("startscan")
+
+        //Add Button
+        let secondRow = new MessageActionRow()
+        secondRow.addComponents([buttonSos, buttonSetup, buttonBackRec, buttonStartScan]);
+        return [secondRow]
     }
-        return []
+    return []
 }
 
 export const whiteStarStatusMessage = async (message, ws) => {
@@ -190,10 +190,18 @@ export const whiteStarStatusMessage = async (message, ws) => {
         .setThumbnail("https://i.imgur.com/fNtJDNz.png")
         .addField("Group:", `<@&${ws.wsrole}>`)
         .addField("Status:", embedTitles.get(ws.status))
+        .addField("Description:", ws.description != "" ? ws.description : "Not setup")
+        .addField("Corporation:", ws.corporation != "" ? ws.corporation : "Not setup", true)
+
+
+    if (ws.status == "WaitForScan") {
+        statusEmbed.addField("Nature:", ws.nature != "" ? ws.nature : "Not setup", true)
+        statusEmbed.addField("Expected Time:", ws.expectedtime ? ws.expectedtime : "Not setup", true)
+    }
     if (ws.status == "Scanning") {
         //calculate delta time
         let today = new Date()
-        let {diffDays, diffHrs, diffMins } = timeUtils.timeDiff(today, ws.scantime);
+        let { diffDays, diffHrs, diffMins } = timeUtils.timeDiff(today, ws.scantime);
         diffMins = diffMins.toString().padStart(2, '0')
         statusEmbed.addField("Time Passed:", `${diffDays} Days,  ${diffHrs} Hours and ${diffMins} Minutes`)
     } else if (ws.status == "Running") {
@@ -231,35 +239,35 @@ export const whiteStarStatusMessage = async (message, ws) => {
         //let groupsRoles = await WhiteStarRoles.findOne({ Corp: ws.Corp, wsrole: ws.wsrole }).exec()
 
         //console.log(groupsRoles.bsGroupsRoles)
-        if(ws.groupsRoles.bsGroupsRoles){
-        //Fill groups
-        await Promise.all(ws.groupsRoles.bsGroupsRoles.map(async role => {
-            await Promise.all(Array.from(ws.members).map(async player => {
-                let roleMember = await message.guild.members.fetch(player.discordId)
-                if (roleMember.roles.cache.find(r => r.id == role)) {
-                    assignedBs.push(player)
-                    if (bsGroupMembers.has(role))
-                        bsGroupMembers.get(role).push(roleMember)
-                    else
-                        bsGroupMembers.set(role, new Array(roleMember))
-                }
+        if (ws.groupsRoles.bsGroupsRoles) {
+            //Fill groups
+            await Promise.all(ws.groupsRoles.bsGroupsRoles.map(async role => {
+                await Promise.all(Array.from(ws.members).map(async player => {
+                    let roleMember = await message.guild.members.fetch(player.discordId)
+                    if (roleMember.roles.cache.find(r => r.id == role)) {
+                        assignedBs.push(player)
+                        if (bsGroupMembers.has(role))
+                            bsGroupMembers.get(role).push(roleMember)
+                        else
+                            bsGroupMembers.set(role, new Array(roleMember))
+                    }
+                }))
             }))
-        }))
-    }
-    if(ws.groupsRoles.bsGroupsRoles){
-        await Promise.all(ws.groupsRoles.spGroupsRoles.map(async role => {
-            await Promise.all(Array.from(ws.members).map(async player => {
-                let roleMember = await message.guild.members.fetch(player.discordId)
-                if (roleMember.roles.cache.find(r => r.id == role)) {
-                    assignedSp.push(player)
-                    if (spGroupMembers.has(role))
-                        spGroupMembers.get(role).push(roleMember)
-                    else
-                        spGroupMembers.set(role, new Array(roleMember))
-                }
+        }
+        if (ws.groupsRoles.bsGroupsRoles) {
+            await Promise.all(ws.groupsRoles.spGroupsRoles.map(async role => {
+                await Promise.all(Array.from(ws.members).map(async player => {
+                    let roleMember = await message.guild.members.fetch(player.discordId)
+                    if (roleMember.roles.cache.find(r => r.id == role)) {
+                        assignedSp.push(player)
+                        if (spGroupMembers.has(role))
+                            spGroupMembers.get(role).push(roleMember)
+                        else
+                            spGroupMembers.set(role, new Array(roleMember))
+                    }
+                }))
             }))
-        }))
-    }
+        }
         let unassignedBsString
         let bsString
         let unassignedSpString
@@ -312,7 +320,7 @@ export const whiteStarStatusMessage = async (message, ws) => {
 
             bsString = Array.from(bsGroupMembers)
                 .map(([groupName, players]) => `**<@&${groupName}> ${ws.groupNotes.has(groupName) ? ` ${ws.groupNotes.get(groupName)}` : ''}:**\n --${Array.from(players)
-                    .map(p => `${ws.members.filter(t=> t.discordId == p.id)[0].name} ${ws.playerBsNotes.has(p.id) ? ` ${ws.playerBsNotes.get(p.id)}` : ''}`).join('\n--')}\n`)
+                    .map(p => `${ws.members.filter(t => t.discordId == p.id)[0].name} ${ws.playerBsNotes.has(p.id) ? ` ${ws.playerBsNotes.get(p.id)}` : ''}`).join('\n--')}\n`)
                 .join('\n')
             if (unassignedBsString != "") bsString = bsString + "\n**Unassigned:**\n" + unassignedBsString
             bsString == "" ? bsString = "None" : bsString
@@ -324,7 +332,7 @@ export const whiteStarStatusMessage = async (message, ws) => {
                 .join('\n')
             spString = Array.from(spGroupMembers)
                 .map(([groupName, players]) => `**<@&${groupName}> ${ws.groupNotes.has(groupName) ? ` ${ws.groupNotes.get(groupName)}` : ''}:**\n --${Array.from(players)
-                 .map(p => `${ws.members.filter(t=> t.discordId == p.id)[0].name} ${ws.playerSpNotes.has(p.id) ? ` ${ws.playerSpNotes.get(p.id)}` : ''}`).join('\n--')}\n`)
+                    .map(p => `${ws.members.filter(t => t.discordId == p.id)[0].name} ${ws.playerSpNotes.has(p.id) ? ` ${ws.playerSpNotes.get(p.id)}` : ''}`).join('\n--')}\n`)
                 .join('\n')
             if (unassignedSpString != "") spString = spString + "\n**Unassigned:**\n" + unassignedSpString
             spString == "" ? spString = "None" : spString
@@ -348,7 +356,7 @@ export const whiteStarStatusMessage = async (message, ws) => {
         statusEmbed.addField("Player List", playersString)
     }
     statusEmbed.setColor(embedColors.get(ws.status))
-        .setFooter({text: `${embedFooters.get(ws.status)}`, iconURL: message.guild.iconURL()})
+        .setFooter({ text: `${embedFooters.get(ws.status)}`, iconURL: message.guild.iconURL() })
         .setTimestamp()
     return statusEmbed;
 }

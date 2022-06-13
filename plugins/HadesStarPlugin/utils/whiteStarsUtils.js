@@ -1,6 +1,4 @@
 import { Member, WhiteStar, WhiteStarRoles } from '../database';
-import * as timeUtils from './timeUtils.js'
-import { MessageEmbed, MessageButton, MessageActionRow, Modal, TextInputComponent, MessageSelectMenu } from 'discord.js';
 export let NormalShow = true
 import * as WsMessages from './whiteStarsMessages.js'
 import { WsConfigMenu } from './whiteStarsMenu.js'
@@ -59,7 +57,7 @@ export const recruitCollector = async (client, message, ws) => {
 
                 //Update statusmessage
                 await RefreshStatusMessage(client, ws)
-                await StartTimerStatusRefresh(client,ws)
+                await StartTimerStatusRefresh(client, ws)
             } else {
                 await b.followUp({ content: 'You cant setup this whitestar.', ephemeral: true })
             }
@@ -193,12 +191,63 @@ export const statusCollector = async (client, message, ws) => {
             } else {
                 await b.followUp({ content: 'You cant setup this whitestar.', ephemeral: true })
             }
+        } else if (b.customId == 'startscan') {
+            if (b.user.id == ws.author.discordId) {
+                //change to Scanning
+                ws.status = "Scanning"
+                ws.scantime = new Date()
+                await ws.save()
+                //Refresh embed
+                const statusEmbed = await WsMessages.whiteStarStatusMessage(message, ws)
+                const statusButtons = await WsMessages.whiteStarStatusButtons(message, ws)
+
+                //add the menu buttons
+                await message.edit({ embeds: [statusEmbed], components: statusButtons })
+            }
+        } else if (b.customId == 'stopscan') {
+            if (b.user.id == ws.author.discordId) {
+                //change to Scanning
+                ws.status = "WaitForScan"
+                await ws.save()
+                //Refresh embed
+                const statusEmbed = await WsMessages.whiteStarStatusMessage(message, ws)
+                const statusButtons = await WsMessages.whiteStarStatusButtons(message, ws)
+
+                //add the menu buttons
+                await message.edit({ embeds: [statusEmbed], components: statusButtons })
+            }
+        } else if (b.customId == 'startws') {
+            if (b.user.id == ws.author.discordId) {
+                //change to Scanning
+                ws.status = "Running"
+                ws.matchtime = new Date();
+                await ws.save()
+                //Refresh embed
+                const statusEmbed = await WsMessages.whiteStarStatusMessage(message, ws)
+                const statusButtons = await WsMessages.whiteStarStatusButtons(message, ws)
+
+                //add the menu buttons
+                await message.edit({ embeds: [statusEmbed], components: statusButtons })
+            }
+        } else if (b.customId == 'stopws') {
+            if (b.user.id == ws.author.discordId) {
+                //change to Scanning
+                ws.status = "Scanning"
+                ws.scantime = new Date()
+                await ws.save()
+                //Refresh embed
+                const statusEmbed = await WsMessages.whiteStarStatusMessage(message, ws)
+                const statusButtons = await WsMessages.whiteStarStatusButtons(message, ws)
+
+                //add the menu buttons
+                await message.edit({ embeds: [statusEmbed], components: statusButtons })
+            }
         }
     })
 }
 
 
-const RefreshStatusMessage = async (client, ws, interval) => {
+export const RefreshStatusMessage = async (client, ws, interval) => {
     let intWs = await WhiteStar.findOne({ wsrole: ws.wsrole }).populate('author').populate('members').populate('groupsRoles').exec();
     let msgStatus;
     if (intWs) {

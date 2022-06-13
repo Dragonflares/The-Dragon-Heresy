@@ -166,6 +166,7 @@ export class WsConfigMenu {
             this.ws.nature = natureInput != "" ? natureInput : this.ws.nature
             await this.ws.save().catch(err => console.log(err))
             WsUtils.RefreshRecruitMessage(this.client, this.ws)
+            WsUtils.RefreshStatusMessage(this.client, this.ws)
             return await i.followUp({ content: "Details updated.", components: [], ephemeral: true })
 
         }

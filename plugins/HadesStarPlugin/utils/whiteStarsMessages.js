@@ -40,8 +40,8 @@ export const embedFooters = new Map([
     ["NotStarted", ``],
     ["Recruiting", ``],
     ["WaitForScan", `🆘 - Switch to text mode`],
-    ["Scanning", `🆘 - Switch to text mode 🛑 - Stop Scan ✅ - Found Match! 🔄 - Refresh`],
-    ["Running", `🆘 - Switch to text mode ⬅️ - Back to scan 🔄 - Refresh\n 🕙: -10 Min 🕚: -1 Min 🕐: +1 Min 🕑: +10 Min`]
+    ["Scanning", `🆘 - Switch to text mode`],
+    ["Running", `🆘 - Switch to text mode`]
 ])
 export const SetNormal = async (normal) => {
     NormalShow = normal;
@@ -177,6 +177,27 @@ export const whiteStarStatusButtons = async (message, ws) => {
         let secondRow = new MessageActionRow()
         secondRow.addComponents([buttonSos, buttonSetup, buttonBackRec, buttonStartScan]);
         return [secondRow]
+    } else if (ws.status == "Scanning") {
+        //Create Buttons
+        let buttonSos = new MessageButton().setStyle(4).setLabel('🆘').setCustomId('🆘')
+        let buttonSetup = new MessageButton().setStyle(1).setLabel("Setup").setCustomId("setup")
+        let buttonBackRec = new MessageButton().setStyle(2).setLabel("Stop Scan").setCustomId("stopscan")
+        let buttonStartScan = new MessageButton().setStyle(3).setLabel("Found Match!").setCustomId("startws")
+
+        //Add Button
+        let secondRow = new MessageActionRow()
+        secondRow.addComponents([buttonSos, buttonSetup, buttonBackRec, buttonStartScan]);
+        return [secondRow]
+    } else if(ws.status = "Running") {
+        //Create Buttons
+        let buttonSos = new MessageButton().setStyle(4).setLabel('🆘').setCustomId('🆘')
+        let buttonSetup = new MessageButton().setStyle(1).setLabel("Setup").setCustomId("setup")
+        let buttonBackRec = new MessageButton().setStyle(2).setLabel("Stop WS").setCustomId("stopws")
+
+        //Add Button
+        let secondRow = new MessageActionRow()
+        secondRow.addComponents([buttonSos, buttonSetup, buttonBackRec]);
+        return [secondRow]
     }
     return []
 }
@@ -199,6 +220,7 @@ export const whiteStarStatusMessage = async (message, ws) => {
         statusEmbed.addField("Expected Time:", ws.expectedtime ? ws.expectedtime : "Not setup", true)
     }
     if (ws.status == "Scanning") {
+        statusEmbed.addField("Nature:", ws.nature != "" ? ws.nature : "Not setup", true)
         //calculate delta time
         let today = new Date()
         let { diffDays, diffHrs, diffMins } = timeUtils.timeDiff(today, ws.scantime);

@@ -135,8 +135,8 @@ export const RefreshRecruitMessage = async (client, ws, interval) => {
             msgRecruit = await recruitChannel.messages.fetch(intWs.recruitmessage.toString())
         }
         //Refresh embed
-        const recruitEmbed = await WsMessages.whiteStarRecruitMessage(ws)
-        const recruitButtons = await WsMessages.whiteStarRecruitButtons(ws)
+        const recruitEmbed = await WsMessages.whiteStarRecruitMessage(intWs)
+        const recruitButtons = await WsMessages.whiteStarRecruitButtons(intWs)
 
         //add the menu buttons
         await msgRecruit.edit({ embeds: [recruitEmbed], components: recruitButtons })
@@ -157,91 +157,50 @@ export const statusCollector = async (client, message, ws) => {
 
     collector.on('collect', async b => {
         await b.deferUpdate()
-
-        if (b.customId == "setup") {
-            if (b.user.id == ws.author.discordId) {
-                //let menuRow = await WsMenu.startMenu(client,message,ws)
-                let menuRow = await wsConfigMenu.getRow(b, message)
-                await b.followUp({ components: [menuRow], ephemeral: true })
-            } else {
-                await b.followUp({ content: 'You cant setup this whitestar.', ephemeral: true })
-            }
-        } else if (b.customId == '🆘') {
+        if (b.customId == '🆘') {
             WsMessages.SetNormal(!WsMessages.NormalShow)
             //Refresh embed
             const statusEmbed = await WsMessages.whiteStarStatusMessage(message, ws)
             const statusButtons = await WsMessages.whiteStarStatusButtons(message, ws)
 
             //add the menu buttons
-            await message.edit({ embeds: [statusEmbed], components: statusButtons })
+            return await message.edit({ embeds: [statusEmbed], components: statusButtons })
+        }
+        if (b.user.id == ws.author.discordId) {
+            if (b.customId == "setup") {
+                let menuRow = await wsConfigMenu.getRow(b, message)
+                 return await b.followUp({ components: [menuRow], ephemeral: true })
 
-        } else if (b.customId == 'backrecruit') {
-            if (b.user.id == ws.author.discordId) {
-                //change to recruiting
+            } else if (b.customId == 'backrecruit') {
                 ws.status = "Recruiting"
                 await ws.save()
-                //Refresh embed
-                const statusEmbed = await WsMessages.whiteStarStatusMessage(message, ws)
-                const statusButtons = await WsMessages.whiteStarStatusButtons(message, ws)
-
-                //add the menu buttons
-                await message.edit({ embeds: [statusEmbed], components: statusButtons })
-
                 await RefreshRecruitMessage(client, ws)
-            } else {
-                await b.followUp({ content: 'You cant setup this whitestar.', ephemeral: true })
-            }
-        } else if (b.customId == 'startscan') {
-            if (b.user.id == ws.author.discordId) {
-                //change to Scanning
+
+            } else if (b.customId == 'startscan') {
                 ws.status = "Scanning"
                 ws.scantime = new Date()
                 await ws.save()
-                //Refresh embed
-                const statusEmbed = await WsMessages.whiteStarStatusMessage(message, ws)
-                const statusButtons = await WsMessages.whiteStarStatusButtons(message, ws)
-
-                //add the menu buttons
-                await message.edit({ embeds: [statusEmbed], components: statusButtons })
-            }
-        } else if (b.customId == 'stopscan') {
-            if (b.user.id == ws.author.discordId) {
-                //change to Scanning
+            } else if (b.customId == 'stopscan') {
                 ws.status = "WaitForScan"
                 await ws.save()
-                //Refresh embed
-                const statusEmbed = await WsMessages.whiteStarStatusMessage(message, ws)
-                const statusButtons = await WsMessages.whiteStarStatusButtons(message, ws)
-
-                //add the menu buttons
-                await message.edit({ embeds: [statusEmbed], components: statusButtons })
-            }
-        } else if (b.customId == 'startws') {
-            if (b.user.id == ws.author.discordId) {
-                //change to Scanning
+            } else if (b.customId == 'startws') {
                 ws.status = "Running"
                 ws.matchtime = new Date();
                 await ws.save()
-                //Refresh embed
-                const statusEmbed = await WsMessages.whiteStarStatusMessage(message, ws)
-                const statusButtons = await WsMessages.whiteStarStatusButtons(message, ws)
-
-                //add the menu buttons
-                await message.edit({ embeds: [statusEmbed], components: statusButtons })
-            }
-        } else if (b.customId == 'stopws') {
-            if (b.user.id == ws.author.discordId) {
-                //change to Scanning
+            } else if (b.customId == 'stopws') {
                 ws.status = "Scanning"
                 ws.scantime = new Date()
                 await ws.save()
-                //Refresh embed
-                const statusEmbed = await WsMessages.whiteStarStatusMessage(message, ws)
-                const statusButtons = await WsMessages.whiteStarStatusButtons(message, ws)
 
-                //add the menu buttons
-                await message.edit({ embeds: [statusEmbed], components: statusButtons })
             }
+            //Refresh embed
+            const statusEmbed = await WsMessages.whiteStarStatusMessage(message, ws)
+            const statusButtons = await WsMessages.whiteStarStatusButtons(message, ws)
+
+            //add the menu buttons
+            return await message.edit({ embeds: [statusEmbed], components: statusButtons })
+        } else {
+            await b.followUp({ content: 'You cant setup this whitestar.', ephemeral: true })
         }
     })
 }

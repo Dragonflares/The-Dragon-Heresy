@@ -166,6 +166,7 @@ export const whiteStarCancelMessage = async (ws) => {
 
 
 export const whiteStarStatusButtons = async (message, ws) => {
+    let secondRow = new MessageActionRow()
     if (ws.status == "WaitForScan") {
         //Create Buttons
         let buttonSos = new MessageButton().setStyle(4).setLabel('🆘').setCustomId('🆘')
@@ -174,9 +175,8 @@ export const whiteStarStatusButtons = async (message, ws) => {
         let buttonStartScan = new MessageButton().setStyle(3).setLabel("Start Scan").setCustomId("startscan")
 
         //Add Button
-        let secondRow = new MessageActionRow()
         secondRow.addComponents([buttonSos, buttonSetup, buttonBackRec, buttonStartScan]);
-        return [secondRow]
+
     } else if (ws.status == "Scanning") {
         //Create Buttons
         let buttonSos = new MessageButton().setStyle(4).setLabel('🆘').setCustomId('🆘')
@@ -185,21 +185,22 @@ export const whiteStarStatusButtons = async (message, ws) => {
         let buttonStartScan = new MessageButton().setStyle(3).setLabel("Found Match!").setCustomId("startws")
 
         //Add Button
-        let secondRow = new MessageActionRow()
         secondRow.addComponents([buttonSos, buttonSetup, buttonBackRec, buttonStartScan]);
-        return [secondRow]
-    } else if(ws.status = "Running") {
+    } else if (ws.status == "Running") {
         //Create Buttons
         let buttonSos = new MessageButton().setStyle(4).setLabel('🆘').setCustomId('🆘')
         let buttonSetup = new MessageButton().setStyle(1).setLabel("Setup").setCustomId("setup")
         let buttonBackRec = new MessageButton().setStyle(2).setLabel("Stop WS").setCustomId("stopws")
 
         //Add Button
-        let secondRow = new MessageActionRow()
         secondRow.addComponents([buttonSos, buttonSetup, buttonBackRec]);
-        return [secondRow]
+    } else {
+        let buttonSetup = new MessageButton().setStyle(1).setLabel("Setup").setCustomId("setup")
+        secondRow.addComponents([buttonSetup]);
     }
-    return []
+
+    return [secondRow]
+
 }
 
 export const whiteStarStatusMessage = async (message, ws) => {

@@ -13,30 +13,6 @@ export class WhiteStarsManager extends Manager {
             //Refresh Timers
             await this.timersStart();
             await this.reListen()
-            //Reaction Events
-          //  this.client.on('messageReactionAdd', async (messageReaction, user) => {
-            //    this.reactListener(messageReaction, user)
-          //  })
-
-            //Role changes
-            /*this.client.on("guildMemberUpdate", async (oldMember, newMember) => {
-                // Old roles Collection is higher in size than the new one. A role has been removed.
-                if (oldMember.roles.cache.size > newMember.roles.cache.size) {
-                    // Looping through the role and checking which role was removed.
-                    oldMember.roles.cache.forEach(role => {
-                        if (!newMember.roles.cache.has(role.id)) {
-                            console.log(`"Role Removed to ${newMember}`)
-                        }
-                    });
-                } else if (oldMember.roles.cache.size < newMember.roles.cache.size) {
-                    // Looping through the role and checking which role was added.
-                    newMember.roles.cache.forEach(role => {
-                        if (!oldMember.roles.cache.has(role.id)) {
-                            console.log(`"Role Added to ${newMember}`)
-                        }
-                    });
-                }
-            });*/
         }
         super.enable();
     }
@@ -44,32 +20,29 @@ export class WhiteStarsManager extends Manager {
     reListen = async () => {
         await this.client.guilds.fetch()
         let wss = await WhiteStar.find().populate('author').populate('members').populate('groupsRoles').exec();
-        wss.forEach(async ws =>{
+        wss.forEach(async ws => {
+
+            //Listen to recruit
             let wsMessage = ws.recruitmessage
             let wsChannel = ws.retruitchannel
-            if( wsMessage && wsChannel) {
-                try{
-             let messageReaction = await this.client.channels.cache.get(wsChannel).messages.fetch(wsMessage);
-             if(messageReaction) 
-                 WsUtils.recruitCollector(this.client,messageReaction,ws)
-                }catch(e){}
+            if (wsMessage && wsChannel) {
+                try {
+                    let messageReaction = await this.client.channels.cache.get(wsChannel).messages.fetch(wsMessage);
+                    if (messageReaction)
+                        WsUtils.recruitCollector(this.client, messageReaction, ws)
+                } catch (e) { }
+            }
+            //Listen to status
+            let wsStatusMessage = ws.statusmessage
+            let wsStatusChannel = ws.statuschannel
+            if (wsStatusMessage && wsStatusChannel) {
+                try {
+                    let messageReaction = await this.client.channels.cache.get(wsStatusChannel).messages.fetch(wsStatusMessage);
+                    if (messageReaction)
+                        WsUtils.statusCollector(this.client, messageReaction, ws)
+                } catch (e) { }
             }
         })
-        /*
-        const guilds = this.client.guilds.cache.map(guild => guild.id);
-        guilds.forEach(async guild => {
-            const corp = await Corp.findOne({ corpId: guild.toString() }).populate('redStarMessage').exec()
-            if(corp){
-                let redStarMessage = corp.redStarMessage
-                if (redStarMessage) {
-                    //Fetch recruit message
-                    try {
-                        let messageReaction = await this.client.channels.cache.get(redStarMessage.rolesMessageChannel).messages.fetch(redStarMessage.rolesMessage);
-                        RoleMessageUtils.collectorFunc(this.client, messageReaction)
-                    } catch (err) { console.log(err)}
-                }
-            }
-        });*/
     }
 
     timersStart = async () => {
@@ -184,80 +157,80 @@ export class WhiteStarsManager extends Manager {
         }
     }*/
 
- /*   recruitListener = async (ws, messageReaction, user) => {
-        //Get reacted member
-        let member = await Member.findOne({ discordId: user.id.toString() }).exec();
-        if (!WsUtils.whiteStarRecruitReactions.includes(messageReaction.emoji.name) && !WsUtils.whiteStarPrefEmojiGroup.has(messageReaction.emoji.name)) return;
-        if (messageReaction.emoji.name == '🆘') { //invalid users
-            WsUtils.SetNormal(!WsUtils.NormalShow)
-        }
-
-        //Let officers change stuff
-        
-        let corp = await Corp.findOne({ corpId: messageReaction.message.guild.id.toString() }).populate('rankRoles').exec();
-        let userRect = messageReaction.message.guild.members.cache.get(user.id)
-        let allowed = (user.id == ws.author.discordId) || userRect.roles.cache.find(r => r == corp.rankRoles.Officer)
-        if (messageReaction.emoji.name == '🚮') {  //If Trash
-
-            if (allowed) { //If Author
-                await WsUtils.killWS(this.client, ws, messageReaction.message)
-                return;
-            }
-        } else if (messageReaction.emoji.name == '🤚') { //If commander
-            if (ws.leadPreferences.has(member.discordId)) { //If member is commander
-                ws.leadPreferences.delete(member.discordId)
-            } else {
-                ws.leadPreferences.set(member.discordId, '🤚')
-            }
-        } else if (messageReaction.emoji.name == '✅') { //If done
-            if (allowed) { //If Author
-                ws.status = "WaitForScan"
-                messageReaction.message.reactions.removeAll()
-                if (ws.statuschannel) //Update status message
-                {
-                    //Create new message
-                    const statusEmbed = await WsUtils.whiteStarStatusMessage(messageReaction.message, ws);
-
-                    //Fetch old message
-                    let msgStatus = await this.client.channels.cache.get(ws.statuschannel).messages.fetch(ws.statusmessage.toString());
-
-                    //Send Reactions
-                    WsUtils.whiteStarStatusReactions.get(ws.status).forEach(async react => msgStatus.react(react))
-
-                    //Edit old message
-                    msgStatus.edit({ embeds: [statusEmbed] })
-                }
-            }
-        } else if (WsUtils.whiteStarPrefEmojiGroup.has(messageReaction.emoji.name)) { //If Valid Emoji
-            let roleMember = await messageReaction.message.guild.members.fetch(member.discordId)
-            if (ws.preferences.has(member.discordId)) { //If player already an emoji
-                if (ws.preferences.get(member.discordId) == messageReaction.emoji.name) { //If it has the one selected
-                    //Delist
-                    let remainingMembers = await ws.members.filter(m => m.discordId != member.discordId)
-                    ws.members = remainingMembers
-                    ws.preferences.delete(member.discordId)
-                    ws.leadPreferences.delete(member.discordId)
-                    roleMember.roles.remove(ws.wsrole)
-                } else {
-                    //Change
-                    ws.preferences.set(member.discordId, messageReaction.emoji.name)
-                    roleMember.roles.add(ws.wsrole)
-                }
-            } else {
-                ws.members.push(member)
-                ws.preferences.set(member.discordId, messageReaction.emoji.name)
-                roleMember.roles.add(ws.wsrole)
-            }
-
-        }
-        await ws.save()
-
-        //Create new message
-        const rolesEmbed = await WsUtils.whiteStarRecruitMessage(ws);
-
-        //Edit old message
-        messageReaction.message.edit({ embeds: [rolesEmbed] })
-    }*/
+    /*   recruitListener = async (ws, messageReaction, user) => {
+           //Get reacted member
+           let member = await Member.findOne({ discordId: user.id.toString() }).exec();
+           if (!WsUtils.whiteStarRecruitReactions.includes(messageReaction.emoji.name) && !WsUtils.whiteStarPrefEmojiGroup.has(messageReaction.emoji.name)) return;
+           if (messageReaction.emoji.name == '🆘') { //invalid users
+               WsUtils.SetNormal(!WsUtils.NormalShow)
+           }
+   
+           //Let officers change stuff
+           
+           let corp = await Corp.findOne({ corpId: messageReaction.message.guild.id.toString() }).populate('rankRoles').exec();
+           let userRect = messageReaction.message.guild.members.cache.get(user.id)
+           let allowed = (user.id == ws.author.discordId) || userRect.roles.cache.find(r => r == corp.rankRoles.Officer)
+           if (messageReaction.emoji.name == '🚮') {  //If Trash
+   
+               if (allowed) { //If Author
+                   await WsUtils.killWS(this.client, ws, messageReaction.message)
+                   return;
+               }
+           } else if (messageReaction.emoji.name == '🤚') { //If commander
+               if (ws.leadPreferences.has(member.discordId)) { //If member is commander
+                   ws.leadPreferences.delete(member.discordId)
+               } else {
+                   ws.leadPreferences.set(member.discordId, '🤚')
+               }
+           } else if (messageReaction.emoji.name == '✅') { //If done
+               if (allowed) { //If Author
+                   ws.status = "WaitForScan"
+                   messageReaction.message.reactions.removeAll()
+                   if (ws.statuschannel) //Update status message
+                   {
+                       //Create new message
+                       const statusEmbed = await WsUtils.whiteStarStatusMessage(messageReaction.message, ws);
+   
+                       //Fetch old message
+                       let msgStatus = await this.client.channels.cache.get(ws.statuschannel).messages.fetch(ws.statusmessage.toString());
+   
+                       //Send Reactions
+                       WsUtils.whiteStarStatusReactions.get(ws.status).forEach(async react => msgStatus.react(react))
+   
+                       //Edit old message
+                       msgStatus.edit({ embeds: [statusEmbed] })
+                   }
+               }
+           } else if (WsUtils.whiteStarPrefEmojiGroup.has(messageReaction.emoji.name)) { //If Valid Emoji
+               let roleMember = await messageReaction.message.guild.members.fetch(member.discordId)
+               if (ws.preferences.has(member.discordId)) { //If player already an emoji
+                   if (ws.preferences.get(member.discordId) == messageReaction.emoji.name) { //If it has the one selected
+                       //Delist
+                       let remainingMembers = await ws.members.filter(m => m.discordId != member.discordId)
+                       ws.members = remainingMembers
+                       ws.preferences.delete(member.discordId)
+                       ws.leadPreferences.delete(member.discordId)
+                       roleMember.roles.remove(ws.wsrole)
+                   } else {
+                       //Change
+                       ws.preferences.set(member.discordId, messageReaction.emoji.name)
+                       roleMember.roles.add(ws.wsrole)
+                   }
+               } else {
+                   ws.members.push(member)
+                   ws.preferences.set(member.discordId, messageReaction.emoji.name)
+                   roleMember.roles.add(ws.wsrole)
+               }
+   
+           }
+           await ws.save()
+   
+           //Create new message
+           const rolesEmbed = await WsUtils.whiteStarRecruitMessage(ws);
+   
+           //Edit old message
+           messageReaction.message.edit({ embeds: [rolesEmbed] })
+       }*/
 
     disable() {
         if (this.enabled) {

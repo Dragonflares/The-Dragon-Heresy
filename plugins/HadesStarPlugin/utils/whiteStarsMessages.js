@@ -29,6 +29,7 @@ export const embedTitles = new Map([
 ])
 
 export const embedColors = new Map([
+    ["NotStarted", "RED"],
     ["Recruiting", "RED"],
     ["WaitForScan", "ORANGE"],
     ["Scanning", "ORANGE"],
@@ -36,10 +37,11 @@ export const embedColors = new Map([
 ])
 
 export const embedFooters = new Map([
-    ["Recruiting", `🚮 - Delete White Star`],
-    ["WaitForScan", `🚮 - Delete White Star 🆘 - Switch to text mode ⬅️ - Back to recruit ✅ - Start Scan  🔄 - Refresh`],
-    ["Scanning", `🚮 - Delete White Star 🆘 - Switch to text mode 🛑 - Stop Scan ✅ - Found Match! 🔄 - Refresh`],
-    ["Running", `🚮 - Delete White Star 🆘 - Switch to text mode ⬅️ - Back to scan 🔄 - Refresh\n 🕙: -10 Min 🕚: -1 Min 🕐: +1 Min 🕑: +10 Min`]
+    ["NotStarted", ``],
+    ["Recruiting", ``],
+    ["WaitForScan", `🆘 - Switch to text mode`],
+    ["Scanning", `🆘 - Switch to text mode 🛑 - Stop Scan ✅ - Found Match! 🔄 - Refresh`],
+    ["Running", `🆘 - Switch to text mode ⬅️ - Back to scan 🔄 - Refresh\n 🕙: -10 Min 🕚: -1 Min 🕐: +1 Min 🕑: +10 Min`]
 ])
 export const SetNormal = async (normal) => {
     NormalShow = normal;
@@ -161,7 +163,24 @@ export const whiteStarCancelMessage = async (ws) => {
 }
 
 //Status
-/*
+
+
+export const whiteStarStatusButtons = async (message, ws) => {
+    if (ws.status == "WaitForScan") {
+           //Create Buttons
+           let buttonSos = new MessageButton().setStyle(4).setLabel('🆘').setCustomId('🆘')
+           let buttonSetup = new MessageButton().setStyle(1).setLabel("Setup").setCustomId("setup")
+           let buttonBackRec = new MessageButton().setStyle(2).setLabel("Back to Recruit").setCustomId("backrecruit")
+           let buttonStartScan = new MessageButton().setStyle(3).setLabel("Start Scan").setCustomId("startscan")
+   
+           //Add Button
+           let secondRow = new MessageActionRow()
+           secondRow.addComponents([buttonSos,buttonSetup,buttonBackRec, buttonStartScan]);
+           return [secondRow]
+    }
+        return []
+}
+
 export const whiteStarStatusMessage = async (message, ws) => {
     //Create Message
     let statusEmbed = new MessageEmbed()
@@ -333,4 +352,3 @@ export const whiteStarStatusMessage = async (message, ws) => {
         .setTimestamp()
     return statusEmbed;
 }
-*/

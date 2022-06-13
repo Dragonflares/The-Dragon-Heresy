@@ -4,6 +4,7 @@ import { MessageEmbed, MessageButton, MessageActionRow, Modal, TextInputComponen
 export let NormalShow = true
 import * as WsMessages from './whiteStarsMessages.js'
 import { WsConfigMenu } from './whiteStarsMenu.js'
+
 //Recruit
 
 export const recruitCollector = async (client, message, ws) => {
@@ -40,6 +41,7 @@ export const recruitCollector = async (client, message, ws) => {
 
                 //add the menu buttons
                 await message.edit({ embeds: [recruitEmbed], components: recruitButtons })
+
             } else {
                 await b.followUp({ content: 'You cant setup this whitestar.', ephemeral: true })
             }
@@ -54,6 +56,10 @@ export const recruitCollector = async (client, message, ws) => {
 
                 //add the menu buttons
                 await message.edit({ embeds: [recruitEmbed], components: recruitButtons })
+
+                //Update statusmessage
+                await RefreshStatusMessage(client, ws)
+                await StartTimerStatusRefresh(client,ws)
             } else {
                 await b.followUp({ content: 'You cant setup this whitestar.', ephemeral: true })
             }
@@ -113,7 +119,7 @@ export const recruitCollector = async (client, message, ws) => {
                 const recruitButtons = await WsMessages.whiteStarRecruitButtons(ws)
 
                 //add the menu buttons
-                await message.edit({ embeds: [recruitEmbed], components: recruitButtons, ephemeral: true })
+                await message.edit({ embeds: [recruitEmbed], components: recruitButtons })
             }
     })
 
@@ -130,11 +136,12 @@ export const RefreshRecruitMessage = async (client, ws, interval) => {
         if (recruitChannel) {
             msgRecruit = await recruitChannel.messages.fetch(intWs.recruitmessage.toString())
         }
-        //Create new message
-        const recruitEmbed = await WsMessages.whiteStarRecruitMessage(intWs);
+        //Refresh embed
+        const recruitEmbed = await WsMessages.whiteStarRecruitMessage(ws)
+        const recruitButtons = await WsMessages.whiteStarRecruitButtons(ws)
 
-        //Remove Reactions
-        await msgRecruit.edit({ embeds: [recruitEmbed] })
+        //add the menu buttons
+        await msgRecruit.edit({ embeds: [recruitEmbed], components: recruitButtons })
     }
 
     return msgRecruit;
@@ -142,12 +149,57 @@ export const RefreshRecruitMessage = async (client, ws, interval) => {
 
 
 //Status
+export const statusCollector = async (client, message, ws) => {
 
 
+    const filter = (button) => button.user.bot == false;
+    const collector = message.createMessageComponentCollector({ filter });
+
+    let wsConfigMenu = new WsConfigMenu(ws, client)
+
+    collector.on('collect', async b => {
+        await b.deferUpdate()
+
+        if (b.customId == "setup") {
+            if (b.user.id == ws.author.discordId) {
+                //let menuRow = await WsMenu.startMenu(client,message,ws)
+                let menuRow = await wsConfigMenu.getRow(b, message)
+                await b.followUp({ components: [menuRow], ephemeral: true })
+            } else {
+                await b.followUp({ content: 'You cant setup this whitestar.', ephemeral: true })
+            }
+        } else if (b.customId == '🆘') {
+            WsMessages.SetNormal(!WsMessages.NormalShow)
+            //Refresh embed
+            const statusEmbed = await WsMessages.whiteStarStatusMessage(message, ws)
+            const statusButtons = await WsMessages.whiteStarStatusButtons(message, ws)
+
+            //add the menu buttons
+            await message.edit({ embeds: [statusEmbed], components: statusButtons })
+
+        } else if (b.customId == 'backrecruit') {
+            if (b.user.id == ws.author.discordId) {
+                //change to recruiting
+                ws.status = "Recruiting"
+                await ws.save()
+                //Refresh embed
+                const statusEmbed = await WsMessages.whiteStarStatusMessage(message, ws)
+                const statusButtons = await WsMessages.whiteStarStatusButtons(message, ws)
+
+                //add the menu buttons
+                await message.edit({ embeds: [statusEmbed], components: statusButtons })
+
+                await RefreshRecruitMessage(client, ws)
+            } else {
+                await b.followUp({ content: 'You cant setup this whitestar.', ephemeral: true })
+            }
+        }
+    })
+}
 
 
 const RefreshStatusMessage = async (client, ws, interval) => {
-    /*let intWs = await WhiteStar.findOne({ wsrole: ws.wsrole }).populate('author').populate('members').populate('groupsRoles').exec();
+    let intWs = await WhiteStar.findOne({ wsrole: ws.wsrole }).populate('author').populate('members').populate('groupsRoles').exec();
     let msgStatus;
     if (intWs) {
         if (interval) {
@@ -155,19 +207,21 @@ const RefreshStatusMessage = async (client, ws, interval) => {
                 clearInterval(interval);
             }
         }
- 
+
         //Fetch old message
         if (!intWs.statuschannel || !intWs.statusmessage) { }
         else {
             msgStatus = await client.channels.cache.get(intWs.statuschannel).messages.fetch(intWs.statusmessage.toString());
- 
-            //Create new message
-            const statusEmbed = await whiteStarStatusMessage(msgStatus, intWs);
-            //Remove Reactions
-            msgStatus.edit( {embeds: [statusEmbed] })
+
+            const statusEmbed = await WsMessages.whiteStarStatusMessage(msgStatus, intWs)
+            const statusButtons = await WsMessages.whiteStarStatusButtons(msgStatus, intWs)
+
+            //add the menu buttons
+            await msgStatus.edit({ embeds: [statusEmbed], components: statusButtons })
+
         }
     }
-    return msgStatus;*/
+    return msgStatus;
 }
 
 //Both
@@ -180,7 +234,7 @@ export const killWS = async (client, ws) => {
     }
     if (ws.statuschannel) {
         let statusmsg = await client.channels.cache.get(ws.statuschannel).messages.fetch(ws.statusmessage.toString());
-        statusmsg.edit({ embeds: [await whiteStarCancelMessage(ws)] })
+        statusmsg.edit({ embeds: [await WsMessages.whiteStarCancelMessage(ws)], components: [] })
         statusmsg.reactions.removeAll()
     }
     ws.members.forEach(async t => {

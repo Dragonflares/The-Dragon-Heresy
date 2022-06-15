@@ -102,13 +102,21 @@ export const recruitCollector = async (client, message, ws) => {
                         roleMember.roles.remove(ws.wsrole)
                     } else {
                         //Change
-                        ws.preferences.set(member.discordId, groupName)
-                        roleMember.roles.add(ws.wsrole)
+                        try {
+                            roleMember.roles.add(ws.wsrole)
+                            ws.preferences.set(member.discordId, groupName)
+                        } catch (e) {
+                            console.log("trying to give role higher than bot")
+                        }
                     }
                 } else {
-                    ws.members.push(member)
-                    ws.preferences.set(member.discordId, groupName)
-                    roleMember.roles.add(ws.wsrole)
+                    try {
+                        roleMember.roles.add(ws.wsrole)
+                        ws.members.push(member)
+                        ws.preferences.set(member.discordId, groupName)
+                    } catch (e) {
+                        console.log("trying to give role higher than bot")
+                    }
                 }
                 await ws.save()
 
@@ -169,7 +177,7 @@ export const statusCollector = async (client, message, ws) => {
         if (b.user.id == ws.author.discordId) {
             if (b.customId == "setup") {
                 let menuRow = await wsConfigMenu.getRow(b, message)
-                 return await b.followUp({ components: [menuRow], ephemeral: true })
+                return await b.followUp({ components: [menuRow], ephemeral: true })
 
             } else if (b.customId == 'backrecruit') {
                 ws.status = "Recruiting"

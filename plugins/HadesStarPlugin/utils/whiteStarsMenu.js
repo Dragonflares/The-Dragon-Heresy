@@ -159,8 +159,14 @@ export class WsConfigMenu {
         if (i.customId == this.mDetailsID) {
             await i.deferUpdate().catch(r => r)
             let descriptionInput = i.fields.getTextInputValue('descriptionInput');
+            if (descriptionInput.length > 1000)
+                return await i.followUp({ content: "Too long description.", components: [], ephemeral: true })
             let corporationInput = i.fields.getTextInputValue('corporationInput');
+            if (corporationInput.length > 1000)
+                return await i.followUp({ content: "Too long coorporation.", components: [], ephemeral: true })
             let natureInput = i.fields.getTextInputValue('natureInput');
+            if (natureInput.length > 1000)
+                return await i.followUp({ content: "Too long nature.", components: [], ephemeral: true })
             this.ws.description = descriptionInput != "" ? descriptionInput : this.ws.description
             this.ws.corporation = corporationInput != "" ? corporationInput : this.ws.corporation
             this.ws.nature = natureInput != "" ? natureInput : this.ws.nature
@@ -263,8 +269,7 @@ export class WsConfigMenu {
                 }
             })
 
-            if (addRoleMenu.options.length >0)
-            {
+            if (addRoleMenu.options.length > 0) {
                 let groupMenusRow = new MessageActionRow()
                 groupMenusRow.addComponents(addRoleMenu)
                 componentsToAdd.push(groupMenusRow)

@@ -60,9 +60,10 @@ export class WsAllowedRolesCammand extends WhitestarsCommand {
   startWsAllowedRolesMessage = async (message, args, corp) => {
     message.delete({ timeout: 1 });    //Delete User message
 
-
-    let bAddRole = new MessageButton().setStyle(3).setLabel("Add").setCustomId("add")
-    let bRemoveRole = new MessageButton().setStyle(4).setLabel("Remove").setCustomId("remove")
+    this.bAddId = message.id + "add"
+    this.bDelId = message.id + "del"
+    let bAddRole = new MessageButton().setStyle(3).setLabel("Add").setCustomId(this.bAddId)
+    let bRemoveRole = new MessageButton().setStyle(4).setLabel("Remove").setCustomId(this.bDelId)
     const rolessetupRow = new MessageActionRow().addComponents([bAddRole, bRemoveRole]);
 
     let embed = await this.makeEmbedMessage(message, corp)
@@ -76,7 +77,7 @@ export class WsAllowedRolesCammand extends WhitestarsCommand {
 
       if (b.user.id == message.author.id) {
 
-        if (b.customId == "add") {
+        if (b.customId == this.bAddId) {
           await b.deferUpdate()
           let divideNum = 25
 
@@ -148,7 +149,7 @@ export class WsAllowedRolesCammand extends WhitestarsCommand {
           }
 
           return await b.followUp({ embeds: [addRolesEmbed], components: componentsToAdd, ephemeral: true })
-        } else if (b.customId == "remove") {
+        } else if (b.customId == this.bDelId) {
           await b.deferUpdate()
           let printRoles = corp.wsAllowedRoles
           if (printRoles) {
@@ -190,7 +191,7 @@ export class WsAllowedRolesCammand extends WhitestarsCommand {
                 //Make new
                 this.delCurrRoleMenuId = b.id + ((index + 1) / divideNum) + "delWsRoleID"
                 this.delRoleMenuID.push(this.delCurrRoleMenuId)
-                delRoleMenu = new MessageSelectMenu().setCustomId(this.delCurrRoleMenuId).setPlaceholder(`${((index + 1) / divideNum) * divideNum +1} - ${((index + 1) / divideNum) + 1 * divideNum} `)
+                delRoleMenu = new MessageSelectMenu().setCustomId(this.delCurrRoleMenuId).setPlaceholder(`${((index + 1) / divideNum) * divideNum + 1} - ${((index + 1) / divideNum) + 1 * divideNum} `)
 
               }
             })
@@ -212,7 +213,7 @@ export class WsAllowedRolesCammand extends WhitestarsCommand {
 
     this.client.on('interactionCreate', async (interaction) => {
       if (this.addRoleMenuID && this.addRoleMenuID.includes(interaction.customId)) {
-        await interaction.deferUpdate()
+        await interaction.deferUpdate().catch();
         corp.wsAllowedRoles.push(interaction.values[0])
         await corp.save()
         await interaction.editReply({ content: `Rank <@&${interaction.values[0]}> added.`, embeds: [], components: [], ephemeral: true })
@@ -220,7 +221,7 @@ export class WsAllowedRolesCammand extends WhitestarsCommand {
         await messageReact.edit({ embeds: [embed] })
       } else
         if (this.delRoleMenuID && this.delRoleMenuID.includes(interaction.customId)) {
-          await interaction.deferUpdate()
+          await interaction.deferUpdate().catch();
           corp.wsAllowedRoles = corp.wsAllowedRoles.filter(role => role != interaction.values[0])
           await corp.save()
           await interaction.editReply({ content: `Rank <@&${interaction.values[0]}> removed.`, embeds: [], components: [], ephemeral: true })
@@ -228,6 +229,7 @@ export class WsAllowedRolesCammand extends WhitestarsCommand {
           await messageReact.edit({ embeds: [embed] })
         }
     })
+    
     collector.on('end', async collected => {
       let newEmbed = new MessageEmbed(messageReact.embeds[0])
       newEmbed.setColor("RED")

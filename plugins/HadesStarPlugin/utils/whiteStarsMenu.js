@@ -1,4 +1,4 @@
-import { Member, WhiteStar, WhiteStarRoles } from '../database';
+import { Member, WhiteStar,Corp, WhiteStarRoles } from '../database';
 import * as timeUtils from './timeUtils.js'
 import { MessageEmbed, MessageButton, MessageActionRow, Modal, TextInputComponent, MessageSelectMenu } from 'discord.js';
 import * as WsMessages from './whiteStarsMessages.js'
@@ -194,10 +194,17 @@ export class WsConfigMenu {
             let rolesStrs = []
             let roleStr = ""
             await this.message.guild.roles.fetch()
-            let roleIds = await this.message.guild.roles.cache.filter(role => role.name != "@everyone");
+            let corp = await Corp.findOne({corpId: this.message.channel.guild.id})
+            let roleIds = corp.wsAllowedRoles
             //roleIds = roleIds.flatMap((x) => [x, x+1]);
+            let rolesNId = new Map()
+            await this.message.guild.roles.fetch()
+            await roleIds.forEach(async (role) => {
+              let name = await this.message.guild.roles.cache.get(role).name
+              rolesNId.set(role, name)
+            })
 
-            roleIds.map(role => role.id).forEach((role, index) => {
+            roleIds.forEach((role, index) => {
                 roleStr += `${index + 1} - <@&${role}>\n`
                 if ((index + 1) % divideNum === 0) {
                     rolesStrs.push(roleStr)
@@ -248,11 +255,11 @@ export class WsConfigMenu {
             this.addRoleMenuID.push(this.addCurrRoleMenuId)
             let addRoleMenu = new MessageSelectMenu().setCustomId(this.addCurrRoleMenuId).setPlaceholder(`0 - ${divideNum}`)
             //Create menus
-            roleIds.map(r => r = r).forEach((role, index) => {
+            roleIds.forEach((role, index) => {
                 addRoleMenu.addOptions([
                     {
-                        label: `${index + 1} - ${role.name}`,
-                        value: role.id,
+                        label: `${index + 1} - ${rolesNId.get(role)}`,
+                        value: role,
                     }])
                 //roleStr += `${index+1} - <@&${role}>\n`
                 if ((index + 1) % divideNum === 0) {

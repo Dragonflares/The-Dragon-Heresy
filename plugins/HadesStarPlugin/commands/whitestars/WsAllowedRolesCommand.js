@@ -28,12 +28,12 @@ export class WsAllowedRolesCammand extends WhitestarsCommand {
       let AuthorRoles = author.roles.cache.map(role => role.id)
 
       if (!AuthorRoles.includes(roles.Officer) && !AuthorRoles.includes(roles.FirstOfficer)) {
-        return message.channel.send("You don't have the authority to modifiy the rank roles of your Corp's server.")
+        this.startWsAllowedRolesMessage(message, args, corp, false)
       } else {
-        this.startWsAllowedRolesMessage(message, args, corp)
+        this.startWsAllowedRolesMessage(message, args, corp, true)
       }
     } else {
-      this.startWsAllowedRolesMessage(message, args, corp)
+      this.startWsAllowedRolesMessage(message, args, corp, true)
     }
   }
 
@@ -57,7 +57,7 @@ export class WsAllowedRolesCammand extends WhitestarsCommand {
     return rolesEmbed
   }
 
-  startWsAllowedRolesMessage = async (message, args, corp) => {
+  startWsAllowedRolesMessage = async (message, args, corp, officer) => {
     message.delete({ timeout: 1 });    //Delete User message
 
     this.bAddId = message.id + "add"
@@ -67,8 +67,11 @@ export class WsAllowedRolesCammand extends WhitestarsCommand {
     const rolessetupRow = new MessageActionRow().addComponents([bAddRole, bRemoveRole]);
 
     let embed = await this.makeEmbedMessage(message, corp)
-    let messageReact = await message.channel.send({ embeds: [embed], components: [rolessetupRow] })
-
+    let messageReact
+    if (officer)
+      messageReact = await message.channel.send({ embeds: [embed], components: [rolessetupRow] })
+    else
+      messageReact = await message.channel.send({ embeds: [embed] })
 
     const filter = (button) => button.user.bot == false;
     const collector = messageReact.createMessageComponentCollector({ filter, time: 2 * 60 * 1000 });
@@ -218,7 +221,7 @@ export class WsAllowedRolesCammand extends WhitestarsCommand {
         await corp.save()
         await interaction.editReply({ content: `Rank <@&${interaction.values[0]}> added.`, embeds: [], components: [], ephemeral: true })
         let embed = await this.makeEmbedMessage(message, corp)
-        await messageReact.edit({ embeds: [embed] })
+        return await messageReact.edit({ embeds: [embed] })
       } else
         if (this.delRoleMenuID && this.delRoleMenuID.includes(interaction.customId)) {
           await interaction.deferUpdate().catch();
@@ -226,10 +229,10 @@ export class WsAllowedRolesCammand extends WhitestarsCommand {
           await corp.save()
           await interaction.editReply({ content: `Rank <@&${interaction.values[0]}> removed.`, embeds: [], components: [], ephemeral: true })
           let embed = await this.makeEmbedMessage(message, corp)
-          await messageReact.edit({ embeds: [embed] })
+          return await messageReact.edit({ embeds: [embed] })
         }
     })
-    
+
     collector.on('end', async collected => {
       let newEmbed = new MessageEmbed(messageReact.embeds[0])
       newEmbed.setColor("RED")

@@ -41,7 +41,7 @@ export class SetRankRolesCommand extends CorpCommand{
     }
     async run(message, args){
         if(message.mentions.users.length > 0) return message.channel.send("I'll ignore that you just tagged a person for a role related command.")
-        if(!message.mentions.roles) return message.channel.send("You need to mention a role for this command!")
+        if(!message.mentions.roles || args.length==0) return message.channel.send("You need to mention a role for this command!")
         //Get Author
         const members = await message.guild.members.fetch();
         let author

@@ -37,6 +37,11 @@ export class RecruitWhiteStarCommand extends WhitestarsCommand {
 
 
       let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate('rankRoles').exec();
+
+      if (!corp.wsAllowedRoles.includes(roles))
+       return message.channel.send("You cannot use that role to start a whitestar!")
+
+
       let memberCheck = message.guild.members.cache.get(message.author.id)
       if (memberCheck.roles.cache.some(role => role.id == corp.rankRoles.Officer || role.id == corp.rankRoles.WhiteStarCommander))
         return this.roleMessage(message, roles, member)

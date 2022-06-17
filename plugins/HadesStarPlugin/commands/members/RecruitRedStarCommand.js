@@ -89,6 +89,10 @@ export class RecruitRedStarCommand extends MemberCommand {
       }
     }
 
+    let time = new Date()
+    time.setMilliseconds( time.getMilliseconds() + timeout );
+    let timestamp = Math.floor(time.getTime() / 1000)
+
     //Create Message
     let pollEmbed = new MessageEmbed()
       .setTitle(`RS ${rsLevel} Recruitment invitation by ${authorName}:`)
@@ -96,8 +100,9 @@ export class RecruitRedStarCommand extends MemberCommand {
       .setDescription(`Do you want to be part of this Red Star? <@&${role}> \n Click below if you need your croid or not`)
       .addField("Current People", "0/4")
       .addField("Members", "None")
+      .addField("Timeout",`<t:${timestamp}:R>`)
       .setColor("ORANGE")
-      .setFooter({ text: `This invitation will be on for ${timeout / 60000} minutes` })
+      .setFooter({ text: `This invitation will be on for ${timeout / 60000} minutes,` })
 
     // Add Buttons
     let styles = [3, 4, 1, 3] //1 blue  2 gray 3 green 4 red

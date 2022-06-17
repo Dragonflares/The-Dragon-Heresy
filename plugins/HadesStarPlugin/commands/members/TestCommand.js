@@ -1,6 +1,6 @@
 import { MemberCommand } from './MemberCommand';
 import { Member } from '../../database';
-import { Modal, MessageButton, MessageActionRow, TextInputComponent  } from 'discord.js';
+import { Modal, MessageButton, MessageActionRow, TextInputComponent,MessageEmbed  } from 'discord.js';
 
 export class TestCommand extends MemberCommand {
     constructor(plugin) {
@@ -28,9 +28,15 @@ export class TestCommand extends MemberCommand {
         let firstRow = new MessageActionRow()
         firstRow.addComponents(acceptButton)
 
-
+        let addRolesEmbed = new MessageEmbed()
+        .setTitle(`Whitestar allowed roles`)
+        .setThumbnail("https://i.imgur.com/fNtJDNz.png")
+        .setColor("GREEN")
+        .setFooter({ text: `Select the role you want to add` })
+        .addField("Test:",`<t:1655482020:R>`)
+      
         
-       let messageReaction = await message.channel.send({content:"Testing", components:[firstRow], ephemeral: true })
+       let messageReaction = await message.channel.send({content:"Testing", embeds:[addRolesEmbed], components:[firstRow], ephemeral: true })
        const filter = (button) => button.user.bot == false;
        const collector = messageReaction.createMessageComponentCollector({filter, time: 2 * 60 * 1000});
 

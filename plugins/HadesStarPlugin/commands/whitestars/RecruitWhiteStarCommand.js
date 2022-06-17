@@ -58,7 +58,7 @@ export class RecruitWhiteStarCommand extends WhitestarsCommand {
     let description = ""
     let corporation = ""
     let nature = ""
-    let expectedtime = null
+    let expectedtime = ""
 
     //Check that no ws exists and if does, reprint the rectuit?
     let newWhiteStar = await WhiteStar.findOne({ wsrole: role.id }).populate('author').populate('members').populate('groupsRoles').exec()

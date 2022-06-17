@@ -8,7 +8,7 @@ const WhiteStarSchema = Schema({
     description: String,
     corporation: String,
     nature: String,
-    expectedtime: Date,
+    expectedtime: String,
     recruitmessage: String,
     retruitchannel: String,
     statusmessage: String,

@@ -1,4 +1,4 @@
-import { Member, WhiteStar,Corp, WhiteStarRoles } from '../database';
+import { Member, WhiteStar, Corp, WhiteStarRoles } from '../database';
 import * as timeUtils from './timeUtils.js'
 import { MessageEmbed, MessageButton, MessageActionRow, Modal, TextInputComponent, MessageSelectMenu } from 'discord.js';
 import * as WsMessages from './whiteStarsMessages.js'
@@ -141,7 +141,10 @@ export class WsConfigMenu {
             .setLabel("Corporation")
             .setStyle('SHORT')
             .setPlaceholder(this.ws.corporation)
-
+        const expectedtimeInput = new TextInputComponent().setCustomId('expectedTime')
+            .setLabel("Expected Time")
+            .setStyle('SHORT')
+            .setPlaceholder(this.ws.expectedtime)
         const natureInput = new TextInputComponent().setCustomId('natureInput')
             .setLabel("Nature")
             .setStyle('SHORT')
@@ -149,9 +152,10 @@ export class WsConfigMenu {
 
         const firstActionRow = new MessageActionRow().addComponents(corporationInput);
         const secondActionRow = new MessageActionRow().addComponents(natureInput);
-        const thirdActionRow = new MessageActionRow().addComponents(descriptionInput);
+        const thirdActionRow = new MessageActionRow().addComponents(expectedtimeInput);
+        const forthActionRow = new MessageActionRow().addComponents(descriptionInput);
         // Add inputs to the modal
-        modal.addComponents(firstActionRow, secondActionRow, thirdActionRow);
+        modal.addComponents(firstActionRow, secondActionRow, thirdActionRow, forthActionRow);
         return modal
     }
 
@@ -167,8 +171,12 @@ export class WsConfigMenu {
             let natureInput = i.fields.getTextInputValue('natureInput');
             if (natureInput.length > 1000)
                 return await i.followUp({ content: "Too long nature.", components: [], ephemeral: true })
+            let expectedTime = i.fields.getTextInputValue('expectedTime');
+            if (expectedTime.length > 1000)
+                return await i.followUp({ content: "Too long expectedTime.", components: [], ephemeral: true })
             this.ws.description = descriptionInput != "" ? descriptionInput : this.ws.description
             this.ws.corporation = corporationInput != "" ? corporationInput : this.ws.corporation
+            this.ws.expectedtime = expectedTime != "" ? expectedTime : this.ws.expectedtime
             this.ws.nature = natureInput != "" ? natureInput : this.ws.nature
             await this.ws.save().catch(err => console.log(err))
             WsUtils.RefreshRecruitMessage(this.client, this.ws)
@@ -194,14 +202,14 @@ export class WsConfigMenu {
             let rolesStrs = []
             let roleStr = ""
             await this.message.guild.roles.fetch()
-            let corp = await Corp.findOne({corpId: this.message.channel.guild.id})
+            let corp = await Corp.findOne({ corpId: this.message.channel.guild.id })
             let roleIds = corp.wsAllowedRoles
             //roleIds = roleIds.flatMap((x) => [x, x+1]);
             let rolesNId = new Map()
             await this.message.guild.roles.fetch()
             await roleIds.forEach(async (role) => {
-              let name = await this.message.guild.roles.cache.get(role).name
-              rolesNId.set(role, name)
+                let name = await this.message.guild.roles.cache.get(role).name
+                rolesNId.set(role, name)
             })
 
             roleIds.forEach((role, index) => {

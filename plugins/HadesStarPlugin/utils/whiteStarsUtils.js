@@ -121,7 +121,7 @@ export const recruitCollector = async (client, message, ws) => {
                         console.log("trying to give role higher than bot")
                     }
                 }
-                await ws.save()
+                await ws.save().catch()
 
                 //Refresh embed
                 const recruitEmbed = await WsMessages.whiteStarRecruitMessage(ws)

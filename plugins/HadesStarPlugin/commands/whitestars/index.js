@@ -5,7 +5,7 @@ export * from './WSRewardsCommand';
 //export * from './NotePlayerWhiteStarCommand';
 export * from './AddPlayerWhiteStarCommand';
 export * from './RemovePlayerWhiteStarCommand';
-export * from './SummaryWhiteStarCommand';
+export * from './WSPlayersTechCommand';
 export * from './ExportWSTechCommand';
 export * from './WSGroupScoreCommand';
 //export * from './DeadShipWhiteStarCommand';

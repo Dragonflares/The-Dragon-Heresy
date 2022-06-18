@@ -6,7 +6,7 @@ export class WsAllowedRolesCammand extends WhitestarsCommand {
   constructor(plugin) {
     super(plugin, {
       name: 'wsallowedroles',
-      aliases: ['wsar', 'n'],
+      aliases: ['wsar'],
       description: "Ws roles info.",
       usage: "&wsallowedroles"
     });

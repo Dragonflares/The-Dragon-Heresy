@@ -29,7 +29,7 @@ export const confirmResultButtons = async (message, query, list) => {
             buttonRow.addComponents(buttons[i]);
         }
         buttons[numOptions] = new MessageButton()
-            .setStyle('SUCCESS')
+            .setStyle(4)
             .setLabel('Cancel')
             .setCustomId('Cancel')
         buttonRow.addComponents(buttons[numOptions]);

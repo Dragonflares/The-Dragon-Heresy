@@ -15,6 +15,7 @@ export class FindTechCommand extends MemberCommand {
     }
 
     async run(message, args) {
+        
         let embed = new MessageEmbed().setColor("RANDOM")
         if (!args.length) {
             embed.setTitle(`**Known Techs**`)
@@ -31,7 +32,7 @@ export class FindTechCommand extends MemberCommand {
                 embed.addField(`*${name}*`, `${Array.from(techs).join(', ')}`)
             });
 
-            return message.channel.send(embed)
+            return message.channel.send({embeds:[embed]})
         }
         else {
             const level = parseInt(args[args.length - 1]);

@@ -212,8 +212,10 @@ export const whiteStarStatusMessage = async (message, ws) => {
         .setThumbnail("https://i.imgur.com/fNtJDNz.png")
         .addField("Group:", `<@&${ws.wsrole}>`)
         .addField("Status:", embedTitles.get(ws.status))
-        .addField("Description:", ws.description != "" ? ws.description : "Not setup")
-        .addField("Corporation:", ws.corporation != "" ? ws.corporation : "Not setup", true)
+    if (ws.description)
+        statusEmbed.addField("Description:", ws.description != "" ? ws.description : "Not setup")
+    if (ws.corporation)
+        statusEmbed.addField("Corporation:", ws.corporation != "" ? ws.corporation : "Not setup", true)
 
 
     if (ws.status == "WaitForScan") {
@@ -262,6 +264,22 @@ export const whiteStarStatusMessage = async (message, ws) => {
         //let groupsRoles = await WhiteStarRoles.findOne({ Corp: ws.Corp, wsrole: ws.wsrole }).exec()
 
         //console.log(groupsRoles.bsGroupsRoles)
+        if (!ws.groupsRoles) {
+            let groupsRoles = await WhiteStarRoles.findOne({ Corp: ws.Corp, wsrole: ws.wsrole }).exec()
+            if (!groupsRoles) {
+                groupsRoles = new WhiteStarRoles({
+                    Corp: ws.Corp,
+                    wsrole: ws.wsrole,
+                    bsGroupsRoles: new Array(),
+                    spGroupsRoles: new Array()
+                });
+                await groupsRoles.save()
+
+
+            }
+            ws.groupsRoles = groupsRoles
+            await ws.save()
+        }
         if (ws.groupsRoles.bsGroupsRoles) {
             //Fill groups
             await Promise.all(ws.groupsRoles.bsGroupsRoles.map(async role => {
@@ -277,7 +295,10 @@ export const whiteStarStatusMessage = async (message, ws) => {
                 }))
             }))
         }
-        if (ws.groupsRoles.bsGroupsRoles) {
+
+
+
+        if (ws.groupsRoles.spGroupsRoles) {
             await Promise.all(ws.groupsRoles.spGroupsRoles.map(async role => {
                 await Promise.all(Array.from(ws.members).map(async player => {
                     let roleMember = await message.guild.members.fetch(player.discordId)
@@ -291,6 +312,7 @@ export const whiteStarStatusMessage = async (message, ws) => {
                 }))
             }))
         }
+
         let unassignedBsString
         let bsString
         let unassignedSpString

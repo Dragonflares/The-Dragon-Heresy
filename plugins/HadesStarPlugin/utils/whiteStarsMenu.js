@@ -30,10 +30,22 @@ export class WsConfigMenu {
         let bTime = new MessageButton().setStyle(2).setLabel("Time").setCustomId(this.bTimeID)
         let bDelete = new MessageButton().setStyle(1).setLabel("🚮").setCustomId(this.bDeleteID)
         let replyRow = new MessageActionRow()
-        if (this.ws.status == "NotStarted") // No need to add/remove members before starting
+
+        if (this.ws.status == "NotStarted") {
+            replyRow.addComponents([bDetails, bRoles, bDelete]);
+        }
+        else if (this.ws.status == "Recruiting") {
+            replyRow.addComponents([bDetails, , bRoles, bDelete]);
+        }
+        else if (this.ws.status == "WaitForScan") {
+            replyRow.addComponents([bDetails, , bRoles, bDelete]);
+        }
+        else if (this.ws.status == "Scanning") {
+            replyRow.addComponents([bDetails, , bRoles, bDelete]);
+        }
+        else if (this.ws.status == "Running") {
             replyRow.addComponents([bDetails, bRoles, bTime, bDelete]);
-        else
-            replyRow.addComponents([bDetails, bMembers, bRoles, bTime, bDelete]);
+        }
 
         if (!this.listening) {
             this.listening = true
@@ -47,11 +59,13 @@ export class WsConfigMenu {
     listenMenu = async (i) => {
 
         if (this.checkIfMainMenu(i.customId))
-            return await this.listenMainMenu(i);
+            return await this.listenMainMenu(i)
         else if (this.checkIfRolesMenu(i.customId))
-            return await this.listenRolesMenu(i);
+            return await this.listenRolesMenu(i)
         else if (this.checkIfAddRolesMenu(i.customId))
-            return await this.listenAddRolesMenu(i);
+            return await this.listenAddRolesMenu(i)
+        else if (this.checkIfTimeMenu(i.customId))
+            return await this.listenTimeMenu(i)
         //DetailsModal
         if (i.isModalSubmit())
             await this.listenDetailsModal(i);
@@ -122,7 +136,24 @@ export class WsConfigMenu {
             return await i.followUp({ embeds: [rolesEmbed], components: [rolessetupRow], ephemeral: true }) //add rows and roles as response
         } else if (i.customId == this.bTimeID) {
             await i.deferUpdate()
-            return await i.followUp({ content: "Estimated time is not supported yet.", components: [], ephemeral: true })
+
+            if (this.ws.status == "Running") {
+                this.bMinus10ID = i.id + 'bMinus10ID'
+                this.bMinus1ID = i.id + 'bMinus1ID'
+                this.bPlus1ID = i.id + 'bPlus1ID'
+                this.bPlus10ID = i.id + 'bPlus10ID'
+
+                let bMinus10 = new MessageButton().setStyle(2).setLabel("-10 Min").setCustomId(this.bMinus10ID)
+                let bMinus1 = new MessageButton().setStyle(2).setLabel("-1 Min").setCustomId(this.bMinus1ID)
+                let bPlus1 = new MessageButton().setStyle(2).setLabel("+1 Min").setCustomId(this.bPlus1ID)
+                let bPlus10 = new MessageButton().setStyle(2).setLabel("+10 Min").setCustomId(this.bPlus10ID)
+                let replyRow = new MessageActionRow()
+                replyRow.addComponents([bMinus10, bMinus1, bPlus1, bPlus10]);
+                return await i.followUp({ content: "Use buttons to tweak the time", components: [replyRow], ephemeral: true })
+            }
+
+
+            return await i.followUp({ content: "There is no time tweaking on this ws stage.", components: [], ephemeral: true })
         } else if (i.customId == this.bDeleteID) {
             await i.deferUpdate()
             WsUtils.killWS(this.client, this.ws)
@@ -394,6 +425,29 @@ export class WsConfigMenu {
         }
 
 
+    }
+
+    //Time
+
+    checkIfTimeMenu = (id) => {
+        let idsToCheck = [this.bMinus10ID, this.bMinus1ID, this.bPlus1ID, this.bPlus10ID]
+        return idsToCheck.includes(id)
+    }
+
+    listenTimeMenu = async (i) => {
+        await i.deferUpdate()
+        if (i.customId == this.bMinus10ID) {
+            this.ws.matchtime = new Date(this.ws.matchtime.getTime() + 600000);
+        } else if (i.customId == this.bMinus1ID) {
+            this.ws.matchtime = new Date(this.ws.matchtime.getTime() + 60000);
+        } else if (i.customId == this.bPlus1ID) {
+            this.ws.matchtime = new Date(this.ws.matchtime.getTime() - 60000);
+        } else if (i.customId == this.bPlus10ID) {
+            this.ws.matchtime = new Date(this.ws.matchtime.getTime() - 600000);
+        }
+        await this.ws.save()
+        WsUtils.RefreshRecruitMessage(this.client, this.ws)
+        WsUtils.RefreshStatusMessage(this.client, this.ws)
     }
 }
 

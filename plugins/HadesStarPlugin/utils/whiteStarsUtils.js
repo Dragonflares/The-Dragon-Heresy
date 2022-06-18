@@ -1,6 +1,7 @@
 import { Member, WhiteStar, WhiteStarRoles } from '../database';
 export let NormalShow = true
 import * as WsMessages from './whiteStarsMessages.js'
+import * as WsUtils from './whiteStarsUtils.js'
 import { WsConfigMenu } from './whiteStarsMenu.js'
 
 //Recruit
@@ -20,6 +21,8 @@ export const recruitCollector = async (client, message, ws) => {
             if (b.user.id == ws.author.discordId) {
                 //let menuRow = await WsMenu.startMenu(client,message,ws)
                 let menuRow = await wsConfigMenu.getRow(b, message)
+                WsUtils.RefreshRecruitMessage(client, ws)
+                WsUtils.RefreshStatusMessage(client, ws)
                 await b.followUp({ components: [menuRow], ephemeral: true })
             } else {
                 await b.followUp({ content: 'You cant setup this whitestar.', ephemeral: true })
@@ -227,13 +230,17 @@ export const RefreshStatusMessage = async (client, ws, interval) => {
         //Fetch old message
         if (!intWs.statuschannel || !intWs.statusmessage) { }
         else {
-            msgStatus = await client.channels.cache.get(intWs.statuschannel).messages.fetch(intWs.statusmessage.toString());
+            try {
+                msgStatus = await client.channels.cache.get(intWs.statuschannel).messages.fetch(intWs.statusmessage.toString());
 
-            const statusEmbed = await WsMessages.whiteStarStatusMessage(msgStatus, intWs)
-            const statusButtons = await WsMessages.whiteStarStatusButtons(msgStatus, intWs)
+                const statusEmbed = await WsMessages.whiteStarStatusMessage(msgStatus, intWs)
+                const statusButtons = await WsMessages.whiteStarStatusButtons(msgStatus, intWs)
 
-            //add the menu buttons
-            await msgStatus.edit({ embeds: [statusEmbed], components: statusButtons })
+                //add the menu buttons
+                await msgStatus.edit({ embeds: [statusEmbed], components: statusButtons })
+            } catch (e) {
+                console.log(`${intWs.description} ws is having issues with its messages`)
+            }
 
         }
     }
@@ -257,14 +264,17 @@ export const killWS = async (client, ws) => {
         let statusmsg = await client.channels.cache.get(ws.retruitchannel).messages.fetch(ws.recruitmessage.toString());
         let roleMember = await statusmsg.guild.members.fetch(t.discordId)
         roleMember.roles.remove(ws.wsrole)
-        ws.groupsRoles.bsGroupsRoles.forEach(async bsRole => {
-            let roleMember = await statusmsg.guild.members.fetch(t.discordId)
-            roleMember.roles.remove(bsRole)
-        })
-        ws.groupsRoles.spGroupsRoles.forEach(async spGroupsRoles => {
-            let roleMember = await statusmsg.guild.members.fetch(t.discordId)
-            roleMember.roles.remove(spGroupsRoles)
-        })
+
+        if (ws.groupsRoles) {
+            ws.groupsRoles.bsGroupsRoles.forEach(async bsRole => {
+                let roleMember = await statusmsg.guild.members.fetch(t.discordId)
+                roleMember.roles.remove(bsRole)
+            })
+            ws.groupsRoles.spGroupsRoles.forEach(async spGroupsRoles => {
+                let roleMember = await statusmsg.guild.members.fetch(t.discordId)
+                roleMember.roles.remove(spGroupsRoles)
+            })
+        }
     })
 
 

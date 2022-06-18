@@ -23,9 +23,9 @@ export const recruitCollector = async (client, message, ws) => {
                 let menuRow = await wsConfigMenu.getRow(b, message)
                 WsUtils.RefreshRecruitMessage(client, ws)
                 WsUtils.RefreshStatusMessage(client, ws)
-                await b.followUp({ components: [menuRow], ephemeral: true })
+                return  await b.followUp({ components: [menuRow], ephemeral: true })
             } else {
-                await b.followUp({ content: 'You cant setup this whitestar.', ephemeral: true })
+                return  await b.followUp({ content: 'You cant setup this whitestar.', ephemeral: true })
             }
         } else if (b.customId == "start") {
             if (b.user.id == ws.author.discordId) {
@@ -41,10 +41,10 @@ export const recruitCollector = async (client, message, ws) => {
                 const recruitButtons = await WsMessages.whiteStarRecruitButtons(ws)
 
                 //add the menu buttons
-                await message.edit({ embeds: [recruitEmbed], components: recruitButtons })
+                return  await message.edit({ embeds: [recruitEmbed], components: recruitButtons })
 
             } else {
-                await b.followUp({ content: 'You cant setup this whitestar.', ephemeral: true })
+                return  await b.followUp({ content: 'You cant setup this whitestar.', ephemeral: true })
             }
         } else if (b.customId == "endrecruit") {
             if (b.user.id == ws.author.discordId) {
@@ -61,8 +61,9 @@ export const recruitCollector = async (client, message, ws) => {
                 //Update statusmessage
                 await RefreshStatusMessage(client, ws)
                 await StartTimerStatusRefresh(client, ws)
+                return
             } else {
-                await b.followUp({ content: 'You cant setup this whitestar.', ephemeral: true })
+                return  await b.followUp({ content: 'You cant setup this whitestar.', ephemeral: true })
             }
         } else if (b.customId == '🤚') {
             let member = await Member.findOne({ discordId: b.user.id.toString() }).exec();
@@ -73,19 +74,20 @@ export const recruitCollector = async (client, message, ws) => {
             }
             //Refresh embed
             const recruitEmbed = await WsMessages.whiteStarRecruitMessage(ws)
-            const recruitButtons = await WsMessages.whiteStarRecruitButtons(ws)
+            //const recruitButtons = await WsMessages.whiteStarRecruitButtons(ws)
 
             //add the menu buttons
-            await message.edit({ embeds: [recruitEmbed], components: recruitButtons, ephemeral: true })
+             return await message.edit({ embeds: [recruitEmbed]})
 
         } else if (b.customId == '🆘') {
             WsMessages.SetNormal(!WsMessages.NormalShow)
+            console.log(WsMessages.NormalShow)
             //Refresh embed
             const recruitEmbed = await WsMessages.whiteStarRecruitMessage(ws)
-            const recruitButtons = await WsMessages.whiteStarRecruitButtons(ws)
+            //const recruitButtons = await WsMessages.whiteStarRecruitButtons(ws)
 
             //add the menu buttons
-            await message.edit({ embeds: [recruitEmbed], components: recruitButtons, ephemeral: true })
+             return await message.edit({ embeds: [recruitEmbed] })
 
         } else
 
@@ -128,7 +130,7 @@ export const recruitCollector = async (client, message, ws) => {
                 const recruitButtons = await WsMessages.whiteStarRecruitButtons(ws)
 
                 //add the menu buttons
-                await message.edit({ embeds: [recruitEmbed], components: recruitButtons })
+                return await message.edit({ embeds: [recruitEmbed], components: recruitButtons })
             }
     })
 
@@ -160,7 +162,7 @@ export const RefreshRecruitMessage = async (client, ws, interval) => {
 //Status
 export const statusCollector = async (client, message, ws) => {
 
-
+    
     const filter = (button) => button.user.bot == false;
     const collector = message.createMessageComponentCollector({ filter });
 
@@ -172,10 +174,10 @@ export const statusCollector = async (client, message, ws) => {
             WsMessages.SetNormal(!WsMessages.NormalShow)
             //Refresh embed
             const statusEmbed = await WsMessages.whiteStarStatusMessage(message, ws)
-            const statusButtons = await WsMessages.whiteStarStatusButtons(message, ws)
+            //const statusButtons = await WsMessages.whiteStarStatusButtons(message, ws)
 
             //add the menu buttons
-            return await message.edit({ embeds: [statusEmbed], components: statusButtons })
+            return await message.edit({ embeds: [statusEmbed] })
         }
         if (b.user.id == ws.author.discordId) {
             if (b.customId == "setup") {
@@ -282,8 +284,19 @@ export const killWS = async (client, ws) => {
 }
 export const StartTimerStatusRefresh = async (client, ws) => {
     let interval;
-    interval = setInterval(function () {
-        RefreshStatusMessage(client, ws, interval)
-    }, 10 * 1000);
+    interval = setInterval(async function () {
+      await  RefreshStatusMessage(client, ws, interval)
+    }, 30 * 1000);
     return interval;
 }
+
+var timer = function (name) {
+    var start = new Date();
+    return {
+        stop: function () {
+            var end = new Date();
+            var time = end.getTime() - start.getTime();
+            console.log('Timer:', name, 'finished in', time, 'ms');
+        }
+    }
+};

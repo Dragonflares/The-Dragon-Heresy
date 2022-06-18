@@ -206,7 +206,7 @@ export const whiteStarStatusButtons = async (message, ws) => {
 export const whiteStarStatusMessage = async (message, ws) => {
     //Create Message
     let statusEmbed = new MessageEmbed()
-
+    
     //Set Common Items
     statusEmbed.setTitle(`White Star Status`)
         .setThumbnail("https://i.imgur.com/fNtJDNz.png")

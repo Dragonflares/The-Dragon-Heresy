@@ -61,7 +61,7 @@ export class HelpCommand extends InfoCommand{
             subCategories.get(command.subcategory).add(command)
         });
 
-        embed.setTitle(`Rising Imperium Bot Commands`);
+        embed.setTitle(`Horus Commands`);
         categories.forEach((subCategories, category) => {
             embed.addField(stripIndents`**${capitalize(category)}**`, `${
                 Array.from(subCategories).map(([subCategory, commands]) => `${capitalize(subCategory)}\n${

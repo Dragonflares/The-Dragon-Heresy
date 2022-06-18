@@ -236,7 +236,7 @@ export const whiteStarStatusMessage = async (message, ws) => {
         var diffDays = Math.floor(diffMs / 86400000); // days
         var diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours
         var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
-        statusEmbed.addField("Current Time:", `${diffDays} Days,  ${diffHrs} Hours and ${diffMins} Minutes`)
+        statusEmbed.addField("Time Left:", `${diffDays} Days,  ${diffHrs} Hours and ${diffMins} Minutes`)
     }
     if (ws.status != "Recruiting") {
         //Create variables

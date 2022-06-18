@@ -72,6 +72,7 @@ export class UpdateTechCommand extends MemberCommand{
             }
            // console.log(techFound)
             await Tech.findOneAndUpdate({name: tech.name, playerId: target.id.toString()}, {level: Math.floor(level)});
+            await message.react(`👏`);
             return message.channel.send(`Tech level updated.`)  
         }
         return message.channel.send("You aren't on your Corporation's server!")

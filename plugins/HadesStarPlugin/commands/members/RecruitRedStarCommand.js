@@ -46,7 +46,7 @@ export class RecruitRedStarCommand extends MemberCommand {
 
     //Check if there is an RS with that level already open
     const corp = await Corp.findOne({ corpId: msgObject.guild.id.toString() }).exec()
-    let rsQueues = await RedStarQueue.find({ corp: corp._id, rsLevel: rsLevel }).exec();
+    let rsQueues = await RedStarQueue.find({ corp: corp, rsLevel: rsLevel }).exec();
     if (rsQueues.length > 0) {
       var link = "http://discordapp.com/channels/" + msgObject.guild.id + "/" + rsQueues[0].recruitChannel + "/" + rsQueues[0].recruitMessage;
 

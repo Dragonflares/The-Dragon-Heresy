@@ -24,6 +24,7 @@ export class NewRedStarLogCommand extends MemberCommand {
                 let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate('members').exec();
                 let memberslist = new Map(corp.members.map(t => [t.name, t]))
                 let member = await confirmResultButtons(message, args.join(' '), [...memberslist.keys()])
+                if(!member) return
                 targetID = memberslist.get(member).discordId.toString()
             }
 

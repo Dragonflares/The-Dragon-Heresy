@@ -1,7 +1,8 @@
 import { CorpCommand } from './CorpCommand';
-import { Member, RedStarMessage, Corp } from '../../database';
+import { Member, RedStarMessage, Corp, RankRoles } from '../../database';
 import Mongoose from 'mongoose'
-import { MessageEmbed } from 'discord.js';
+import { MessageEmbed, MessageButton, MessageActionRow } from 'discord.js';
+import * as RoleMessageUtils from '../../utils/roleMessageUtils'
 
 export class StartRoleMessageCommand extends CorpCommand {
     constructor(plugin) {
@@ -27,8 +28,36 @@ export class StartRoleMessageCommand extends CorpCommand {
         if (!member)
             return message.channel.send("You aren't part of any Corporation. Join a Corporation first.")
         else {
-            if (member.Corp.corpId === message.guild.id.toString())
-                return this.roleMessage(target, message)
+            if (member.Corp.corpId === message.guild.id.toString()) {
+                //Get Author
+                const members = await message.guild.members.fetch();
+                let author
+                await members.forEach(member => {
+                    if (member.id === message.author.id) {
+                        author = member
+                    }
+                })
+
+                if (!author.permissions.has("ADMINISTRATOR") && !author.permissions.has("MANAGE_GUILD")) {
+
+                    const corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate("rankRoles").exec()
+                    let roles = corp.rankRoles
+                    let AuthorRoles = author.roles.cache.map(role => role.id)
+
+                    if (!AuthorRoles.includes(roles.Officer) && !AuthorRoles.includes(roles.FirstOfficer)) {
+                        return message.channel.send("You don't have the authority to send the roles setup message.")
+                    } else {
+                        //All good
+                        return this.roleMessage(target, message)
+                    }
+                } else {
+                    //All good
+                    return this.roleMessage(target, message)
+                }
+
+
+            }
+
             else
                 return message.channel.send("You aren't on your Corporation's server!")
         }
@@ -37,18 +66,25 @@ export class StartRoleMessageCommand extends CorpCommand {
     roleMessage = async (target, message) => {
         message.delete({ timeout: 1 });    //Delete User message
 
-
-
         let rolesEmbed = new MessageEmbed()
             .setTitle(`Select which Red Star Levels you want to get notified!`)
             .setThumbnail("https://i.imgur.com/hedXFRd.png")
-            .setDescription(`Click to Register/Unregister to/of Red Star Notifications!`)
-            .addField("Levels", "1️⃣-🔟 For RS1-RS10 and ‼️ for RS11")
+            .setDescription(`Check which Red Star Notifications you wanna recieve!`)
+            .addField("Info", "Press on **Setup** to change your notification settings on which roles you get notified!")
             .setColor("GREEN")
-            .setFooter({text:`Have fun!`})
+            .setFooter({ text: `Have fun!` })
 
-        const reactions = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟', '‼️']
-        const messageReaction = await message.channel.send({embeds: [rolesEmbed]});
+
+        let startButton = new MessageButton()
+            .setStyle(1)
+            .setLabel('Start')
+            .setCustomId('start')
+
+        let firstRow = new MessageActionRow()
+        firstRow.addComponents(startButton)
+
+        const messageReaction = await message.channel.send({ embeds: [rolesEmbed], components: [firstRow] });
+        RoleMessageUtils.collectorFunc(this.client, messageReaction)
 
         //Save Message ID
         const corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate('redStarMessage').exec()
@@ -64,7 +100,5 @@ export class StartRoleMessageCommand extends CorpCommand {
         newRedStarMessage.save();
         corp.redStarMessage = newRedStarMessage
         corp.save()
-
-        reactions.forEach(async react => await messageReaction.react(react))
     }
 }

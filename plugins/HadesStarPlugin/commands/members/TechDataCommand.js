@@ -69,7 +69,7 @@ export class TechDataCommand extends MemberCommand {
                 messageReaction = await message.channel.send({ components: [buttonRow], embeds: [msgEmbed] });
             else
                 messageReaction = await message.channel.send({ embed: [msgEmbed] });
-            const filter = (button) => button.clicker.user.bot == false;
+            const filter = (button) => button.user.bot == false;
             const collector = messageReaction.createMessageComponentCollector({filter, time: 2 * 60 * 1000});
             collector.on('collect', async b => {
                 if (b.customId == "prev") level--;

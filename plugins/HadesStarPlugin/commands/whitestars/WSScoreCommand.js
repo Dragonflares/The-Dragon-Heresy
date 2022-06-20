@@ -69,7 +69,7 @@ export class WSScoreCommand extends WhitestarsCommand {
                             let wsscore = TechTree.find(t.name).properties.get('WS Score')[memberTechs.get(t.name).level - 1];
                             totalScore += parseInt(wsscore);
                             return `${t.name} ${memberTechs.get(t.name).level} __Score__: ${wsscore}`
-                        })
+                        }).join('\n')
                 ])
                 .forEach(categoryData => embed.addField(categoryData[0].toString(), categoryData[1].toString()));
 

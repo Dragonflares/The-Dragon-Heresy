@@ -21,7 +21,8 @@ const CorpSchema = Schema ({
     redStarRoles: {type: Schema.Types.ObjectId, ref: "RedStarRole"},
     battlegroups: [{type: Schema.Types.ObjectId, ref: "Battlegroup"}],
     members: [{type: Schema.Types.ObjectId, ref: "Member"}],
-    redStarLogs: [{type: Schema.Types.ObjectId, ref: "RedStarLog"}]    
+    redStarLogs: [{type: Schema.Types.ObjectId, ref: "RedStarLog"}],
+    wsAllowedRoles: [{type: String}]
 })
 
 export const Corp = model("Corp", CorpSchema, "Corp")

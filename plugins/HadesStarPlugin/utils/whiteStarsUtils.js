@@ -1,317 +1,226 @@
-import { Member, WhiteStar } from '../database';
-import * as timeUtils from './timeUtils.js'
-import { MessageEmbed} from 'discord.js';
-
+import { Member, WhiteStar, WhiteStarRoles } from '../database';
 export let NormalShow = true
+import * as WsMessages from './whiteStarsMessages.js'
+import * as WsUtils from './whiteStarsUtils.js'
+import { WsConfigMenu } from './whiteStarsMenu.js'
+
+//Recruit
+
+export const recruitCollector = async (client, message, ws) => {
 
 
+    const filter = (button) => button.user.bot == false;
+    const collector = message.createMessageComponentCollector({ filter });
 
-export const whiteStarRecruitReactions = ['🤚', '🆘', '🚮', '✅']
+    let wsConfigMenu = new WsConfigMenu(ws, client)
 
-export const whiteStarStatusReactions = new Map([
-    ["Recruiting", ['🚮']],
-    ["WaitForScan", ['🚮', '🆘', '⬅️', '✅', '🔄']],
-    ["Scanning", ['🚮', '🆘', '🛑', '✅', '🔄']],
-    ["Running", ['🚮', '🆘', '⬅️', '🔄', '🕙', '🕚', '🕐', '🕑']]
-])
+    collector.on('collect', async b => {
+        await b.deferUpdate()
 
-export const whiteStarPrefEmojiGroup = new Map([
-    ['⚔️', "Attackers"],
-    ['🛡️', "Defenders"],
-    ['🗡️', "Assassins"],
-    ['❓', "Doesnt Matter"]
-])
-
-export const embedTitles = new Map([
-    ["Recruiting", "Waiting for recruitment"],
-    ["WaitForScan", "Waiting for scanning"],
-    ["Scanning", "Scanning"],
-    ["Running", "Running"]
-])
-
-export const embedColors = new Map([
-    ["Recruiting", "RED"],
-    ["WaitForScan", "ORANGE"],
-    ["Scanning", "ORANGE"],
-    ["Running", "GREEN"]
-])
-
-export const embedFooters = new Map([
-    ["Recruiting", `🚮 - Delete White Star`],
-    ["WaitForScan", `🚮 - Delete White Star 🆘 - Switch to text mode ⬅️ - Back to recruit ✅ - Start Scan  🔄 - Refresh`],
-    ["Scanning", `🚮 - Delete White Star 🆘 - Switch to text mode 🛑 - Stop Scan ✅ - Found Match! 🔄 - Refresh`],
-    ["Running", `🚮 - Delete White Star 🆘 - Switch to text mode ⬅️ - Back to scan 🔄 - Refresh\n 🕙: -10 Min 🕚: -1 Min 🕐: +1 Min 🕑: +10 Min`]
-])
-export const SetNormal = async(normal) => {
-    NormalShow=normal;
-}
-
-export const whiteStarRecruitMessage = async (ws) => {
-    //Get Members
-    let prefCatStrings = new Map()
-
-    //Fill Categries with None
-    whiteStarPrefEmojiGroup.forEach((value) => prefCatStrings.set(value, "None"))
-
-    if (ws.members) {
-        Array.from(ws.members).map(async t => {
-            //Get Player Category
-            let cat = whiteStarPrefEmojiGroup.get(ws.preferences.get(t.discordId));
-
-            //If Player Leads
-            let command = ws.leadPreferences.has(t.discordId) ? ' 🤚' : ''
-
-            //Add him to the string
-            if (NormalShow) {
-                if (prefCatStrings.get(cat) == "None")
-                    prefCatStrings.set(cat, `<@${t.discordId}>${command}`)
-                else
-                    prefCatStrings.set(cat, `${prefCatStrings.get(cat)}\n<@${t.discordId}>${command}`)
+        if (b.customId == "setup") {
+            if (b.user.id == ws.author.discordId) {
+                //let menuRow = await WsMenu.startMenu(client,message,ws)
+                let menuRow = await wsConfigMenu.getRow(b, message)
+                WsUtils.RefreshRecruitMessage(client, ws)
+                WsUtils.RefreshStatusMessage(client, ws)
+                return  await b.followUp({ components: [menuRow], ephemeral: true })
             } else {
-                if (prefCatStrings.get(cat) == "None")
-                    prefCatStrings.set(cat, `${t.name}${command}`)
-                else
-                    prefCatStrings.set(cat, `${prefCatStrings.get(cat)}\n${t.name}${command}`)
+                return  await b.followUp({ content: 'You cant setup this whitestar.', ephemeral: true })
             }
-        })
-    }
+        } else if (b.customId == "start") {
+            if (b.user.id == ws.author.discordId) {
+                if (ws.description == "") {
+                    return await b.followUp({ content: "Please setup a description for the whitestar.", ephemeral: true })
+                }
+                //change to recruiting
+                ws.status = "Recruiting"
+                await ws.save()
 
-    //Create Message
-    let rolesEmbed = new MessageEmbed()
-        .setTitle(`White Star Recruitment by ${ws.author.name}:`)
-        .setThumbnail("https://i.imgur.com/fNtJDNz.png")
-        .setDescription(`${ws.description}`)
-        .addField("Group:", `<@&${ws.wsrole}>`)
-        .addField("Current People", ws.members ? Object.keys(ws.members).length.toString() : "0")
+                //Refresh embed
+                const recruitEmbed = await WsMessages.whiteStarRecruitMessage(ws)
+                const recruitButtons = await WsMessages.whiteStarRecruitButtons(ws)
 
-    //Add Categories and players
-    whiteStarPrefEmojiGroup.forEach((value, key) =>
-        rolesEmbed.addField(`${key} ${value}`, prefCatStrings.get(value), true))
+                //add the menu buttons
+                return  await message.edit({ embeds: [recruitEmbed], components: recruitButtons })
 
-    //Footers
-    if (ws.status == "Recruiting") {
-        rolesEmbed.setColor("ORANGE")
-            .setFooter({text: `🤚 - Commander  🆘 - Switch to text mode 🚮 - Stop Recruit ✅ - Finish Recruit`})
-    }
-    else {
-        rolesEmbed.setColor("GREEN")
-            .setFooter({text: `Recruitment Done`})
-    }
-    return rolesEmbed;
+            } else {
+                return  await b.followUp({ content: 'You cant setup this whitestar.', ephemeral: true })
+            }
+        } else if (b.customId == "endrecruit") {
+            if (b.user.id == ws.author.discordId) {
+                //change to recruiting
+                ws.status = "WaitForScan"
+                await ws.save()
+                //Refresh embed
+                const recruitEmbed = await WsMessages.whiteStarRecruitMessage(ws)
+                const recruitButtons = await WsMessages.whiteStarRecruitButtons(ws)
 
-}
+                //add the menu buttons
+                await message.edit({ embeds: [recruitEmbed], components: recruitButtons })
 
-export const whiteStarStatusMessage = async (message, ws) => {
-    //Create Message
-    let statusEmbed = new MessageEmbed()
+                //Update statusmessage
+                await RefreshStatusMessage(client, ws)
+                await StartTimerStatusRefresh(client, ws)
+                return
+            } else {
+                return  await b.followUp({ content: 'You cant setup this whitestar.', ephemeral: true })
+            }
+        } else if (b.customId == '🤚') {
+            let member = await Member.findOne({ discordId: b.user.id.toString() }).exec();
+            if (ws.leadPreferences.has(member.discordId)) { //If member is commander
+                ws.leadPreferences.delete(member.discordId)
+            } else {
+                ws.leadPreferences.set(member.discordId, '🤚')
+            }
+            //Refresh embed
+            const recruitEmbed = await WsMessages.whiteStarRecruitMessage(ws)
+            //const recruitButtons = await WsMessages.whiteStarRecruitButtons(ws)
 
-    //Set Common Items
-    statusEmbed.setTitle(`White Star Status`)
-        .setThumbnail("https://i.imgur.com/fNtJDNz.png")
-        .addField("Group:", `<@&${ws.wsrole}>`)
-        .addField("Status:", embedTitles.get(ws.status))
-    if (ws.status == "Scanning") {
-        //calculate delta time
-        let today = new Date()
-        let {diffDays, diffHrs, diffMins } = timeUtils.timeDiff(today, ws.scantime);
-        diffMins = diffMins.toString().padStart(2, '0')
-        statusEmbed.addField("Time Passed:", `${diffDays} Days,  ${diffHrs} Hours and ${diffMins} Minutes`)
-    } else if (ws.status == "Running") {
-        //calculate delta time
-        let today = new Date()
-        let diffMs = 432000000 - (today - ws.matchtime)
-        var diffDays = Math.floor(diffMs / 86400000); // days
-        var diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours
-        var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
-        statusEmbed.addField("Current Time:", `${diffDays} Days,  ${diffHrs} Hours and ${diffMins} Minutes`)
-    }
-    if (ws.status != "Recruiting") {
-        //Create variables
-        let assignedBs = new Array();
-        let assignedSp = new Array();
-        let bsGroupMembers = new Map()
-        let spGroupMembers = new Map()
-        let afkMembers = new Map()
+            //add the menu buttons
+             return await message.edit({ embeds: [recruitEmbed]})
 
-        //Check AFKs
-        await Promise.all(Array.from(ws.members).map(async player => {
-            let member = await Member.findOne({ discordId: player.discordId.toString() }).populate('Corp').populate('techs').exec();
-            if (!member) afkMembers.set(chMember, "")
-            if (member.awayTime) {
-                let awayTime = new Date();
-                if (awayTime.getTime() < member.awayTime.getTime()) {
-                    afkMembers.set(player.discordId, "🅰️")
+        } else if (b.customId == '🆘') {
+            WsMessages.SetNormal(!WsMessages.NormalShow)
+            console.log(WsMessages.NormalShow)
+            //Refresh embed
+            const recruitEmbed = await WsMessages.whiteStarRecruitMessage(ws)
+            //const recruitButtons = await WsMessages.whiteStarRecruitButtons(ws)
+
+            //add the menu buttons
+             return await message.edit({ embeds: [recruitEmbed] })
+
+        } else
+
+            if (WsMessages.whiteStarPrefEmojiGroup.get(b.customId)) {
+                let member = await Member.findOne({ discordId: b.user.id.toString() }).exec();
+                let groupName = b.customId
+                //join the whitestar
+
+                let roleMember = await message.guild.members.fetch(member.discordId)
+                if (ws.preferences.has(member.discordId)) { //If player already an emoji
+                    if (ws.preferences.get(member.discordId) == groupName) { //If it has the one selected
+                        //Delist
+                        let remainingMembers = await ws.members.filter(m => m.discordId != member.discordId)
+                        ws.members = remainingMembers
+                        ws.preferences.delete(member.discordId)
+                        ws.leadPreferences.delete(member.discordId)
+                        roleMember.roles.remove(ws.wsrole)
+                    } else {
+                        //Change
+                        try {
+                            roleMember.roles.add(ws.wsrole)
+                            ws.preferences.set(member.discordId, groupName)
+                        } catch (e) {
+                            console.log("trying to give role higher than bot")
+                        }
+                    }
                 } else {
-                    afkMembers.set(player.discordId, "")
+                    try {
+                        roleMember.roles.add(ws.wsrole)
+                        ws.members.push(member)
+                        ws.preferences.set(member.discordId, groupName)
+                    } catch (e) {
+                        console.log("trying to give role higher than bot")
+                    }
                 }
-            } else {
-                afkMembers.set(player.discordId, "")
+                await ws.save().catch()
+
+                //Refresh embed
+                const recruitEmbed = await WsMessages.whiteStarRecruitMessage(ws)
+                const recruitButtons = await WsMessages.whiteStarRecruitButtons(ws)
+
+                //add the menu buttons
+                return await message.edit({ embeds: [recruitEmbed], components: recruitButtons })
             }
-        }))
-
-        //Fill groups
-        await Promise.all(ws.bsGroupsRoles.map(async role => {
-            await Promise.all(Array.from(ws.members).map(async player => {
-                let roleMember = await message.guild.members.fetch(player.discordId)
-                if (roleMember.roles.cache.find(r => r.id == role)) {
-                    assignedBs.push(player)
-                    if (bsGroupMembers.has(role))
-                        bsGroupMembers.get(role).push(roleMember)
-                    else
-                        bsGroupMembers.set(role, new Array(roleMember))
-                }
-            }))
-        }))
-
-        await Promise.all(ws.spGroupsRoles.map(async role => {
-            await Promise.all(Array.from(ws.members).map(async player => {
-                let roleMember = await message.guild.members.fetch(player.discordId)
-                if (roleMember.roles.cache.find(r => r.id == role)) {
-                    assignedSp.push(player)
-                    if (spGroupMembers.has(role))
-                        spGroupMembers.get(role).push(roleMember)
-                    else
-                        spGroupMembers.set(role, new Array(roleMember))
-                }
-            }))
-        }))
-        let unassignedBsString
-        let bsString
-        let unassignedSpString
-        let spString
-        let playersString
-        if (NormalShow) {
-            //Generate Battleships string
-            unassignedBsString = Array.from(ws.members)
-                .filter(t => !assignedBs.includes(t))
-                .map(t => `-<@${t.discordId}> ${ws.preferences.get(t.discordId)}${ws.leadPreferences.has(t.discordId) ? ' 🤚' : ''}${ws.playerBsNotes.has(t.discordId) ? ` ${ws.playerBsNotes.get(t.discordId)}` : ''}`)
-                .join('\n')
-
-            bsString = Array.from(bsGroupMembers)
-                .map(([groupName, players]) => `**<@&${groupName}> ${ws.groupNotes.has(groupName) ? ` ${ws.groupNotes.get(groupName)}` : ''}:**\n --${Array.from(players)
-                    .map(p => `${p} ${ws.playerBsNotes.has(p.id) ? ` ${ws.playerBsNotes.get(p.id)}` : ''}`).join('\n--')}\n`)
-                .join('\n')
-            if (unassignedBsString != "") bsString = bsString + "\n**Unassigned:**\n" + unassignedBsString
-            bsString == "" ? bsString = "None" : bsString
-
-            //Generate Support string
-            unassignedSpString = Array.from(ws.members)
-                .filter(t => !assignedSp.includes(t))
-                .map(t => `-<@${t.discordId}> ${ws.preferences.get(t.discordId)}${ws.leadPreferences.has(t.discordId) ? ' 🤚' : ''}${ws.playerSpNotes.has(t.discordId) ? ` ${ws.playerSpNotes.get(t.discordId)}` : ''}`)
-                .join('\n')
-            spString = Array.from(spGroupMembers)
-                .map(([groupName, players]) => `**<@&${groupName}> ${ws.groupNotes.has(groupName) ? ` ${ws.groupNotes.get(groupName)}` : ''}:**\n --${Array.from(players)
-                    .map(p => `${p} ${ws.playerSpNotes.has(p.id) ? ` ${ws.playerSpNotes.get(p.id)}` : ''}`).join('\n--')}\n`)
-                .join('\n')
-            if (unassignedSpString != "") spString = spString + "\n**Unassigned:**\n" + unassignedSpString
-            spString == "" ? spString = "None" : spString
-
-            //Generate Players string
-            playersString = Array.from(ws.members)
-                .map(t => {
-                    if (t.timezone == "+0")
-                        return `-<@${t.discordId}> (TOD: Not  set up)`
-                    let today = new Date()
-                    today = new Date(today.getTime() + today.getTimezoneOffset() * 60 * 1000);
-                    today = new Date(today.getTime() + t.timezone * 60 * 60 * 1000);
-                    return `-${afkMembers.get(t.discordId)}<@${t.discordId}> (TOD: ${today.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })})`
-                })
-                .join('\n')
-            playersString == "" ? playersString = "None" : playersString
-        } else {
-            //Generate Battleships string
-            unassignedBsString = Array.from(ws.members)
-                .filter(t => !assignedBs.includes(t))
-                .map(t => `-${t.name} ${ws.preferences.get(t.discordId)}${ws.leadPreferences.has(t.discordId) ? ' 🤚' : ''}${ws.playerBsNotes.has(t.discordId) ? ` ${ws.playerBsNotes.get(t.discordId)}` : ''}`)
-                .join('\n')
-
-            bsString = Array.from(bsGroupMembers)
-                .map(([groupName, players]) => `**<@&${groupName}> ${ws.groupNotes.has(groupName) ? ` ${ws.groupNotes.get(groupName)}` : ''}:**\n --${Array.from(players)
-                    .map(p => `${ws.members.filter(t=> t.discordId == p.id)[0].name} ${ws.playerBsNotes.has(p.id) ? ` ${ws.playerBsNotes.get(p.id)}` : ''}`).join('\n--')}\n`)
-                .join('\n')
-            if (unassignedBsString != "") bsString = bsString + "\n**Unassigned:**\n" + unassignedBsString
-            bsString == "" ? bsString = "None" : bsString
-
-            //Generate Support string
-            unassignedSpString = Array.from(ws.members)
-                .filter(t => !assignedSp.includes(t))
-                .map(t => `-${t.name} ${ws.preferences.get(t.discordId)}${ws.leadPreferences.has(t.discordId) ? ' 🤚' : ''}${ws.playerSpNotes.has(t.discordId) ? ` ${ws.playerSpNotes.get(t.discordId)}` : ''}`)
-                .join('\n')
-            spString = Array.from(spGroupMembers)
-                .map(([groupName, players]) => `**<@&${groupName}> ${ws.groupNotes.has(groupName) ? ` ${ws.groupNotes.get(groupName)}` : ''}:**\n --${Array.from(players)
-                 .map(p => `${ws.members.filter(t=> t.discordId == p.id)[0].name} ${ws.playerSpNotes.has(p.id) ? ` ${ws.playerSpNotes.get(p.id)}` : ''}`).join('\n--')}\n`)
-                .join('\n')
-            if (unassignedSpString != "") spString = spString + "\n**Unassigned:**\n" + unassignedSpString
-            spString == "" ? spString = "None" : spString
-
-            //Generate Players string
-            playersString = Array.from(ws.members)
-                .map(t => {
-                    if (t.timezone == "+0")
-                        return `-${t.name} (TOD: Not  set up)`
-                    let today = new Date()
-                    today = new Date(today.getTime() + today.getTimezoneOffset() * 60 * 1000);
-                    today = new Date(today.getTime() + t.timezone * 60 * 60 * 1000);
-                    return `-${afkMembers.get(t.discordId)}${t.name} (TOD: ${today.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })})`
-                })
-                .join('\n')
-            playersString == "" ? playersString = "None" : playersString
-        }
-        //Add members to embed
-        statusEmbed.addField("Battleships:", bsString, true)
-        statusEmbed.addField("Support:", spString, true)
-        statusEmbed.addField("Player List", playersString)
-    }
-    statusEmbed.setColor(embedColors.get(ws.status))
-        .setFooter({text: `${embedFooters.get(ws.status)}`, iconURL: message.guild.iconURL()})
-        .setTimestamp()
-    return statusEmbed;
-}
-
-export const whiteStarCancelMessage = async (ws) => {
-    let rolesEmbed = new MessageEmbed()
-    rolesEmbed.setTitle(`White Star Status`)
-        .setThumbnail("https://i.imgur.com/fNtJDNz.png")
-        .setDescription(`${ws.description}`)
-        .addField("Group:", `<@&${ws.wsrole}>`)
-        .addField("Status:", "This WS Was Cancelled")
-        .setColor("RED")
-
-    return rolesEmbed;
-}
-
-export const killWS = async (client, ws, message) => {
-
-    if (ws.retruitchannel) {
-        let msg = await client.channels.cache.get(ws.retruitchannel).messages.fetch(ws.recruitmessage.toString());
-        msg.edit({embeds: [await whiteStarCancelMessage(ws)] })
-        msg.reactions.removeAll()
-    }
-    if (ws.statuschannel) {
-        let statusmsg = await client.channels.cache.get(ws.statuschannel).messages.fetch(ws.statusmessage.toString());
-        statusmsg.edit({embeds: [await whiteStarCancelMessage(ws)] })
-        statusmsg.reactions.removeAll()
-    }
-    ws.members.forEach(async t => {
-        let statusmsg = await client.channels.cache.get(ws.statuschannel).messages.fetch(ws.statusmessage.toString());
-        let roleMember = await statusmsg.guild.members.fetch(t.discordId)
-        roleMember.roles.remove(ws.wsrole)
-        ws.bsGroupsRoles.forEach(async bsRole => {
-            let roleMember = await statusmsg.guild.members.fetch(t.discordId)
-            roleMember.roles.remove(bsRole)
-        })
-        ws.spGroupsRoles.forEach(async spGroupsRoles => {
-            let roleMember = await statusmsg.guild.members.fetch(t.discordId)
-            roleMember.roles.remove(spGroupsRoles)
-        })
     })
 
 
-    ws.remove();
 }
 
+export const RefreshRecruitMessage = async (client, ws, interval) => {
+    let intWs = await WhiteStar.findOne({ wsrole: ws.wsrole }).populate('author').populate('members').populate('groupsRoles').exec();
+    let msgRecruit;
+    if (intWs) {
+
+        //Fetch old message
+        let recruitChannel = await client.channels.cache.get(intWs.retruitchannel)
+        if (recruitChannel) {
+            msgRecruit = await recruitChannel.messages.fetch(intWs.recruitmessage.toString())
+        }
+        //Refresh embed
+        const recruitEmbed = await WsMessages.whiteStarRecruitMessage(intWs)
+        const recruitButtons = await WsMessages.whiteStarRecruitButtons(intWs)
+
+        //add the menu buttons
+        await msgRecruit.edit({ embeds: [recruitEmbed], components: recruitButtons })
+    }
+
+    return msgRecruit;
+}
+
+
+//Status
+export const statusCollector = async (client, message, ws) => {
+
+    
+    const filter = (button) => button.user.bot == false;
+    const collector = message.createMessageComponentCollector({ filter });
+
+    let wsConfigMenu = new WsConfigMenu(ws, client)
+
+    collector.on('collect', async b => {
+        await b.deferUpdate()
+        if (b.customId == '🆘') {
+            WsMessages.SetNormal(!WsMessages.NormalShow)
+            //Refresh embed
+            const statusEmbed = await WsMessages.whiteStarStatusMessage(message, ws)
+            //const statusButtons = await WsMessages.whiteStarStatusButtons(message, ws)
+
+            //add the menu buttons
+            return await message.edit({ embeds: [statusEmbed] })
+        }
+        if (b.user.id == ws.author.discordId) {
+            if (b.customId == "setup") {
+                let menuRow = await wsConfigMenu.getRow(b, message)
+                return await b.followUp({ components: [menuRow], ephemeral: true })
+
+            } else if (b.customId == 'backrecruit') {
+                ws.status = "Recruiting"
+                await ws.save()
+                await RefreshRecruitMessage(client, ws)
+
+            } else if (b.customId == 'startscan') {
+                ws.status = "Scanning"
+                ws.scantime = new Date()
+                await ws.save()
+            } else if (b.customId == 'stopscan') {
+                ws.status = "WaitForScan"
+                await ws.save()
+            } else if (b.customId == 'startws') {
+                ws.status = "Running"
+                ws.matchtime = new Date();
+                await ws.save()
+            } else if (b.customId == 'stopws') {
+                ws.status = "Scanning"
+                ws.scantime = new Date()
+                await ws.save()
+
+            }
+            //Refresh embed
+            const statusEmbed = await WsMessages.whiteStarStatusMessage(message, ws)
+            const statusButtons = await WsMessages.whiteStarStatusButtons(message, ws)
+
+            //add the menu buttons
+            return await message.edit({ embeds: [statusEmbed], components: statusButtons })
+        } else {
+            await b.followUp({ content: 'You cant setup this whitestar.', ephemeral: true })
+        }
+    })
+}
+
+
 export const RefreshStatusMessage = async (client, ws, interval) => {
-    let intWs = await WhiteStar.findOne({ wsrole: ws.wsrole }).populate('author').populate('members').exec();
+    let intWs = await WhiteStar.findOne({ wsrole: ws.wsrole }).populate('author').populate('members').populate('groupsRoles').exec();
     let msgStatus;
     if (intWs) {
         if (interval) {
@@ -323,41 +232,71 @@ export const RefreshStatusMessage = async (client, ws, interval) => {
         //Fetch old message
         if (!intWs.statuschannel || !intWs.statusmessage) { }
         else {
-            msgStatus = await client.channels.cache.get(intWs.statuschannel).messages.fetch(intWs.statusmessage.toString());
+            try {
+                msgStatus = await client.channels.cache.get(intWs.statuschannel).messages.fetch(intWs.statusmessage.toString());
 
-            //Create new message
-            const statusEmbed = await whiteStarStatusMessage(msgStatus, intWs);
-            //Remove Reactions
-            msgStatus.edit( {embeds: [statusEmbed] })
+                const statusEmbed = await WsMessages.whiteStarStatusMessage(msgStatus, intWs)
+                const statusButtons = await WsMessages.whiteStarStatusButtons(msgStatus, intWs)
+
+                //add the menu buttons
+                await msgStatus.edit({ embeds: [statusEmbed], components: statusButtons })
+            } catch (e) {
+                console.log(`${intWs.description} ws is having issues with its messages`)
+            }
+
         }
     }
     return msgStatus;
 }
 
-export const RefreshRecruitMessage = async (client, ws, interval) => {
-    let intWs = await WhiteStar.findOne({ wsrole: ws.wsrole }).populate('author').populate('members').exec();
-    let msgRecruit;
-    if (intWs) {
+//Both
+export const killWS = async (client, ws) => {
 
-        //Fetch old message
-        let recruitChannel = await client.channels.cache.get(intWs.retruitchannel)
-        if (recruitChannel) {
-            msgRecruit = await recruitChannel.messages.fetch(intWs.recruitmessage.toString())
-        }
-        //Create new message
-        const recruitEmbed = await whiteStarRecruitMessage(intWs);
-
-        //Remove Reactions
-        await msgRecruit.edit({embeds: [recruitEmbed] })
+    if (ws.retruitchannel) {
+        let msg = await client.channels.cache.get(ws.retruitchannel).messages.fetch(ws.recruitmessage.toString());
+        msg.edit({ embeds: [await WsMessages.whiteStarCancelMessage(ws)], components: [] })
+        msg.reactions.removeAll()
     }
+    if (ws.statuschannel) {
+        let statusmsg = await client.channels.cache.get(ws.statuschannel).messages.fetch(ws.statusmessage.toString());
+        statusmsg.edit({ embeds: [await WsMessages.whiteStarCancelMessage(ws)], components: [] })
+        statusmsg.reactions.removeAll()
+    }
+    ws.members.forEach(async t => {
+        let statusmsg = await client.channels.cache.get(ws.retruitchannel).messages.fetch(ws.recruitmessage.toString());
+        let roleMember = await statusmsg.guild.members.fetch(t.discordId)
+        roleMember.roles.remove(ws.wsrole)
 
-    return msgRecruit;
+        if (ws.groupsRoles) {
+            ws.groupsRoles.bsGroupsRoles.forEach(async bsRole => {
+                let roleMember = await statusmsg.guild.members.fetch(t.discordId)
+                roleMember.roles.remove(bsRole)
+            })
+            ws.groupsRoles.spGroupsRoles.forEach(async spGroupsRoles => {
+                let roleMember = await statusmsg.guild.members.fetch(t.discordId)
+                roleMember.roles.remove(spGroupsRoles)
+            })
+        }
+    })
+
+
+    ws.remove();
 }
-
 export const StartTimerStatusRefresh = async (client, ws) => {
     let interval;
-    interval = setInterval(function () {
-        RefreshStatusMessage(client, ws, interval)
-    }, 10 * 1000);
+    interval = setInterval(async function () {
+      await  RefreshStatusMessage(client, ws, interval)
+    }, 30 * 1000);
     return interval;
 }
+
+var timer = function (name) {
+    var start = new Date();
+    return {
+        stop: function () {
+            var end = new Date();
+            var time = end.getTime() - start.getTime();
+            console.log('Timer:', name, 'finished in', time, 'ms');
+        }
+    }
+};

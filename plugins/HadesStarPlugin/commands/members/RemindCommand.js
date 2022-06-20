@@ -56,6 +56,10 @@ export class RemindCommand extends MemberCommand {
                 //Get Reason
                 let reason = ""
                 if (args[1]) reason = args.slice(1).join(' ')
+
+                if (reason.length >100)
+                return message.channel.send(`Too long remind message.`)
+
                 if(reason.toLowerCase().includes("http")){
                     return message.channel.send(`Adding links to reminder messages is disabled.`)
                 }

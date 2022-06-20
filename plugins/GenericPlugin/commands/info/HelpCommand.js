@@ -61,11 +61,11 @@ export class HelpCommand extends InfoCommand{
             subCategories.get(command.subcategory).add(command)
         });
 
-        embed.setTitle(`Rising Imperium Bot Commands`);
+        embed.setTitle(`Bot Commands`);
         categories.forEach((subCategories, category) => {
             embed.addField(stripIndents`**${capitalize(category)}**`, `${
                 Array.from(subCategories).map(([subCategory, commands]) => `${capitalize(subCategory)}\n${
-                    Array.from(commands).map(command => `\`${command.name}\``).join(', ')
+                    Array.from(commands).filter(command=> !command.hidden).map(command => `\`${command.name}\``).join(', ')
                 }`).join('\n\n')
             }`)
         });
@@ -79,7 +79,7 @@ export class HelpCommand extends InfoCommand{
         const cmd = this.bot.commands.get(input.toLowerCase());
         
         const info = [];
-        if (!cmd) {
+        if (!cmd || cmd.hidden) {
             return message.channel.send({embeds:[embed.setColor("RED").setDescription(`No information found for command **${input.toLowerCase()}**`)]});
         }
         if (cmd.name) info.push(`**Command name**: ${cmd.name}`);

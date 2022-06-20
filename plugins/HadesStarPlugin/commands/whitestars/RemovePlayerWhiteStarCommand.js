@@ -69,7 +69,7 @@ export class RemovePlayerWhiteStarCommand extends WhitestarsCommand {
     collector.on('collect', async b => {
 
       if (b.customId == "group") {
-        ws = await WhiteStar.findOne({ wsrole: message.guild.roles.cache.find(r => r.name == b.values[0]).id }).populate('author').populate('members').exec()
+        ws = await WhiteStar.findOne({ wsrole: message.guild.roles.cache.find(r => r.name == b.values[0]).id }).populate('author').populate('members').populate('groupsRoles').exec()
         if (ws && ws.members.length >0) {
           let selectMember = new MessageSelectMenu()
             .setCustomId('member')

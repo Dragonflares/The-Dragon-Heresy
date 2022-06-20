@@ -5,13 +5,13 @@ import * as WsUtils from '../../utils/whiteStarsUtils.js';
 import { confirmResultButtons } from '../../utils';
 import { MessageEmbed } from 'discord.js';
 
-export class SummaryWhiteStarCommand extends WhitestarsCommand {
+export class WSPlayersTechCommand extends WhitestarsCommand {
     constructor(plugin) {
         super(plugin, {
-            name: 'summaryws',
-            aliases: ['sumws'],
+            name: 'wsplayerstech',
+            aliases: ['wspt'],
             description: "Summary of Whitestar Members",
-            usage: "&summaryws <wsrole>"
+            usage: "&wsplayerstech <wsrole>"
         });
     }
 

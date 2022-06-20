@@ -15,6 +15,7 @@ export class FindTechCommand extends MemberCommand {
     }
 
     async run(message, args) {
+
         let embed = new MessageEmbed().setColor("RANDOM")
         if (!args.length) {
             embed.setTitle(`**Known Techs**`)
@@ -31,7 +32,7 @@ export class FindTechCommand extends MemberCommand {
                 embed.addField(`*${name}*`, `${Array.from(techs).join(', ')}`)
             });
 
-            return message.channel.send(embed)
+            return message.channel.send({ embeds: [embed] })
         }
         else {
             const level = parseInt(args[args.length - 1]);
@@ -57,27 +58,29 @@ export class FindTechCommand extends MemberCommand {
 
             if (!isNaN(level))
                 return this.getFindTechInformation(message, tech, level)
-            else
-                return this.getFindTechInformation(message, tech, null)
+            else {
+                var d = timer('All &ftech command')
+                await this.getFindTechInformation(message, tech, null)
+                d.stop();
+                return;
+            }
         }
     }
+
 
     async getFindTechInformation(message, tech, limit) {
        
 
         let corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate('members').exec();
-
+        
         //find tech ID
         const members = Array.from(corp.members)
 
-        let memListSorted = await Promise.all(
-            members.map(async t => [t, await this.GetModule(t, tech.name)])
-        )
+        let memListSorted = await Promise.all(members.map(async t => [t, await this.GetModule(t, tech.name)]))
 
         memListSorted = memListSorted
             .filter(([key, value]) => value != null)
             .map(([key, value]) => [value.level, key.name])
-            .filter(([key, value]) => key > 0)
             .filter(function ([key, value]) { if (limit) { return key == limit } else { return true } })
             .sort(([keya, valuea], [keyb, valueb]) => keya < keyb ? 1 : -1)
             .map(([key, value]) => `${value} ${key}`)
@@ -113,12 +116,18 @@ export class FindTechCommand extends MemberCommand {
         return;
     }
     async GetModule(member, techName) {
-        let techFound;
-        let techs = await Tech.find({ _id: Array.from(member.techs) })
-
-        techs.map(t => {
-            if (t.name == techName) techFound = t;
-        })
+        let techFound = await Tech.findOne({ _id: Array.from(member.techs),name: techName, level: { "$gt": 0} })
         return techFound
     }
 }
+
+var timer = function (name) {
+    var start = new Date();
+    return {
+        stop: function () {
+            var end = new Date();
+            var time = end.getTime() - start.getTime();
+            console.log('Timer:', name, 'finished in', time, 'ms');
+        }
+    }
+};

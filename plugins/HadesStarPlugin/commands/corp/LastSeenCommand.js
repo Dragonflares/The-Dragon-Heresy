@@ -1,9 +1,9 @@
-import { OfficerCommand } from './OfficerCommand';
+import { CorpCommand } from './CorpCommand';
 import { Member, Corp } from '../../database';
 import { confirmResultButtons } from '../../utils';
 import * as timeUtils from '../../utils/timeUtils.js'
 
-export class LastSeenCommand extends OfficerCommand {
+export class LastSeenCommand extends CorpCommand {
     constructor(plugin) {
         super(plugin, {
             name: 'lastseen',

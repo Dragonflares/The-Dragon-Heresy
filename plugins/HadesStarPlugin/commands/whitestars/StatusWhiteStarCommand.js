@@ -2,6 +2,7 @@ import { WhitestarsCommand } from './WhitestarsCommand';
 import { Member, WhiteStar, Corp } from '../../database';
 import * as WsUtils from '../../utils/whiteStarsUtils.js';
 import { confirmResultButtons } from '../../utils';
+import * as WsMessages from '../../utils/whiteStarsMessages.js'
 
 export class StatusWhiteStarCommand extends WhitestarsCommand {
   constructor(plugin) {
@@ -39,29 +40,34 @@ export class StatusWhiteStarCommand extends WhitestarsCommand {
 
   statusMessage = async (message, role, member) => {
     message.delete({ timeout: 1 });    //Delete User message
-    const ws = await WhiteStar.findOne({ wsrole: role.id }).populate('author').populate('members').exec()
+    const ws = await WhiteStar.findOne({ wsrole: role.id }).populate('author').populate('members').populate('groupsRoles').exec()
     if (!ws) {
       message.channel.send("There is no ws going on with that role!")
     } else {
 
       if (ws.statusmessage) {
-        let msg = await this.client.channels.cache.get(ws.statuschannel).messages.fetch(ws.statusmessage.toString())
-        msg.delete({ timeout: 1 })
+        try {
+          let msg = await this.client.channels.cache.get(ws.statuschannel).messages.fetch(ws.statusmessage.toString())
+          msg.delete({ timeout: 1 })
+        } catch (r) { console.log("Someone deleted manually one of the ws statuses.") }
       }
-      //Send Message
-      const rolesEmbed = await WsUtils.whiteStarStatusMessage(message, ws);
 
       //Send Message
-      const messageReaction = await message.channel.send({embeds:[rolesEmbed]});
+      const rolesEmbed = await WsMessages.whiteStarStatusMessage(message, ws)
+      const statusButtons = await WsMessages.whiteStarStatusButtons(message, ws)
+      //Send Message
+      const messageReaction = await message.channel.send({ embeds: [rolesEmbed], components: statusButtons });
 
       //React
-      WsUtils.whiteStarStatusReactions.get(ws.status).forEach(async react => await messageReaction.react(react))
+      // WsUtils.whiteStarStatusReactions.get(ws.status).forEach(async react => await messageReaction.react(react))
 
       //Save new ids in the database
       ws.statusmessage = messageReaction.id.toString()
       ws.statuschannel = messageReaction.channel.id.toString()
 
       await ws.save();
+
+    await WsUtils.statusCollector(this.client, messageReaction, ws);
     }
 
   }

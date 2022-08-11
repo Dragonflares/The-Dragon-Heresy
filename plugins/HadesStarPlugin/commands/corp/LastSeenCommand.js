@@ -92,8 +92,12 @@ export class LastSeenCommand extends CorpCommand {
             }
             else {
                 let today = new Date()
+                if(element.lastSeen) {
                 let {diffDays, diffHrs, diffMins } = timeUtils.timeDiff(today, element.lastSeen);
-                messageConcat = `- ${element.name} was last seen ${diffDays} days, ${diffHrs} hours and ${diffMins} minutes ago. \n`
+                    messageConcat = `- ${element.name} was last seen ${diffDays} days, ${diffHrs} hours and ${diffMins} minutes ago. \n`
+                }else{s
+                    messageConcat = `- ${element.name} was never seen?!. \n`
+                }
             }
             if (response.length + messageConcat.length + 3 >= 2000) {
                 response += `\`\`\``

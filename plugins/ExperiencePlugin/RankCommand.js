@@ -1,7 +1,7 @@
 import { Command } from '../../lib';
 import pkg from 'canvas';
 const { TheCanvas, registerFont, Canvas} = pkg;
-
+const { loadImage } = pkg;
 import { MessageAttachment } from 'discord.js';
 
 
@@ -26,7 +26,7 @@ export class RankCommand extends Command{
             const filename = `profile-${message.author.id}.jpg`;
             const attachment = new MessageAttachment(buffer, filename);
 
-            await message.channel.send(attachment);
+            await message.channel.send({files: [attachment]});
         } catch (error) {
             console.error(error);
             return message.channel.send(`An error ocurred: **${error.message}**`);
@@ -50,7 +50,7 @@ export class RankCommand extends Command{
             registerFont(bignoodle, {family: "Noodle"})
             const rankImage = new Canvas(470, 130)
             const buildRank = rankImage.getContext('2d')
-            const background = await TheCanvas.loadImage('./assets/images/canvasbackground.jpg')
+            const background = await loadImage('./assets/images/canvasbackground.jpg')
 
             buildRank.drawImage(background, 0, 0, rankImage.width, rankImage.height)
 
@@ -98,19 +98,19 @@ export class RankCommand extends Command{
             let ring
 
             if(xp.level < 3) {
-                ring = await TheCanvas.loadImage('./assets/images/ranklevelborders/level0.png')
+                ring = await loadImage('./assets/images/ranklevelborders/level0.png')
             }
             else if(xp.level < 5) {
-                ring = await TheCanvas.loadImage('./assets/images/ranklevelborders/level3.png')
+                ring = await loadImage('./assets/images/ranklevelborders/level3.png')
             }
             else if(xp.level < 10) {
-                ring = await TheCanvas.loadImage('./assets/images/ranklevelborders/level5.png')
+                ring = await loadImage('./assets/images/ranklevelborders/level5.png')
             }
             else if(xp.level < 15) {
-                ring = await TheCanvas.loadImage('./assets/images/ranklevelborders/level10.png')
+                ring = await loadImage('./assets/images/ranklevelborders/level10.png')
             }
             else{
-                ring = await TheCanvas.loadImage('./assets/images/ranklevelborders/level15.png')
+                ring = await loadImage('./assets/images/ranklevelborders/level15.png')
             }
             if(xp.level < 15){
                 buildRank.drawImage(ring, 13, 17, 94, 94)
@@ -125,7 +125,7 @@ export class RankCommand extends Command{
             buildRank.closePath();
             buildRank.clip();
 
-            const avatar = await TheCanvas.loadImage(member.displayAvatarURL({format:'png', size:64}));
+            const avatar = await loadImage(member.displayAvatarURL({format:'png', size:64}));
             buildRank.drawImage(avatar, 20, 25, 80, 80);
 
             return rankImage.toBuffer();

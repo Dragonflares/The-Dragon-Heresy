@@ -95,7 +95,7 @@ export class LastSeenCommand extends CorpCommand {
                 if(element.lastSeen) {
                 let {diffDays, diffHrs, diffMins } = timeUtils.timeDiff(today, element.lastSeen);
                     messageConcat = `- ${element.name} was last seen ${diffDays} days, ${diffHrs} hours and ${diffMins} minutes ago. \n`
-                }else{s
+                }else{
                     messageConcat = `- ${element.name} was never seen?!. \n`
                 }
             }

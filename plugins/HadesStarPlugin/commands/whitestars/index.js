@@ -11,3 +11,4 @@ export * from './WSGroupScoreCommand';
 //export * from './DeadShipWhiteStarCommand';
 export * from './WSScoreCommand';
 export * from './WsAllowedRolesCommand';
+export * from './KillWhiteStarCommand'

@@ -51,20 +51,36 @@ export class SetRankRolesCommand extends CorpCommand{
             }
         })
         const corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate("rankRoles").exec()
-        if (!author.permissions.has("ADMINISTRATOR") && !author.permissions.has("MANAGE_GUILD")) {
-            
-            let roles = corp.rankRoles
-            let AuthorRoles = author.roles.cache.map(role => role.id)
-
-            if (!AuthorRoles.includes(roles.Officer) && !AuthorRoles.includes(roles.FirstOfficer)) {
+        if (!author.permissions.has("ADMINISTRATOR") || !author.permissions.has("MANAGE_GUILD")) 
+        {
+            if(!corp){
                 return message.channel.send("You don't have the authority to modifiy the rank roles of your Corp's server.")
-            } else {
-                SetRank(message, args, corp)
+            }
+            else{
+                let roles = corp.rankRoles
+                let AuthorRoles = author.roles.cache.map(role => role.id)
+
+                if (!AuthorRoles.includes(roles.Officer) || !AuthorRoles.includes(roles.FirstOfficer)) {
+                    return message.channel.send("You don't have the authority to modifiy the rank roles of your Corp's server.")
+                } else {
+                    SetRank(message, args, corp)
+                }
             }
         } else {
-            SetRank(message, args, corp)
+            if(!corp){
+                let corporation = new Corp({
+                    _id: new Mongoose.Types.ObjectId(),
+                    name: message.guild.name,
+                    corpId: message.guild.id,
+                    members: []
+                });
+                await corporation.save();
+                message.channel.send("Created this Coporation in the Hades' Corps area! It will be visible from any server who I am in when they ask for the known Corporations! (although this can be configured later to be removed)")
+                corporation
+                SetRank(message, args, corporation)
+            }
+            else SetRank(message, args, corp)
         }
-
         /*
         if(!author.permissions.has("ADMINISTRATOR") || !author.permissions.has("MANAGE_GUILD")) {
             const corp = await Corp.findOne({ corpId: message.guild.id.toString() }).populate("redStarRoles").exec()
@@ -113,21 +129,6 @@ export class SetRankRolesCommand extends CorpCommand{
             }
         }
         else {
-            let actualCorp
-            let corp = await Corp.findOne({corpId: message.channel.guild.id})
-            if(!corp) {
-                let corporation = new Corp({
-                    _id: new Mongoose.Types.ObjectId(),
-                    name: message.guild.name,
-                    corpId: message.guild.id,
-                    members: []
-                });
-                await corporation.save();
-                message.channel.send("Created this Coporation in the Hades' Corps area! It will be visible from any server who I am in when they ask for the known Corporations! (although this can be configured later to be removed)")
-                actualCorp = corporation
-            }
-            else actualCorp = corp
-            SetRank(message, args, actualCorp)
         }*/
     }
 }
